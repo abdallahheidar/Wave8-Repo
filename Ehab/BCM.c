@@ -31,7 +31,7 @@ strUSART_Config_t USART_Config;
 strSPI_Config_t SPI_Config;
 
 uint8_t gu8_BCM_InitFlag = FALSE;
-uint8_t gu8_BCM_InitFlag = FALSE;
+
 uint8_t gu8_BCM_SendFlag = FALSE;
 uint8_t gu8_BCM_ReceiveFlag = FALSE;
 
@@ -455,7 +455,7 @@ ERROR_STATUS BCM_Send (uint8_t* pu8_Data , uint16_t u16_NumberOfBytes)
 	
 	if (pu8_Data != NULL)
 	{
-		if (gu8_BCM_SPI_InitFlag || gu8_BCM_UART_InitFlag)
+		if (gu8_BCM_InitFlag)
 		{
 			gpu8_PointerToBuffer = pu8_Data;
 			if (gu8_FSM_Status == IDLE)
@@ -492,7 +492,7 @@ ERROR_STATUS BCM_Receive(uint8_t* pu8_Data)
 	if (pu8_Data != NULL)
 	{
 		
-		if (gu8_BCM_UART_InitFlag || gu8_BCM_SPI_InitFlag)
+		if (gu8_BCM_InitFlag)
 		{
 			gpu8_PointerToBuffer = pu8_Data;
 			if (gu8_FSM_Status == IDLE)
