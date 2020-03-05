@@ -157,34 +157,17 @@ ERROR_STATUS BCM_Init(void)
  *
  * @return: function status
  */
-ERROR_STATUS BCM_DeInit(uint8_t u8_ComProtocol)
+ERROR_STATUS BCM_DeInit(void)
 {
 	ERROR_STATUS ERR = E_OK;
 
-	switch (u8_ComProtocol)
+	if (gu8_BCM_InitFlag)
 	{
-		case UART:
-			if (gu8_BCM_UART_InitFlag)
-			{
-				gu8_BCM_UART_InitFlag = FALSE;
-			}
-			else
-			{
-				ERR = BCM_MODULE_ID + ERROR_MODULE_NOT_INITIALIZED;
-			}
-		
-		case SPI:
-			if (gu8_BCM_SPI_InitFlag)
-			{
-				gu8_BCM_SPI_InitFlag = FALSE;
-			}
-			else
-			{
-				ERR = BCM_MODULE_ID + ERROR_MODULE_NOT_INITIALIZED;
-			}
-		
-		default:
-			ERR = BCM_MODULE_ID + ERROR_INVALID_PARAMETER;
+		gu8_BCM_InitFlag = FALSE;
+	}
+	else
+	{
+		ERR = BCM_MODULE_ID + ERROR_MODULE_NOT_INITIALIZED;
 	}
 	return ERR;
 }
