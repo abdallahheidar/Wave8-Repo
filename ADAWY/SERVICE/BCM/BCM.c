@@ -76,33 +76,36 @@ void BCM_ISR_CBK(uint8_t RecievedByte);
 /*************** LOCAL FUNCTION IMPLEMENTAION ***************/
 /***********************************************************/
 
-void BCM_ISR_CBK(uint8_t RecievedByte){
-	
+/**
+* Input: the buffer lock state.
+* Output:
+* In/Out: Received Byte by ISR
+* Return:
+* Description: This function Act as the BCM Rx callback function
+*
+*/
 
-	
-	
-   
+void BCM_ISR_CBK(uint8_t RecievedByte){
+	/*Receiving the BCM ID*/
 	if ((gstr_RxInfo.RxCounter == RX_BCMID_BYTE_NUM) && (RecievedByte == BCM_ID) && (gu8_RXBufferStateLock == RX_UNLOCK))
 	{
 		gu8_FrameRecieveFlag = TRUE;
 		gu8_RXBufferStateLock = RX_RECIEVING;
-		
 		gstr_RxInfo.RxCounter++;
 	}
-	
+
 	else if((gu8_RXBufferStateLock == RX_RECIEVING)){
-	
-		
+	   /*Receiving the Size Byte 1*/
 		if(gstr_RxInfo.RxCounter == RX_SIZE_LSB_BYTE_NUM){
 			gu16_SizeLSB = RecievedByte;
 		}
+		/*Receiving the Size Byte 2*/
 		else if(gstr_RxInfo.RxCounter == RX_SIZE_MSB_BYTE_NUM){
-			//e3mly el size
 			gu16_SizeMSB = RecievedByte;
 			gstr_RxInfo.RxDataSize = (gu16_SizeMSB << 8) |gu16_SizeLSB;
 		}
 		
-		
+		/*Receiving the Data*/
 		else if((gstr_RxInfo.RxCounter > RX_SIZE_MSB_BYTE_NUM) && (gstr_RxInfo.RxCounter < (gstr_RxInfo.RxDataSize+RX_BUFFER_REMAINING_SIZE))){
 			
 			
@@ -115,9 +118,8 @@ void BCM_ISR_CBK(uint8_t RecievedByte){
 			gstr_RxBuffer.RxBufferIndex++;
 		}
 		
-		
+		/*Receiving Check Sum byte*/
 		else if((gstr_RxInfo.RxCounter == (gstr_RxInfo.RxDataSize+RX_BUFFER_REMAINING_SIZE))){
-			//TCNT2 =gstr_RxInfo.RxCounter;
 			gstr_RxInfo.CheckSumRecieved = RecievedByte;
 		}
 		
@@ -131,17 +133,31 @@ void BCM_ISR_CBK(uint8_t RecievedByte){
 /*************************************************************/
 /*************** APIS FUNCTION IMPLEMENTAION ****************/
 /***********************************************************/
+
+/**
+* Input: Pointer to a structure contains the information needed to initialize the BCM.
+* Output:
+* In/Out:
+* Return: The error status of the function.
+* Description: Initiates the BCM.
+*
+*/
 ERROR_STATUS BCM_Init(strBCMCfg_t *BCMCfg){
 	ERROR_STATUS ERR;
+
+	/*Check on NULL Pointer*/
 	if (BCMCfg != NULL)
 	{
+		/*Check on Communication protocol*/
 		switch(BCMCfg->Protocol){
+			/*In case Uart*/
 			case UART_BCM:
 			gu8_Protocol = UART_BCM;
 			UART_INIT(Uart_Parity_no,Uart_Stop_Bit_One,Uart_Data_8_Bit,Uart_Baud_Rate_9600,Uart_Async_Normal_Speed,Uart_Multi_Processor_Communication_Disable,Uart_Interrupt,BCM_ISR_CBK);
 			ERR =E_OK;
 			break;
 			
+			/*In case SPI*/
 			case SPI_BCM:
 			gu8_Protocol = SPI_BCM;
 			if(BCMCfg->Direction == SENDING){
@@ -154,10 +170,12 @@ ERROR_STATUS BCM_Init(strBCMCfg_t *BCMCfg){
 				_SPIInitSlave(Fosc4 , mode1 ,MSB,SPI_INTERRUPT_MODE,BCM_ISR_CBK);
 				
 			}
+			/*error assignment*/
 			ERR =E_OK;
 			break;
 			
 			default:
+			/* error assignment to invalid parameter*/
 			ERR =(BCM_ERROR + E_INVALID_PARAMETER);
 			break;
 			
@@ -202,7 +220,7 @@ ERROR_STATUS BCM_Init(strBCMCfg_t *BCMCfg){
 
 					else if (SPI_BCM == gu8_Protocol)
 					{
-						ptrSend = _SPITrancevier; //ptrSend = spi transmit function
+						ptrSend = _SPITrancevier; 
 						
 					}
 					
@@ -220,6 +238,7 @@ ERROR_STATUS BCM_Init(strBCMCfg_t *BCMCfg){
 				break;
 				
 				default:
+				/* Error assignment*/
 				ERR =(BCM_ERROR + E_INVALID_PARAMETER);
 				break; 
 			}
@@ -228,6 +247,7 @@ ERROR_STATUS BCM_Init(strBCMCfg_t *BCMCfg){
 		
 	}
 	else{
+	   /*error assignment null ptr*/
 		ERR =(BCM_ERROR + E_NULL_PTR);
 	}
 
@@ -236,15 +256,29 @@ ERROR_STATUS BCM_Init(strBCMCfg_t *BCMCfg){
 }
 
 
+/**
+* Input: Pointer to the RX Buffer, The size of RX Buffer,the pointer to the BCM Callback function.
+* Output:
+* In/Out:
+* Return: The error status of the function.
+* Description: This function act as the creator for the BCM Reception
+*
+*/
 ERROR_STATUS BCM_SetupRxBuffer(uint8_t* PtrRxData,uint16_t size,void (*Notification)(uint8_t)){
 	ERROR_STATUS ERR;
+	/*In case the inputs of the function are valid*/
 	if(PtrRxData != NULL && Notification != NULL){
+	   /*Let the Rx ISR callback Function equals to the notification*/
 		RxBCM_CBK = Notification;
+		/*Let the RxBuffer equals to the user's buffer*/
 		gstr_RxBuffer.RxBuffer = PtrRxData;
+		/*Let the RxBuffer size equals to the user's buffer size*/
 		gstr_RxBuffer.RxBufferSize =size;
+		/*error assignment*/
 		ERR = E_OK;
 	}
 	else{
+	   /*error assignment to null ptr*/
 		ERR = (BCM_ERROR + E_NULL_PTR);
 	}
 	return ERR;
@@ -252,6 +286,14 @@ ERROR_STATUS BCM_SetupRxBuffer(uint8_t* PtrRxData,uint16_t size,void (*Notificat
 }
 
 
+/**
+* Input: the buffer lock state.
+* Output:
+* In/Out:
+* Return: The error status of the function.
+* Description: This function used to unlock the Rx buffer
+*
+*/
 ERROR_STATUS BCM_RxUnlock(uint8_t Rxlock){
 	ERROR_STATUS ERR;
 	
@@ -262,25 +304,28 @@ ERROR_STATUS BCM_RxUnlock(uint8_t Rxlock){
 	return ERR;
 }
 
-/*
-ERROR_STATUS BCM_GetRxBuffer(uint8_t * BufferState){
-	
-}*/
+/**
+* Input: the buffer lock state.
+* Output:
+* In/Out:
+* Return: The error status of the function.
+* Description: This function act as the manager of the Rx BCM
+*
+*/
 
 void BCM_RxDispatcher(void){
 	
 	switch(gu8_CurrentState){
-		
+		/*In case IDLE state*/
 		case RX_IDLE:
 		if (gu8_RXBufferStateLock == RX_RECIEVING)
 		{
 			gu8_CurrentState = RX_RECIEVING_BYTE;
 			
 		}
-		
-		
 		break;
 		
+		/*In case RX_RECIEVING_BYTE state*/
 		case  RX_RECIEVING_BYTE:
 		
 		/*Loop on what is came from the ISR and make the check on this data*/
@@ -302,13 +347,13 @@ void BCM_RxDispatcher(void){
 			
 			/*Check whether the current received byte is a data or not to move to the next state*/
 			if(gu16_CurrentFrameCounter == (gstr_RxInfo.RxDataSize+RX_BUFFER_REMAINING_SIZE)){
-				//Switch to the received complete frame state
+				/*Switch to the received complete frame state*/
 				
 				gu8_CurrentState = RX_RECIEVING_COMPLETE_FRAME;
 				break;
 			}
 			
-			//Increment the counter until it reaches the ISR Received Counter/
+			/*Increment the counter until it reaches the ISR Received Counter*/
 			gu16_CurrentFrameCounter++;
 		}
 		
@@ -318,18 +363,17 @@ void BCM_RxDispatcher(void){
 		case  RX_RECIEVING_COMPLETE_FRAME:
 		if((gstr_RxInfo.CheckSum == gstr_RxInfo.CheckSumRecieved) && (gu8_SizeErrorFlag == TRUE)){
 			
-			//Callback the consumer send it E_OK
-			
+			/*Callback the consumer send it E_OK*/
 			RxBCM_CBK(E_OK);
 			gu8_RXBufferStateLock =RX_READY;
 		}
 		else{
-			//Callback the consumer send it E_NOK
+			/*Callback the consumer send it E_NOK*/
 			RxBCM_CBK(E_NOK);
 			gu8_RXBufferStateLock =RX_UNLOCK;
 		}
-		/*RxBCM_CBK(E_OK);
-		gu8_RXBufferState =RX_READY;*/
+
+		/*Let it RX IDLe*/
 		gu8_CurrentState = RX_IDLE;
 		break;
 		
@@ -337,6 +381,14 @@ void BCM_RxDispatcher(void){
 }
 
 
+/**
+* Input: Pointer to a structure contains the information of TX Buffer the BCM.
+* Output:
+* In/Out:
+* Return: The error status of the function.
+* Description: This function act as the creator for the BCM Transmission
+*
+*/
 ERROR_STATUS BCM_Send(strTxBuffer_t * TxRequest)
 {
 	uint8_t au8_Error = E_OK;
@@ -377,7 +429,14 @@ ERROR_STATUS BCM_Send(strTxBuffer_t * TxRequest)
 	return au8_Error;
 }
 
-
+/**
+* Input: the buffer lock state.
+* Output:
+* In/Out:
+* Return: The error status of the function.
+* Description: This function act as the manager of the Tx BCM
+*
+*/
 void BCM_TxDispatcher (void)
 {
 	/*
@@ -398,7 +457,6 @@ void BCM_TxDispatcher (void)
 		 *the dis stay in this case till app call creator function, at this time it move the dis to next case sending byte 
 		 */
 		case IDLE:
-		//adjust the idle state according to the edit in sending due to array of request
 		/* check if app call the creator */
 		for (au8_IdleCounter=IDLE_COUNTER_INITIAL_VALUE;au8_IdleCounter<NUMBER_OF_REQUEST_FOR_TX_BCM;au8_IdleCounter++)
 		{
@@ -517,7 +575,7 @@ void BCM_TxDispatcher (void)
 		gu16_TxFrameCounter = TX_FRAME_COUNTER_INITAIL_VALUE;
 
 		/* notify the app that buffer send complete*/
-		//still don't know how?? is it by call function or by set flag for the app i don't know till now
+		
 		
 		/* return the Tx DIS to idle state*/
 		au8_TxDisState = IDLE ;
@@ -530,13 +588,28 @@ void BCM_TxDispatcher (void)
 	}
 }
 
-
+/**
+* Input: the buffer lock state.
+* Output:
+* In/Out:
+* Return: The error status of the function.
+* Description: This function used to change the state of the Rx buffer locking state
+*
+*/
 ERROR_STATUS BCM_GetTxBuffer(strTxBuffer_t * TxRequestID,uint8_t * TxBufferState)
 {
-	uint8_t au8_Error = E_OK;
+	uint8_t au8_Error;
 	
 	/* return the state of the request */
-	*TxBufferState = TxRequestID->Lock;
+	if( TxRequestID == NULL || TxBufferState == NULL)
+	{
+		au8_Error = E_NULL_PTR + BCM_ERROR;
+	}
+	else{
+		*TxBufferState = TxRequestID->Lock;
+		au8_Error = E_OK;
+	}
+	
 
 	return au8_Error;
 }

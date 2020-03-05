@@ -54,12 +54,6 @@ void Consumer(uint8_t Status){
 }
 	
 
-
-
-
-
-
-
 void SEND_APP  (void)
 {
 	strBCMCfg_t BCM_Info;
@@ -99,7 +93,7 @@ void SEND_APP  (void)
 		BCM_TxDispatcher();
 	}
 
-	return 0;
+	
 }
 
 
