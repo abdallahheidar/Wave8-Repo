@@ -3,13 +3,13 @@
  *
  * Created: 3/3/2020 1:46:03 AM
  *  Author: Ema
- */ 
+ */
 
 
 #ifndef BCM_CFG_H_
 #define BCM_CFG_H_
 
-#include "..\common\std_types.h"
+#include "mock_std_types.h"
 
 
 
@@ -31,8 +31,10 @@
 #define BCM_TXSEND              5
 #define BCM_TXSENDING           8
 #define BCM_TXSEND_COMPLETE     6
-#define BCM_TXCOMPLETE          7  
- 
+#define BCM_TXCOMPLETE          7
+#define BCM_INIT_DONE           1
+#define BCM_NO_INIT             0
+
 
 typedef struct Bcm_Cfg_ST{
 	uint8_t BCM_Mode;
