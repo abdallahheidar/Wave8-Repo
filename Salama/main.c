@@ -96,7 +96,7 @@ void BCM_Receive_Notification(uint16_t uart_size){
 	uint16_t u16_loop = ZERO;
 	
 	/*loop to send all bytes*/
-	for(u16_loop = 0; u16_loop <= uart_size ; u16_loop++)
+	for(u16_loop = ZERO; u16_loop <= uart_size ; u16_loop++)
 	{
 		/*send data back to pc*/
 		uart_tx_send(arr_BCM_Buffer[u16_loop]);
