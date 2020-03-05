@@ -36,10 +36,10 @@ config_spi spi_0 = {ZERO};
 /************************************************************************/
 /*				 GLOBAL STATIC VARIABLES            			        */
 /************************************************************************/
-volatile static uint16_t gu16_TxISR_cnt = 0;
-volatile static uint16_t gu16_RxISR_cnt = 0;
+static uint16_t gu16_TxISR_cnt = 0;
+static uint16_t gu16_RxISR_cnt = 0;
 
-volatile static uint8_t gu8_rec_value = ZERO;
+static uint8_t gu8_rec_value = ZERO;
 
 static uint8_t gu8_ProtocolToUse = ZERO;
 
@@ -67,7 +67,7 @@ static uint8_t gu8_BCM_RxBuffer_LockState			= BCM_RX_BUFFER_UNLOCKED;
 static uint8_t gu8_BCM_TxBuffer_Index = ZERO;
 static uint8_t gu8_BCM_TxChecksum = ZERO;
 
-volatile static uint8_t gu8_BCM_RxChecksum = ZERO;
+static uint8_t gu8_BCM_RxChecksum = ZERO;
 
 static uint8_t gu8_BCM_TxC_Flag = ZERO;
 static volatile uint8_t gu8_uart_BCM_TxC_Flag = BCM_TXC_FLAG_NOT_TRIGGERED;
