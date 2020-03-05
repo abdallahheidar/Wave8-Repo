@@ -80,14 +80,76 @@ typedef struct strTxBuffer_t{
 /*************************************************************/
 /***************** APIS FUNCTION PROTOTYPE ******************/
 /***********************************************************/
-extern ERROR_STATUS BCM_Init(strBCMCfg_t *BCMCfg);
-extern ERROR_STATUS BCM_Send(strTxBuffer_t * TxRequest);
-extern ERROR_STATUS BCM_SetupRxBuffer(uint8_t* PtrRxData,uint16_t size, void (*Notification)(uint8_t));
-extern ERROR_STATUS BCM_RxUnlock(uint8_t Rxlock);
-extern ERROR_STATUS BCM_GetTxBuffer(strTxBuffer_t * TxRequestID,uint8_t * TxBufferState);
-extern ERROR_STATUS BCM_GetRxBufferLockState(uint8_t * BufferState);
 
+/**
+* Input: Pointer to a structure contains the information needed to initialize the BCM.
+* Output:
+* In/Out:
+* Return: The error status of the function.
+* Description: Initiates the BCM.
+*
+*/
+extern ERROR_STATUS BCM_Init(strBCMCfg_t *BCMCfg);
+
+/**
+* Input: Pointer to a structure contains the information of TX Buffer the BCM.
+* Output:
+* In/Out:
+* Return: The error status of the function.
+* Description: This function act as the creator for the BCM Transmission
+*
+*/
+extern ERROR_STATUS BCM_Send(strTxBuffer_t * TxRequest);
+
+/**
+* Input: Pointer to the RX Buffer, The size of RX Buffer,the pointer to the BCM Callback function.
+* Output:
+* In/Out:
+* Return: The error status of the function.
+* Description: This function act as the creator for the BCM Reception
+*
+*/
+extern ERROR_STATUS BCM_SetupRxBuffer(uint8_t* PtrRxData,uint16_t size, void (*Notification)(uint8_t));
+
+/**
+* Input: the buffer lock state.
+* Output:
+* In/Out:
+* Return: The error status of the function.
+* Description: This function used to unlock the Rx buffer
+*
+*/
+extern ERROR_STATUS BCM_RxUnlock(uint8_t Rxlock);
+
+/**
+* Input: the buffer lock state.
+* Output:
+* In/Out:
+* Return: The error status of the function.
+* Description: This function used to change the state of the Rx buffer locking state
+*
+*/
+extern ERROR_STATUS BCM_GetTxBuffer(strTxBuffer_t * TxRequestID,uint8_t * TxBufferState);
+
+
+/**
+* Input: the buffer lock state.
+* Output:
+* In/Out:
+* Return: The error status of the function.
+* Description: This function act as the manager of the Rx BCM
+*
+*/
 extern void BCM_RxDispatcher(void);
+
+/**
+* Input: the buffer lock state.
+* Output:
+* In/Out:
+* Return: The error status of the function.
+* Description: This function act as the manager of the Tx BCM
+*
+*/
 extern void BCM_TxDispatcher(void);
 
 

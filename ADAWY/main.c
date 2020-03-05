@@ -15,6 +15,9 @@
 
 void Consumer(uint8_t Status);
 void REC_App (void);
+void SEND_APP  (void);
+
+
 uint8_t Data[80];
 extern  strTxBuffer_t Tx_RequestBuffer[];
 

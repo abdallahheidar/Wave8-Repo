@@ -43,10 +43,6 @@
 
 #define RX_BUFFER_REMAINING_SIZE   3
 
-/*************************************************************/
-/*********************** LOCAL STRUCT ***********************/
-/***********************************************************/
-
 
 
 
@@ -87,39 +83,39 @@ void BCM_ISR_CBK(uint8_t RecievedByte);
 
 void BCM_ISR_CBK(uint8_t RecievedByte){
 	/*Receiving the BCM ID*/
-	if ((gstr_RxInfo.RxCounter == RX_BCMID_BYTE_NUM) && (RecievedByte == BCM_ID) && (gu8_RXBufferStateLock == RX_UNLOCK))
-	{
-		gu8_FrameRecieveFlag = TRUE;
-		gu8_RXBufferStateLock = RX_RECIEVING;
-		gstr_RxInfo.RxCounter++;
-	}
+   if ((gstr_RxInfo.RxCounter == RX_BCMID_BYTE_NUM) && (RecievedByte == BCM_ID) && (gu8_RXBufferStateLock == RX_UNLOCK))
+   {
+   	gu8_FrameRecieveFlag = TRUE;
+   	gu8_RXBufferStateLock = RX_RECIEVING;
+   	gstr_RxInfo.RxCounter++;
+   }
 
-	else if((gu8_RXBufferStateLock == RX_RECIEVING)){
+	else if((gu8_RXBufferStateLock == RX_RECIEVING))
+	{
 	   /*Receiving the Size Byte 1*/
-		if(gstr_RxInfo.RxCounter == RX_SIZE_LSB_BYTE_NUM){
+		if(gstr_RxInfo.RxCounter == RX_SIZE_LSB_BYTE_NUM)
+		{
 			gu16_SizeLSB = RecievedByte;
-		}
+	   }
+
 		/*Receiving the Size Byte 2*/
-		else if(gstr_RxInfo.RxCounter == RX_SIZE_MSB_BYTE_NUM){
+	   else if(gstr_RxInfo.RxCounter == RX_SIZE_MSB_BYTE_NUM)
+	   {
 			gu16_SizeMSB = RecievedByte;
 			gstr_RxInfo.RxDataSize = (gu16_SizeMSB << 8) |gu16_SizeLSB;
 		}
 		
 		/*Receiving the Data*/
-		else if((gstr_RxInfo.RxCounter > RX_SIZE_MSB_BYTE_NUM) && (gstr_RxInfo.RxCounter < (gstr_RxInfo.RxDataSize+RX_BUFFER_REMAINING_SIZE))){
-			
-			
+		else if((gstr_RxInfo.RxCounter > RX_SIZE_MSB_BYTE_NUM) && (gstr_RxInfo.RxCounter < (gstr_RxInfo.RxDataSize+RX_BUFFER_REMAINING_SIZE)))
+		{	
 			gstr_RxBuffer.RxBuffer[gstr_RxBuffer.RxBufferIndex] = RecievedByte;
-			
-			
 			gstr_RxInfo.CheckSum += gstr_RxBuffer.RxBuffer[gstr_RxBuffer.RxBufferIndex];
-			
-			
 			gstr_RxBuffer.RxBufferIndex++;
 		}
 		
 		/*Receiving Check Sum byte*/
-		else if((gstr_RxInfo.RxCounter == (gstr_RxInfo.RxDataSize+RX_BUFFER_REMAINING_SIZE))){
+		else if((gstr_RxInfo.RxCounter == (gstr_RxInfo.RxDataSize+RX_BUFFER_REMAINING_SIZE)))
+		{
 			gstr_RxInfo.CheckSumRecieved = RecievedByte;
 		}
 		
@@ -142,14 +138,16 @@ void BCM_ISR_CBK(uint8_t RecievedByte){
 * Description: Initiates the BCM.
 *
 */
-ERROR_STATUS BCM_Init(strBCMCfg_t *BCMCfg){
+ERROR_STATUS BCM_Init(strBCMCfg_t *BCMCfg)
+{
 	ERROR_STATUS ERR;
 
 	/*Check on NULL Pointer*/
 	if (BCMCfg != NULL)
 	{
 		/*Check on Communication protocol*/
-		switch(BCMCfg->Protocol){
+		switch(BCMCfg->Protocol)
+		{
 			/*In case Uart*/
 			case UART_BCM:
 			gu8_Protocol = UART_BCM;
@@ -160,7 +158,8 @@ ERROR_STATUS BCM_Init(strBCMCfg_t *BCMCfg){
 			/*In case SPI*/
 			case SPI_BCM:
 			gu8_Protocol = SPI_BCM;
-			if(BCMCfg->Direction == SENDING){
+			if(BCMCfg->Direction == SENDING)
+			{
 				_SPIInitMaster(Fosc4 , mode1 ,MSB,SPI_INTERRUPT_MODE);
 				
 			}
@@ -170,6 +169,7 @@ ERROR_STATUS BCM_Init(strBCMCfg_t *BCMCfg){
 				_SPIInitSlave(Fosc4 , mode1 ,MSB,SPI_INTERRUPT_MODE,BCM_ISR_CBK);
 				
 			}
+
 			/*error assignment*/
 			ERR =E_OK;
 			break;
@@ -180,9 +180,9 @@ ERROR_STATUS BCM_Init(strBCMCfg_t *BCMCfg){
 			break;
 			
 		}
-		if(ERR == E_OK){
+		if(ERR == E_OK)
+		{
 			/* Initializing Globals and check on the direction*/
-			
 			switch(BCMCfg->Direction){
 				case READING:
 					
@@ -246,7 +246,8 @@ ERROR_STATUS BCM_Init(strBCMCfg_t *BCMCfg){
 		}
 		
 	}
-	else{
+	else
+	{
 	   /*error assignment null ptr*/
 		ERR =(BCM_ERROR + E_NULL_PTR);
 	}
@@ -264,10 +265,12 @@ ERROR_STATUS BCM_Init(strBCMCfg_t *BCMCfg){
 * Description: This function act as the creator for the BCM Reception
 *
 */
-ERROR_STATUS BCM_SetupRxBuffer(uint8_t* PtrRxData,uint16_t size,void (*Notification)(uint8_t)){
+ERROR_STATUS BCM_SetupRxBuffer(uint8_t* PtrRxData,uint16_t size,void (*Notification)(uint8_t))
+{
 	ERROR_STATUS ERR;
 	/*In case the inputs of the function are valid*/
-	if(PtrRxData != NULL && Notification != NULL){
+	if(PtrRxData != NULL && Notification != NULL)
+	{
 	   /*Let the Rx ISR callback Function equals to the notification*/
 		RxBCM_CBK = Notification;
 		/*Let the RxBuffer equals to the user's buffer*/
@@ -277,7 +280,8 @@ ERROR_STATUS BCM_SetupRxBuffer(uint8_t* PtrRxData,uint16_t size,void (*Notificat
 		/*error assignment*/
 		ERR = E_OK;
 	}
-	else{
+	else
+	{
 	   /*error assignment to null ptr*/
 		ERR = (BCM_ERROR + E_NULL_PTR);
 	}
@@ -294,7 +298,8 @@ ERROR_STATUS BCM_SetupRxBuffer(uint8_t* PtrRxData,uint16_t size,void (*Notificat
 * Description: This function used to unlock the Rx buffer
 *
 */
-ERROR_STATUS BCM_RxUnlock(uint8_t Rxlock){
+ERROR_STATUS BCM_RxUnlock(uint8_t Rxlock)
+{
 	ERROR_STATUS ERR;
 	
 	gu8_RXBufferStateLock = Rxlock;
@@ -313,9 +318,10 @@ ERROR_STATUS BCM_RxUnlock(uint8_t Rxlock){
 *
 */
 
-void BCM_RxDispatcher(void){
-	
-	switch(gu8_CurrentState){
+void BCM_RxDispatcher(void)
+{
+	switch(gu8_CurrentState)
+	{
 		/*In case IDLE state*/
 		case RX_IDLE:
 		if (gu8_RXBufferStateLock == RX_RECIEVING)
@@ -329,24 +335,29 @@ void BCM_RxDispatcher(void){
 		case  RX_RECIEVING_BYTE:
 		
 		/*Loop on what is came from the ISR and make the check on this data*/
-		while(gu16_CurrentFrameCounter < gstr_RxInfo.RxCounter){
+		while(gu16_CurrentFrameCounter < gstr_RxInfo.RxCounter)
+		{
 			
 			/*Check whether the size is received fully with success or not*/
-			if(gu16_CurrentFrameCounter == RX_DATASTART_BYTE_NUM){
+			if(gu16_CurrentFrameCounter == RX_DATASTART_BYTE_NUM)
+			{
 				
 				/*Compare the Received Size  and the Buffer Size*/
-				if(gstr_RxBuffer.RxBufferSize <gstr_RxInfo.RxDataSize){
+				if(gstr_RxBuffer.RxBufferSize <gstr_RxInfo.RxDataSize)
+				{
 					/*Notify error and send it to the call back function Or make an error state*/
 					gu8_SizeErrorFlag = FALSE;
 				}
-				else{
+				else
+				{
 					gu8_SizeErrorFlag = TRUE;
 				}
 				
 			}
 			
 			/*Check whether the current received byte is a data or not to move to the next state*/
-			if(gu16_CurrentFrameCounter == (gstr_RxInfo.RxDataSize+RX_BUFFER_REMAINING_SIZE)){
+			if(gu16_CurrentFrameCounter == (gstr_RxInfo.RxDataSize+RX_BUFFER_REMAINING_SIZE))
+			{
 				/*Switch to the received complete frame state*/
 				
 				gu8_CurrentState = RX_RECIEVING_COMPLETE_FRAME;
@@ -361,13 +372,14 @@ void BCM_RxDispatcher(void){
 		break;
 		
 		case  RX_RECIEVING_COMPLETE_FRAME:
-		if((gstr_RxInfo.CheckSum == gstr_RxInfo.CheckSumRecieved) && (gu8_SizeErrorFlag == TRUE)){
-			
+		if((gstr_RxInfo.CheckSum == gstr_RxInfo.CheckSumRecieved) && (gu8_SizeErrorFlag == TRUE))
+		{
 			/*Callback the consumer send it E_OK*/
 			RxBCM_CBK(E_OK);
 			gu8_RXBufferStateLock =RX_READY;
 		}
-		else{
+		else
+		{
 			/*Callback the consumer send it E_NOK*/
 			RxBCM_CBK(E_NOK);
 			gu8_RXBufferStateLock =RX_UNLOCK;
