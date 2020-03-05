@@ -29,7 +29,7 @@
 #define UART_PROTOCOL			0
 #define SPI_PROTOCOL			1
 
-typedef volatile void (*ptr_Function) (void);
+typedef void (*ptr_Function) (void);
 
 
 typedef struct st_BCM_Cfg_t {
