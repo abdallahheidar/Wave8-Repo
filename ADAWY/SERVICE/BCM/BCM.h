@@ -16,6 +16,7 @@
 #include "../../MCAL/UART/UART.h"
 #include "../../MCAL/DIO/DIO.h"
 #include "../../MCAL/SPI/SPI__.h"
+#include "../ERROR/ERROR-STORE.h"
 
 /*************************************************************/
 /*********************** GLOBAL MACROS **********************/

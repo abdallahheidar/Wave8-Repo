@@ -176,7 +176,8 @@ ERROR_STATUS BCM_Init(strBCMCfg_t *BCMCfg)
 			
 			default:
 			/* error assignment to invalid parameter*/
-			ERR =(BCM_ERROR + E_INVALID_PARAMETER);
+			ERR =E_NOK;
+			Error_Push(BCM_MODULE,ERROR_INVALID_PARAMETER);
 			break;
 			
 		}
@@ -239,7 +240,8 @@ ERROR_STATUS BCM_Init(strBCMCfg_t *BCMCfg)
 				
 				default:
 				/* Error assignment*/
-				ERR =(BCM_ERROR + E_INVALID_PARAMETER);
+				ERR =E_NOK;
+				Error_Push(BCM_MODULE,ERROR_INVALID_PARAMETER);
 				break; 
 			}
 			
@@ -249,7 +251,8 @@ ERROR_STATUS BCM_Init(strBCMCfg_t *BCMCfg)
 	else
 	{
 	   /*error assignment null ptr*/
-		ERR =(BCM_ERROR + E_NULL_PTR);
+		ERR =E_NOK;
+		Error_Push(BCM_MODULE,ERROR_NULL_POINTER);
 	}
 
 
@@ -283,7 +286,8 @@ ERROR_STATUS BCM_SetupRxBuffer(uint8_t* PtrRxData,uint16_t size,void (*Notificat
 	else
 	{
 	   /*error assignment to null ptr*/
-		ERR = (BCM_ERROR + E_NULL_PTR);
+		ERR = E_NOK;
+		Error_Push(BCM_MODULE,ERROR_NULL_POINTER);
 	}
 	return ERR;
 	
@@ -404,33 +408,44 @@ void BCM_RxDispatcher(void)
 ERROR_STATUS BCM_Send(strTxBuffer_t * TxRequest)
 {
 	uint8_t au8_Error = E_OK;
-	
-	
-	/* check the pointer*/
-	if (NULL != TxRequest->ptrTxBuffer)
+	 /* check the pointer*/
+	if (NULL != TxRequest)
 	{
-		/* check data size*/
-		if (ZERO != TxRequest->Size)
-		{
-			/* check tx buffer lock state*/
-			if(TX_BUFFER_READY_TO_SEND == Tx_RequestBuffer->Lock)
-			{
-				/* confirm that request is valid*/
-				TxRequest->Lock = TX_BUFFER_SEND_VALID;
-			}
+	   /* check the pointer*/
+	   if (NULL != TxRequest->ptrTxBuffer)
+	   {
+		   /* check data size*/
+		   if (ZERO != TxRequest->Size)
+		   {
+			   /* check tx buffer lock state*/
+			   if(TX_BUFFER_READY_TO_SEND == Tx_RequestBuffer->Lock)
+			   {
+				   /* confirm that request is valid*/
+				   TxRequest->Lock = TX_BUFFER_SEND_VALID;
+			   }
 
-			else{}
-			//Error_Push(BCM_MODULE, ERROR_TX_BUFFER_NOT_READY);
-		}
-		else
-		{
-			//Error_Push(BCM_MODULE, ERROR_NO_DATA);
-		}
+			   else
+			   {
+				   Error_Push(BCM_MODULE, ERROR_TX_BUFFER_NOT_READY);
+			   }
+			   
+		   }
+		   else
+		   {
+			   Error_Push(BCM_MODULE, ERROR_NO_DATA);
+		   }
+	   }
+	   else
+	   {
+		   Error_Push(BCM_MODULE,ERROR_NULL_POINTER);
+	   }
 	}
+	 
 	else
 	{
-		//Error_Push(BCM_MODULE,ERROR_NULL_POINTER);
+	   Error_Push(BCM_MODULE,ERROR_NULL_POINTER);
 	}
+	
 
 	/* initialize global creator flag to let dis know there is creator to switch it's state from idle to sending byte */
 	gu8_TxCreatorFlag = INITIALIZED;
@@ -615,7 +630,8 @@ ERROR_STATUS BCM_GetTxBuffer(strTxBuffer_t * TxRequestID,uint8_t * TxBufferState
 	/* return the state of the request */
 	if( TxRequestID == NULL || TxBufferState == NULL)
 	{
-		au8_Error = E_NULL_PTR + BCM_ERROR;
+		Error_Push(BCM_MODULE,ERROR_NULL_POINTER);
+		au8_Error = E_NOK;
 	}
 	else{
 		*TxBufferState = TxRequestID->Lock;
