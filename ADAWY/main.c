@@ -5,6 +5,116 @@
  * Author : Khaled
  */ 
 
+ #include "SERVICE/BCM/BCM.h"
+ #include "MCAL/DIO/DIO.h"
+
+/*******************************************************/
+/***************** BCM TEST****************************/
+/*****************************************************/
+
+
+void Consumer(uint8_t Status);
+uint8_t Data[80];
+int main(void)
+{
+	strBCMCfg_t bcm;
+/*
+	DIO_Cfg_s diocfg;
+	diocfg.GPIO =GPIOB;
+	diocfg.pins=BIT0|BIT1|BIT3;
+	diocfg.dir=OUTPUT;
+	
+	DIO_init(&diocfg);
+*/
+	
+	bcm.Protocol = SPI_BCM;
+	bcm.Direction =READING;
+	
+	UART_INIT(Uart_Parity_no,Uart_Stop_Bit_One,Uart_Data_8_Bit,Uart_Baud_Rate_9600,Uart_Async_Normal_Speed,Uart_Multi_Processor_Communication_Disable,Uart_Polling,NULL);
+	BCM_Init(&bcm);
+	BCM_SetupRxBuffer(Data,80,Consumer);
+	/*DIO_Write(GPIOB,BIT3,OUTPUT);*/
+	while(1)
+    {
+        //TODO:: Please write your application code
+		BCM_RxDispatcher(); 
+    }
+	
+}
+void Consumer(uint8_t Status){
+	
+	if(Status == E_OK){
+		//TCNT0 = Data[2];
+
+		UART_TRANSMIT_String(Data);
+		BCM_RxUnlock(RX_UNLOCK);
+	}
+}
+	
+
+
+
+
+
+/*
+extern  strTxBuffer_t Tx_RequestBuffer[];
+int main  (void)
+{
+	strBCMCfg_t BCM_Info;
+	DIO_Cfg_s diocfg;
+	//uint8_t Data[10]={'0','1','2','3','4','5','6','7','8','9'};
+	
+	BCM_Info.Direction = SENDING;
+	BCM_Info.Protocol = SPI_BCM;
+	
+		
+	diocfg.GPIO =GPIOB;
+	diocfg.pins=BIT0|BIT1|BIT3;
+	diocfg.dir=OUTPUT;
+		
+	DIO_init(&diocfg);
+	
+	
+	UART_INIT(Uart_Parity_no,Uart_Stop_Bit_One,Uart_Data_8_Bit,Uart_Baud_Rate_9600,Uart_Async_Normal_Speed,Uart_Multi_Processor_Communication_Disable,Uart_Polling,NULL);
+	DIO_Write(GPIOA,BIT3,HIGH);
+	
+	
+	
+	
+	
+	uint8_t D[100];
+	UART_RECEIVE_String(D);
+	
+	BCM_Init(&BCM_Info);
+	//_SPITrancevier('c',D);
+	Tx_RequestBuffer[0].Lock = TX_BUFFER_READY_TO_SEND;
+	Tx_RequestBuffer[0].ptrTxBuffer = D;
+	Tx_RequestBuffer[0].Size = 10;
+
+	BCM_Send(Tx_RequestBuffer);
+	while (1)
+	{
+		BCM_TxDispatcher();
+	}
+
+	return 0;
+}*/
+
+
+
+
+
+
+
+
+
+
+
+
+ /******************************************************/
+ /******************* TMU TEST*************************/
+ /****************************************************/
+/*
 #include "SERVICE/TMU/TMU.h"
 #include "MCAL/DIO/DIO.h"
 
@@ -20,7 +130,7 @@ void consumer4 (void);
 extern str_TMU_InitConfig_t init;
 int main(void)
 {
-     DIO_Cfg_s DIO_Init;
+    DIO_Cfg_s DIO_Init;
 	 DIO_Init.dir = OUTPUT;
 	 DIO_Init.GPIO = GPIOA;
 	 DIO_Init.pins = LOWER_NIBBLE;
@@ -123,4 +233,4 @@ void consumer3 (void)
 void consumer4 (void)
 {
 	DIO_Toggle(GPIOA,BIT3);
-}
+}*/
