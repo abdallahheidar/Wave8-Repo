@@ -14,18 +14,20 @@
 
 
 void Consumer(uint8_t Status);
+void REC_App (void);
 uint8_t Data[80];
-int main(void)
+extern  strTxBuffer_t Tx_RequestBuffer[];
+
+
+int main (void)
+{
+     SEND_APP();
+	  return 0;
+}
+void REC_App (void)
 {
 	strBCMCfg_t bcm;
-/*
-	DIO_Cfg_s diocfg;
-	diocfg.GPIO =GPIOB;
-	diocfg.pins=BIT0|BIT1|BIT3;
-	diocfg.dir=OUTPUT;
-	
-	DIO_init(&diocfg);
-*/
+
 	
 	bcm.Protocol = SPI_BCM;
 	bcm.Direction =READING;
@@ -33,10 +35,10 @@ int main(void)
 	UART_INIT(Uart_Parity_no,Uart_Stop_Bit_One,Uart_Data_8_Bit,Uart_Baud_Rate_9600,Uart_Async_Normal_Speed,Uart_Multi_Processor_Communication_Disable,Uart_Polling,NULL);
 	BCM_Init(&bcm);
 	BCM_SetupRxBuffer(Data,80,Consumer);
-	/*DIO_Write(GPIOB,BIT3,OUTPUT);*/
+	
 	while(1)
     {
-        //TODO:: Please write your application code
+       
 		BCM_RxDispatcher(); 
     }
 	
@@ -44,7 +46,7 @@ int main(void)
 void Consumer(uint8_t Status){
 	
 	if(Status == E_OK){
-		//TCNT0 = Data[2];
+		
 
 		UART_TRANSMIT_String(Data);
 		BCM_RxUnlock(RX_UNLOCK);
@@ -56,9 +58,9 @@ void Consumer(uint8_t Status){
 
 
 
-/*
-extern  strTxBuffer_t Tx_RequestBuffer[];
-int main  (void)
+
+
+void SEND_APP  (void)
 {
 	strBCMCfg_t BCM_Info;
 	DIO_Cfg_s diocfg;
@@ -98,7 +100,7 @@ int main  (void)
 	}
 
 	return 0;
-}*/
+}
 
 
 
