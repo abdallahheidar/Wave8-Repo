@@ -2,7 +2,7 @@
  * bcm_cfg.c
  *
  * Created: 2020-03-02 1:31:20 PM
- *  Author: EbrahimOseif
+ *  Author: Ahmed_Salama
  */ 
 #include "bcm_cfg.h"
 
