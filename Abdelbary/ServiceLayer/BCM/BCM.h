@@ -15,19 +15,18 @@
 typedef void(*BCM_UserNotifier)(ERROR_STATUS status);
 
 
-/*define your chanals here*/
-#define BCM_UART_CHANAL		0
-#define BCM_SPI_CHANAL		1
-#define BCM_I2C_CHANAL		2
+#define BCM_FRAM_HEADER_OVERHEAD	4 /*4 bytes added to user data buffer*/
+#define BCM_FRAME_SIZE              4
+#define ONE_BYTE					1
+#define TWO_BYTE                    2
+#define BUFFER_SIZE_ELEM			2
+/*USE THESE VALUES FOR gas8_init_cbanals_staus ARRAY*/
+#define BCM_CHANAL_UNINTALIZED		-1
+#define BCM_CHANAL_NO_TASKS			 0
 
-#define BCM_MAX_CHANALS		3 /*hardware avaliable chanales*/
-
-/*use these values for mod in bcmTask_cfg*/
-#define BCM_SENDER			0
-#define BCM_RECIVER			1
-//#define BCM_SEND_RECIVE		2
-
-#define	BCM_MODES			2 
+#define BCM_RECIVING_ID					0
+#define BCM_RECIVING_DATA_SIZE			2
+#define BCM_MAX_RECIVING_BUFFER_SIZE	(MAX_USER_BUFFER_SIZE+BCM_FRAM_HEADER_OVERHEAD)
 
 typedef struct gstr_BCM_cfg{
 	uint8_t chanal;		/*BCM_UART_CHANAL ,BCM_SPI_CHANAL,BCM_I2C_CHANAL*/
