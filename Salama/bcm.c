@@ -22,8 +22,8 @@
 /************************************************************************/
 #define FIRST_BYTE_SEND					(1)
 #define SECOND_BYTE_SEND				(2)
-#define OVERHEAD_BYTE_NUMBER			(3)
-
+#define OVERHEAD_BYTE_NUMBER				(3)
+#define SHIT_LEFT_8BITS					(8)
 
 /*- LOCAL Data types --------------------------------------*/
 
@@ -33,7 +33,9 @@ static void BCM_OneByte_TxComplete_CBK(void);
 init_uart uart_0 = {ZERO};
 config_spi spi_0 = {ZERO};
 
-void (*fun)(uint16_t) = NULL;
+/*creating pointer to user's function*/
+void (*ptr_userNotification)(uint16_t) = NULL;
+
 /************************************************************************/
 /*				 GLOBAL STATIC VARIABLES            			        */
 /************************************************************************/
@@ -100,10 +102,8 @@ static void BCM_OneByte_TxComplete_CBK(void)
 * */
 static void BCM_OneByte_RxComplete_CBK(void)
 {
-
 	/*receive data in buffer and increment index*/
-	gptr_RxBuffer[gu16_RxISR_cnt] = (spi_receiver()<<1);
-
+	gptr_RxBuffer[gu16_RxISR_cnt] = (spi_receiver());
 
 	/*increase buffer by one*/
 	gu16_RxISR_cnt++;
@@ -319,74 +319,89 @@ ERROR_STATUS BCM_SetupReceive(ptrBuffer ptr_Buffer,uint16_t u16_Rx_size)
 */
 ERROR_STATUS BCM_RxDispatcher(void)
 {
-	uint16_t i=0;
+	/*variable to use it for looping*/
+	uint8_t loopVar = ZERO;
+	
 	/*create error flag*/
 	ERROR_STATUS ERROR_Status = BCM_ERROR_BASE + NO_ERRORS;
-
+	
 	/*create local length variable*/
-	uint16_t u16_length = ZERO;
-
+	static uint16_t u16_length = ZERO;
+	
 	/*check for states*/
 	switch(gu8_BCM_RxDispatcher_State)
 	{
 		case BCM_DISPATCHER_IDLE:
-
+										
 			/*check if data received and id matches*/
-			if(gptr_RxBuffer[0] == (BCM_ID ) && gu16_RxISR_cnt > ZERO)
-			{
+			if(gptr_RxBuffer[ZERO] == (BCM_ID ) && gu16_RxISR_cnt > ZERO)
+			{		
+			
 				/*set State as it's received*/
-				gu8_BCM_RxDispatcher_State = BCM_DISPATCHER_RECEIVE;
+				gu8_BCM_RxDispatcher_State = BCM_DISPATCHER_RECEIVE;	
 			}
 			else
 			{
 				/*set error as ID_NOT_MATCHED*/
 				ERROR_Status = BCM_ERROR_BASE + ID_NOT_MATCHED;
-			}
+			} 
 		break;
-
+		
 		case BCM_DISPATCHER_RECEIVE:
-			//gu16_RxISR_cnt=0;
-			/*check for counter more than 3 then length is received*/
-			if(gu16_RxISR_cnt > 3)
+		
+		/*init buffer_length with zero*/
+			u16_length = ZERO;
+			
+			if(gu16_RxISR_cnt >= OVERHEAD_BYTE_NUMBER)
 			{
-				u16_length = ((gptr_RxBuffer[1] << 8) + (gptr_RxBuffer[2]));
-				uart_tx_send((uint8_t)u16_length);
-				if(u16_length > (gu16_RxSize ))
+				
+				if(u16_length == ZERO)
 				{
-					/*length not match then save error BUFFER_NOT_FIT*/
-					ERROR_Status = BCM_ERROR_BASE + BUFFER_NOT_FIT;
-
-					/*reset idle*/
-					gu8_BCM_RxDispatcher_State = BCM_DISPATCHER_IDLE;
-				}
-			}
-
-			/*check for CHSUM MATCH*/
-			else if(gu16_RxISR_cnt >= (u16_length+3))
-			{
-				gu16_RxISR_cnt =0;
-				if(gptr_RxBuffer[u16_length + 3] == gu8_BCM_RxChecksum)
-				{
-
-					for(i=0;i<6;i++)
+					/*save length sent by user*/
+					u16_length = ((gptr_RxBuffer[FIRST_BYTE_SEND] << SHIT_LEFT_8BITS) + (gptr_RxBuffer[SECOND_BYTE_SEND]));
+					
+					/*if length more than your buffer maximum size then save error*/
+					if(u16_length > (gu16_RxSize ))
 					{
-						uart_tx_send((uint8_t)u16_length);
+						/*length not match then save error BUFFER_NOT_FIT*/
+						ERROR_Status = BCM_ERROR_BASE + BUFFER_NOT_FIT;
+						
+						/*reset idle*/
+						gu8_BCM_RxDispatcher_State = BCM_DISPATCHER_IDLE;
 					}
-					/*set state as Rec complete*/
+					
+				else if(gu16_RxISR_cnt > (u16_length+3))
+				{
+					/*count checksum value*/
+					for(loopVar = ZERO; loopVar < (u16_length + OVERHEAD_BYTE_NUMBER) ; loopVar++)
+					{
+						gu8_BCM_RxChecksum+= gptr_RxBuffer[loopVar];
+						gptr_RxBuffer[loopVar] = gptr_RxBuffer[loopVar + OVERHEAD_BYTE_NUMBER];
+						
+					}
+					
+					/*compare it to sent check sum*/
+					if(gu8_BCM_RxChecksum == gptr_RxBuffer[u16_length + OVERHEAD_BYTE_NUMBER])
+					{
+					/*if matched move to next state*/		
 					gu8_BCM_RxDispatcher_State = BCM_DISPATCHER_TRANSMIT_BYTE_COMPLETE;
-
+					
+					}
 				}
 			}
+		}
 		break;
-
+		
 		case BCM_DISPATCHER_TRANSMIT_BYTE_COMPLETE:
-
-
-
-			while(1);
+			
+			/*call notification function*/
+			BCM_Cfg.Recieve_Cbk(u16_length);
+			
+			/*Deinit*/
+			BCM_DeInit();
 		break;
 	}
-
+	
 	/*return error value*/
 	return ERROR_Status;
 }
@@ -617,10 +632,10 @@ ERROR_STATUS BCM_DeInit(void)
 		 gu8_BCM_SpiState = NOT_INITIALIZED;
 
 		 gptr_TxBuffer = NULL;
-		 gu16_TxSize = 0;
+		 gu16_TxSize = ZERO;
 
 		 gptr_RxBuffer = NULL;
-		 gu16_RxSize = 0;
+		 gu16_RxSize = ZERO;
 
 		 gu8_BCM_TxDispatcher_State			= BCM_DISPATCHER_IDLE;
 		 gu8_BCM_TxBuffer_LockState			= BCM_TX_BUFFER_UNLOCKED;
