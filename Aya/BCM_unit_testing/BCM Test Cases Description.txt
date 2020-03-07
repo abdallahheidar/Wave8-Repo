@@ -1,0 +1,77 @@
+/* BCM_Init */  
+1- First test case is to insert a NULL Pointer
+    - Expected -> to return "Passed" that's means the function could detect that it's a NULL Pointer.
+    - Actual   -> the program returns  "Passed" that's means the function could detect that it's a NULL Pointer.
+
+2- Second Test case is to insert a none NULL Pointer with taking into consideration UART is not working will
+    - Expected -> to return "Passed" that's means the function could detect that some thing went wrong from .
+    - Actual   -> the program returns "Passed" that's means the function could detect that some thing went wrong from .
+
+3- Third Test case is to insert an Invalid Pre Configuration value
+    - Expected -> to return "Passed" that's means the function could detect that is a wrong value.
+    - Actual   -> the program returns "Passed" that's means the function could detect that is a wrong value.
+
+4- fourth Test case is to insert an Invalid Channel Parameter
+    - Expected -> to return "Passed" that's means the function could detect that is an Invalid Channel Parameter
+    - Actual   -> the program returns "Passed" that's means the function could detect that is an Invalid Channel Parameter.
+
+4- Fifth Test case is to Test Multiple Init 
+    - Expected -> to return "Passed" that's means the function could detect that is already Inialized.
+    - Actual   -> the program returns "Passed" that's means the function could detect that  is already Inialized.
+
+/* BCM_Start */  
+1- First test case is to trying to start Sending usinf BCM without Initiaize it 
+    - Expected -> to return "Passed" that's means the function detect that the module is not initialized.
+    - Actual   -> the program returns "Passed" that's means the function could detect that the module is not initialized.
+
+	
+2- Second test case is to insert a NULL Pointer 
+    - Expected -> to return "Passed" that's means the function could detect that it's a NULL Pointer.
+    - Actual   -> the program returns  "Passed" that's means the function could detect that it's a NULL Pointer.
+
+3- third test case is to insert an Invalid Channel Parameter 
+    - Expected -> to return "Passed" that's means the function could detect that it's an Invalid Channel Parameter 
+	- Actual   -> the program returns  "Passed" that's means the function could detect  that it's an Invalid Channel Parameter.
+		
+
+
+4- fourth test case is to insert an Invalid Size Parameter 
+    - Expected -> to return "Passed" that's means the function could detect that it's an Invalid Size Parameter 
+	- Actual   -> the program returns  "Passed" that's means the function could detect  that it's an Invalid Size Parameter.
+		
+/* BCM_Receive */  
+1- First test case is to trying to start Receiving using BCM without Initiaize it 
+    - Expected -> to return "Passed" that's means the function detect that the module is not initialized.
+    - Actual   -> the program returns "Passed" that's means the function could detect that the module is not initialized.
+
+	
+2- Second test case is to insert a NULL Pointer 
+    - Expected -> to return "Passed" that's means the function could detect that it's a NULL Pointer.
+    - Actual   -> the program returns  "Passed" that's means the function could detect that it's a NULL Pointer.
+
+3- third test case is to insert NULL Pointer Parameter for consumer function  
+    - Expected -> to return "Passed" that's means the function could detect that it's a NULL Pointer.
+	   - Actual   -> the program returns  "Passed" that's means the function could detect that it's a NULL Pointer.
+   - Actual   -> the program returns  "Passed" that's means the function could detect that it's a NULL Pointer.
+
+
+4- Fourth test case is to insert an Invalid Channel Parameter 
+    - Expected -> to return "Passed" that's means the function could detect that it's an Invalid Channel Parameter 
+	- Actual   -> the program returns  "Passed" that's means the function could detect  that it's an Invalid Channel Parameter.
+
+4- fifth test case is to insert an Invalid Size Parameter 
+    - Expected -> to return "Passed" that's means the function could detect that it's an Invalid Size Parameter 
+	- Actual   -> the program returns  "Passed" that's means the function could detect  that it's an Invalid Size Parameter.
+	
+
+/*BCM_TxDispatch*/
+1- First test case is to trying to start BCM Dispatcher without Initiaize it 
+    - Expected -> to return "Passed" that's means the function detect that the module is not initialized.
+    - Actual   -> the program returns "Passed" that's means the function could detect that the module is not initialized.
+
+
+/*BCM_RxDispatch*/
+1- First test case is to trying to start BCM Dispatcher without Initiaize it 
+    - Expected -> to return "Passed" that's means the function detect that the module is not initialized.
+    - Actual   -> the program returns "Passed" that's means the function could detect that the module is not initialized.
+
