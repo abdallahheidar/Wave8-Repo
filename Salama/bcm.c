@@ -186,7 +186,8 @@ ERROR_STATUS BCM_Init(st_BCM_Cfg_t *st_BCM_Cfg)
 					/*save that SPI used*/
 					gu8_ProtocolToUse = SPI_PROTOCOL;
 
-					fun = BCM_Cfg.Recieve_Cbk;
+					ptr_userNotification = BCM_Cfg.Recieve_Cbk;
+				
 					/*check if spi was init before*/
 					if(gu8_BCM_SpiState == INITIALIZED)
 					{
