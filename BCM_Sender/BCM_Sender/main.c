@@ -1,4 +1,4 @@
-/*
+/*BCM Sender
  * main.c
  *
  *  Created on: Mar 2, 2020
