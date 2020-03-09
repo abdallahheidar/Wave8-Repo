@@ -140,7 +140,7 @@ ERROR_STATUS BCM_init(gstr_BCM_cfg_t* pstr_bcm_cfg )
 		u8_fun_status = BCM_MODULE_ERR + MULTIPLE_INITALIZATION;
 	}
 	
-	else if ( pstr_bcm_cfg->mode > BCM_MAX_MODES || pstr_bcm_cfg->chanal >BCM_MAX_CHANALS )	/*CHECK FOR parameters*/
+	else if ( pstr_bcm_cfg->mode >= BCM_MAX_MODES || pstr_bcm_cfg->chanal >= BCM_MAX_CHANALS )	/*CHECK FOR parameters*/
 	{
 		u8_fun_status = BCM_MODULE_ERR + INVALAD_PARAMETER;
 	}
@@ -234,7 +234,6 @@ ERROR_STATUS BCM_init(gstr_BCM_cfg_t* pstr_bcm_cfg )
 ERROR_STATUS BCM_setup(gstr_BCM_Task_cfg_t* str_BCM_TaskCfg)
 {
 	ERROR_STATUS u8_fun_status = OK;
-
 	if (gu8_moduleInitFlag == FALSE)
 	{
 		u8_fun_status = BCM_MODULE_ERR + MODULE_NOT_INITALIZED;
@@ -243,21 +242,18 @@ ERROR_STATUS BCM_setup(gstr_BCM_Task_cfg_t* str_BCM_TaskCfg)
 	{
 		u8_fun_status = BCM_MODULE_ERR + NULL_PTR_ERROR;
 	}
-	else if (str_BCM_TaskCfg->mode > BCM_MAX_MODES || str_BCM_TaskCfg->size > MAX_USER_BUFFER_SIZE || (*str_BCM_TaskCfg->lock) == LOCK || str_BCM_TaskCfg->chanal > BCM_MAX_CHANALS )
+	else if (str_BCM_TaskCfg->mode >= BCM_MAX_MODES || str_BCM_TaskCfg->size > MAX_USER_BUFFER_SIZE || (*str_BCM_TaskCfg->lock) == LOCK || str_BCM_TaskCfg->chanal >= BCM_MAX_CHANALS )
 	{
-		u8_fun_status = BCM_MODULE_ERR +NULL_PTR_ERROR;
-		}else if (gas8_init_chanals_stauts[str_BCM_TaskCfg->chanal][str_BCM_TaskCfg->mode] != ZERO)/*CHECK IF TWO TASKS RUN ON THE SAME MODE ON THE SAME CHANAL*/
-		{
-			u8_fun_status = BCM_MODULE_ERR+ MODULE_BUSY;
-		}
-		else
-		{
+	u8_fun_status = BCM_MODULE_ERR +NULL_PTR_ERROR;
+	}
+	else
+	{
+			TCNT1H +=1;
 			/*
 			*	-set all bcm task control configuration
 			*	-set task in its position
 			*	-lock on buffer
 			*/
-
 			bcm_taskControlBlock_t* pstr_currentTask = &g3astr_BCM_Tasks[str_BCM_TaskCfg->chanal][str_BCM_TaskCfg->mode];
 
 			pstr_currentTask->bcmTask = (str_BCM_TaskCfg);
@@ -268,7 +264,8 @@ ERROR_STATUS BCM_setup(gstr_BCM_Task_cfg_t* str_BCM_TaskCfg)
 			pstr_currentTask->u8_BCM_framSize = str_BCM_TaskCfg->size + BCM_FRAM_HEADER_OVERHEAD;
 
 			gu8_BCM_Id =BCM_SPI_ID;/*load bcm id*/
-
+			gu8_bufferCounter = ZERO;
+			
 			gau8_BCM_FrameElementSize[BCM_FRAM_ELEMENT_THREE]=str_BCM_TaskCfg->size;	/*load buffer size taken from user*/
 
 
@@ -345,6 +342,7 @@ ERROR_STATUS BCM_RX_dispatcher()
 						*	receiving frame complete--->dispatcher--->error|finished
 						*/
 						case BCM_SPI_CHANAL:
+						TCNT2 = pstr_currentTask->u8_taskStatus;
 						switch(pstr_currentTask->u8_taskStatus)
 						{
 	
@@ -369,10 +367,12 @@ ERROR_STATUS BCM_RX_dispatcher()
 						
 								/*validate bcm id and fram size*/
 								if (gau8_BCM_RecivingBuffer[ZERO]!=BCM_SPI_ID){
+									TCNT1L = gau8_BCM_RecivingBuffer[ZERO];
 									pstr_currentTask->u8_taskStatus=STATE_ERROR;
 								}
 								else if(pstr_currentTask->u8_BCM_framSize > BCM_MAX_RECIVING_BUFFER_SIZE )
 								{
+									TCNT1L = 4;
 									pstr_currentTask->u8_taskStatus=STATE_ERROR;
 								}
 								else {
@@ -388,7 +388,11 @@ ERROR_STATUS BCM_RX_dispatcher()
 									if(gu8_bufferCounter <= BCM_MAX_RECIVING_BUFFER_SIZE )
 										pstr_currentTask->u8_taskStatus = STATE_FRAM_RECIVE_COMPLETE;
 									else 
+									{
+										TCNT1L = 5;
 										pstr_currentTask->u8_taskStatus = STATE_ERROR;
+
+									}
 								}
 							break;
 	
@@ -399,10 +403,10 @@ ERROR_STATUS BCM_RX_dispatcher()
 	
 							break;
 	
-							case STATE_ERROR :
-	
-							break;
-							case STATE_FINISED:;
+							case STATE_ERROR :;
+									/*report error */
+									//pstr_currentTask->u8_taskStatus = STATE_FINISED;
+								{
 								uint8_t u8_buffer_size =  (pstr_currentTask->u8_BCM_framSize - BCM_FRAM_HEADER_OVERHEAD);
 								uint8_t u8_counter = ZERO;
 								/*COPY DATA TO USER BUFFER*/
@@ -410,7 +414,26 @@ ERROR_STATUS BCM_RX_dispatcher()
 								{
 									pstr_currentTask->bcmTask->buffer[u8_counter] = gau8_BCM_RecivingBuffer[u8_counter+BCM_DATA_START_POS];
 								}
-								/*call the CBF with buffer size*/
+								
+								/*removing task*/
+								gas8_init_chanals_stauts[pstr_currentTask->bcmTask->chanal][pstr_currentTask->bcmTask->mode] = ZERO;
+								gu8_bufferCounter = ZERO;
+								pstr_currentTask->bcmTask->bcm_cbf(u8_counter);	
+								}
+							break;
+							case STATE_FINISED:;
+							
+								uint8_t u8_buffer_size =  (pstr_currentTask->u8_BCM_framSize - BCM_FRAM_HEADER_OVERHEAD);
+								uint8_t u8_counter = ZERO;
+								/*COPY DATA TO USER BUFFER*/
+								for (;u8_counter < u8_buffer_size;u8_counter++)
+								{
+									pstr_currentTask->bcmTask->buffer[u8_counter] = gau8_BCM_RecivingBuffer[u8_counter+BCM_DATA_START_POS];
+								}
+								
+								/*removing task*/
+								gas8_init_chanals_stauts[pstr_currentTask->bcmTask->chanal][pstr_currentTask->bcmTask->mode] = ZERO;
+								gu8_bufferCounter = ZERO;
 								pstr_currentTask->bcmTask->bcm_cbf(u8_counter);
 							break;
 	
@@ -478,6 +501,7 @@ ERROR_STATUS BCM_TX_dispatcher()
 							/*get state and current task buffer counter and data to send*/
 							bcm_taskControlBlock_t* pstr_currentTask =  &g3astr_BCM_Tasks[u8_BCM_chanalIndx][BCM_SENDER];
 							uint8_t u8_data =  *(pstr_currentTask->apu8_BCM_Frame[pstr_currentTask->u8_counter]+pstr_currentTask->u8_byteCounter); /*get data if counter didn't reach end of buffer*/
+							TCNT2 = pstr_currentTask->u8_taskStatus;
 							switch(u8_BCM_chanalIndx)
 							{
 								/*	-case idle
@@ -500,7 +524,6 @@ ERROR_STATUS BCM_TX_dispatcher()
 										case STATE_IDLE:
 											SPI_sendData(u8_data);
 											pstr_currentTask->u8_taskStatus = STATE_SENDING_BYTE;
-											PORTA_DATA = pstr_currentTask->u8_taskStatus;
 										break;
 										case STATE_SENDING_BYTE:
 											/*do nothing*/										  
@@ -536,7 +559,7 @@ ERROR_STATUS BCM_TX_dispatcher()
 											}
 										break; 
 										case STATE_FRAM_SEND_COMLETE:
-
+											pstr_currentTask->bcmTask->bcm_cbf(OK);
 										break;
 									}
 								break;
