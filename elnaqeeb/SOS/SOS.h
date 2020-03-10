@@ -9,12 +9,26 @@
 #ifndef __TMU_H__
 #define __TMU_H__
 
+/********************************************
+ *			General macros					*
+ ********************************************/
+
+/*Task calling type*/
+
 #define ONE_SHOT_CALLING	(0)
 #define PERIODIC_CALLING	(1)
+
+/*TMU available channels*/
 
 #define TMU_TIM_CH0			(0)
 #define TMU_TIM_CH1 		(1)
 #define TMU_TIM_CH2			(2)
+
+/********************************************
+ *			TMU data types					*
+ ********************************************/
+
+/*Task configuration structure*/
 
 typedef struct
 {
@@ -24,11 +38,15 @@ typedef struct
 	uint16_t periodicity;
 }Task_ConfigType;
 
+/*TMU configuration structure*/
+
 typedef struct  
 {
 	uint8_t timer_channel;
 	uint8_t timer_tick_time_ms;
 }TMU_ConfigType;
+
+/*TMU error reporting*/
 
 typedef enum
 {
@@ -43,8 +61,6 @@ typedef enum
 	OperationSuccess
 }EnmTMUError_t;
 
-
-
 /************************************************************************/
 /*                         TMU functions' prototypes                    */
 /************************************************************************/
@@ -52,7 +68,7 @@ typedef enum
 /*
  * Description: Initializes the Timing Management Unit and its hardware timer.
  * Input: pointer to initialization structure of TMU
- * Output: N/A
+ * Output: TMU Error status
  * Input/Output: N/A
  */
 EnmTMUError_t TMU_Init(const TMU_ConfigType * ConfigPtr);
@@ -60,7 +76,7 @@ EnmTMUError_t TMU_Init(const TMU_ConfigType * ConfigPtr);
 /*
  * Description: De-Initializes the Timing Management Unit and its hardware timer.
  * Input: N/A
- * Output: N/A
+ * Output: TMU Error status
  * Input/Output: N/A
  */
 EnmTMUError_t TMU_DeInit(void);
@@ -68,7 +84,7 @@ EnmTMUError_t TMU_DeInit(void);
 /*
  * Description: Adds the timer software object to the TMU.
  * Input: pointer to specified task
- * Output: N/A
+ * Output: TMU Error status
  * Input/Output: N/A
  */
 EnmTMUError_t TMU_Start_Timer(const Task_ConfigType * TaskPtr);
@@ -76,7 +92,7 @@ EnmTMUError_t TMU_Start_Timer(const Task_ConfigType * TaskPtr);
 /*
  * Description: Removes the timer software object to the TMU.
  * Input: pointer to specified task
- * Output: N/A
+ * Output: TMU Error status
  * Input/Output: N/A
  */
 EnmTMUError_t TMU_Stop_Timer(const Task_ConfigType * TaskPtr);
@@ -84,7 +100,7 @@ EnmTMUError_t TMU_Stop_Timer(const Task_ConfigType * TaskPtr);
 /*
  * Description: Calls the dispatcher of the TMU.
  * Input: pointer to initialization structure of TMU
- * Output: N/A
+ * Output: TMU Error status
  * Input/Output: N/A
  */
 EnmTMUError_t TMU_Dispatch(void);
