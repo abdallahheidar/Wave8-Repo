@@ -8,21 +8,20 @@
 #ifndef	DIO_H
 #define DIO_H
 
-#include "../util/std_types.h"
-#include "../util/registers.h"
-
+#include "std_types.h"
+#include "registers.h"
 /************************************************************************/
 /*						PINS/BITS defines                               */
 /************************************************************************/
 
-#define PIN0	0x01
-#define PIN1	0x02
-#define PIN2	0x04
-#define PIN3	0x08
-#define PIN4	0x10
-#define PIN5	0x20
-#define PIN6	0x40
-#define PIN7	0x80
+//#define PIN0	0x01
+//#define PIN1	0x02
+//#define PIN2	0x04
+//#define PIN3	0x08
+//#define PIN4	0x10
+//#define PIN5	0x20
+//#define PIN6	0x40
+//#define PIN7	0x80
 
 #define BIT0	0x01
 #define BIT1	0x02
@@ -37,18 +36,16 @@
 #define LOWER_NIBBLE	0x0F
 #define FULL_PORT		0xFF
 
-#define GPIOA	0
-#define GPIOB	1
-#define GPIOC	2
-#define GPIOD	3
+#define GPIOA			0
+#define GPIOB			1
+#define GPIOC			2
+#define GPIOD			3
 
-#define OUTPUT	0xFF
-#define INPUT	0x00
-
+#define OUTPUT			0xFF
+#define INPUT			0x00
 /************************************************************************/
 /*						Typedefs defines                               	*/
 /************************************************************************/
-
 typedef struct DIO_Cfg_s
 {
 	uint8_t GPIO;
@@ -56,17 +53,17 @@ typedef struct DIO_Cfg_s
 	uint8_t dir;
 }DIO_Cfg_s;
 
-/*
+/**
 *Input: DIO_Cfg_s -> to get PORT name, pins to be initiated and the required direction
 *Output: No output
 *In/Out:
 *Description: This function can set the direction of a full port, a nibble
 * 			  or even one pin.
 */
-extern ERROR_STATUS DIO_init(DIO_Cfg_s* DIO_info);
+ERROR_STATUS DIO_init (DIO_Cfg_s *DIO_info);
 
 
-/*
+/**
 *Input: GPIO -> to get PORT name
 *					- GPIOA
 *					- GPIOB
@@ -92,9 +89,9 @@ extern ERROR_STATUS DIO_init(DIO_Cfg_s* DIO_info);
 *Description: This function can set the value of a full port, a nibble
 * 			  or even one pin.
 */
-extern ERROR_STATUS DIO_Write (uint8_t GPIO, uint8_t pins, uint8_t value);
+ERROR_STATUS DIO_Write (uint8_t GPIO, uint8_t pins, uint8_t value);
 
-/*
+/**
 *Input: GPIO -> to get PORT name
 *					- GPIOA
 *					- GPIOB
@@ -120,9 +117,9 @@ extern ERROR_STATUS DIO_Write (uint8_t GPIO, uint8_t pins, uint8_t value);
 *Description: This function gets the value of a full port, a nibble
 * 			  or even one pin.
 */
-extern ERROR_STATUS DIO_Read (uint8_t GPIO,uint8_t pins, uint8_t *data);
+ERROR_STATUS DIO_Read (uint8_t GPIO,uint8_t pins, uint8_t *data);
 
-/*
+/**
 *Input: GPIO -> to get PORT name
 *					- GPIOA
 *					- GPIOB
@@ -145,7 +142,7 @@ extern ERROR_STATUS DIO_Read (uint8_t GPIO,uint8_t pins, uint8_t *data);
 *Description: This function toggles the value of a full port, a nibble
 * 			  or even one pin.
 */
-extern ERROR_STATUS DIO_Toggle (uint8_t GPIO, uint8_t pins);
+ERROR_STATUS DIO_Toggle (uint8_t GPIO, uint8_t pins);
 
 
 

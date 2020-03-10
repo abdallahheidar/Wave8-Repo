@@ -1,262 +1,317 @@
 /*
  * TMU.c
  *
- * Created: 2/23/2020 9:36:01 PM
- *  Author: Khaled Magdy
+ * Created: 2/24/2020 12:19:35 PM
+ *  Author: MENA
  */ 
+
+#include "Timer.h"
 #include "TMU.h"
-#include "TMU_cfg.h"
 
 
-typedef struct Consumer_s{
-	FunPtr Consumer_Ptr;
-	uint8_t Periodicity;
-	uint32_t Time;
-	uint8_t State;
-	uint32_t Count;
-	uint16_t ConsumerID;
-} Consumer_s;
-
-static Timer_cfg_s g_TMU_TMR;
-static TMU_cfg_s   g_TMU = {ZERO, ZERO, DISABLED};
-static Consumer_s  g_RequestBuffer[REQUEST_BUFFER_LEN];
-
-volatile static uint16_t g_ReqBuffer_Index   = ZERO;
-volatile static uint8_t  g_TMR_Ticks_Changed = ZERO;
-volatile static uint16_t g_TMU_TickTime      = ZERO;
-volatile static uint16_t g_SysTicks          = ZERO;
+ void ISR_flag_func(void);
+static void Remove_task(TMU_tsak_s *TMU_task);
 
 
-static void TMU_ISR_cbf(void)
-{
-	/* Adjust The Tick Time According To The TMU's Time Configuration */
-	g_SysTicks++;
+
+
+uint8_t g_u8_timer_CH ;
+uint8_t g_u8_TMU_reselution ;
+
+TMU_tsak_s *Buffer[TMU_BUFFER_SIZE] = { NULL };
+
+uint8_t g_u8_NO_ELEMNT_BUFFER = ZERO_VALUE ;
+
+uint8_t g_u8_ISR_flag = FALSE ;
+uint8_t g_u8_TMU_initialzation = FALSE ;
+uint8_t g_u8_first_call_start = FALSE ;
+
+
+/**
+ * Input: Pointer to a structure contains the information needed to initialize the TMU. 
+ * Output:
+ * In/Out:			
+ * Return: The error status of the function.			
+ * Description: Initiates the module.
+ * 							
+ */
+
+
+ERROR_STATUS TMU_Init (TMU_Cfg_s *TMU_Cfg){
 	
-	if(g_SysTicks == g_TMU_TickTime)
-	{
-		g_TMR_Ticks_Changed = TRUE;
-		g_SysTicks = FALSE;	
-	}
-}
-
-ERROR_STATUS TMU_Init(TMU_cfg_s* a_TMU_s)
-{
-	ERROR_STATUS errorStauts = E_OK;
-	uint16_t index = 0;
 	
-	/*-------------[ Check TMU's Pointer Validity ]-------------*/
-	if(a_TMU_s != NULL)
-	{
-		/*-------------[ TMU Initialization ]-------------*/
-		g_TMU.Timer_ID  = a_TMU_s->Timer_ID;
-		g_TMU.Tick_Time = a_TMU_s->Tick_Time;
-		g_TMU.Timer_Cbk_ptr = TMU_ISR_cbf;
-		g_TMU.State    = INACTIVE;
-		g_TMU_TickTime = g_TMU.Tick_Time;
-		
-		/*-------------[ Timer Initialization ]-------------*/
-		g_TMU_TMR.Timer_Mode = TIMER_MODE;
-		g_TMU_TMR.Timer_Prescaler = TIMER_PRESCALER_64;
-		g_TMU_TMR.Timer_Polling_Or_Interrupt = TIMER_INTERRUPT_MODE;
-		g_TMU_TMR.Timer_Cbk_ptr = g_TMU.Timer_Cbk_ptr;
-		
-		/* Select The Timer Channel & Set It's CallBack Function */
-		switch(a_TMU_s->Timer_ID)
-		{
-			case TIMER_CH0:
-				g_TMU_TMR.Timer_CH_NO = TIMER_CH0;
-				TIMER0_SetCM(TMU_ISR_cbf);
-				break;
-			case TIMER_CH1:
-				g_TMU_TMR.Timer_CH_NO = TIMER_CH1;
-				TIMER1_SetCM(TMU_ISR_cbf);
-				break;
-			case TIMER_CH2:
-				g_TMU_TMR.Timer_CH_NO = TIMER_CH2;
-				TIMER2_SetCM(TMU_ISR_cbf);
-				break;
-			default:
-				errorStauts = TMU_ERROR + INVALID_IN;
-				return errorStauts;
-		}
-		
-		/* Apply The Settings & Start The TMU Timer Hardware Module */
-		Timer_Init(&g_TMU_TMR);
-		Timer_Start(g_TMU_TMR.Timer_CH_NO, TMR_Ticks);	
-		
-		/*  Initialize The Request Buffer  */
-		for(index = 0; index < REQUEST_BUFFER_LEN; index++)
-		{
-			g_RequestBuffer[index].State = INACTIVE;
-			g_RequestBuffer[index].Consumer_Ptr = NULL;
-		}
-	}
-	/*-------------[ In Case Of TMU's Null Pointer ]-------------*/
+	if (TMU_Cfg == NULL)
+		return TMU_module_error +NULL_PTR_ERROR ;
+	
+	/* check if the module is initialized before */
+	
+	if (g_u8_TMU_initialzation== FALSE )
+		g_u8_TMU_initialzation = TRUE ;
 	else
-	{
-		errorStauts = TMU_ERROR + NULL_PTR;
-		return errorStauts;
-	}
-	return errorStauts;
-}
-
-
-ERROR_STATUS TMU_Start(FunPtr a_ConsumerFun, uint16_t a_ConsumerID, uint8_t a_Periodic_OneShot, uint32_t a_Time)
-{
-	ERROR_STATUS a_errorStatus = E_OK;
-	uint16_t index = 0;
+		return TMU_module_error + MULTIPLE_INITIALIZATION ;
 	
-	/*  Create New Consumer Instance & Initialize It  */
-	Consumer_s a_NewConsumer;
-	a_NewConsumer.Consumer_Ptr = a_ConsumerFun;
-	a_NewConsumer.ConsumerID = a_ConsumerID;
-	a_NewConsumer.Time = a_Time;
-	a_NewConsumer.Periodicity = a_Periodic_OneShot;
-	a_NewConsumer.Count = ZERO;
-	a_NewConsumer.State = ACTIVE;
+	Timer_cfg_s timer_TMU_cfg ;
+	g_u8_timer_CH = TMU_Cfg->Timer_channel;
 	
-	if(g_TMU.State == INACTIVE || g_TMU.State == ACTIVE)
-	{
-		/*-------------[ Check Consumer's CBF Pointer Validity ]-------------*/
-		if(a_ConsumerFun != NULL)
-		{
-			/*  In Case OF Full Request Buffer  */
-			if(g_ReqBuffer_Index == REQUEST_BUFFER_LEN)
-			{
-				/*  Search For Inactive Consumer & Overwrite It */
-				for(index = 0; index < REQUEST_BUFFER_LEN; index++)
-				{
-					if(g_RequestBuffer[index].State == INACTIVE)
-					{
-						g_RequestBuffer[index] = a_NewConsumer;
-						break;
-					}
-				}
-				/*  If All Consumers In The Buffer Are Active & No Space If Available */
-				if(index == REQUEST_BUFFER_LEN)
-				{
-					a_errorStatus = TMU_ERROR + FULL_BUFFER;
-					return a_errorStatus;
-				}
-			}
-			/*  If There Still Space In The Request Buffer  */
-			else
-			{
-				/*  Search The Buffer To Report Consumer ID Duplication IF Happened!  */
-				for(index = 0; index < REQUEST_BUFFER_LEN; index++)
-				{
-					if(g_RequestBuffer[index].ConsumerID == a_ConsumerID)
-					{
-						a_errorStatus = TMU_ERROR + MULTI_START;
-						return a_errorStatus;
-					}
-				}
-				/* Add The New Consumer To The Request Buffer */
-				g_RequestBuffer[g_ReqBuffer_Index++] = a_NewConsumer;				
-			}
-		}
-		/*-------------[ In Case Of Consumer's Null Pointer CBF ]-------------*/
-		else
-		{
-			a_errorStatus = TMU_ERROR + NULL_PTR;
-			return a_errorStatus;
-		}
-	}
-	/*-------------[ In Case The TMU IS Not Active (Not Initialized Yet) ]-------------*/
-	else
-	{
-		a_errorStatus = TMU_ERROR + NOT_INIT;
-		return a_errorStatus;
-	}
-	return a_errorStatus;	
-}
-
-ERROR_STATUS TMU_Stop(uint16_t a_ConsumerID)
-{
-	ERROR_STATUS errorStatus = E_NOK;
-	uint16_t a_u16_index;
+	/* check for available range of resolution */
 	
-	/*-------------[ Search For The Consumer ID In The Request Buffer ]-------------*/
-	for(a_u16_index = ZERO; a_u16_index < REQUEST_BUFFER_LEN; a_u16_index++)
+	if (TMU_Cfg->TMU_Reselution<1 || TMU_Cfg->TMU_Reselution>17)
 	{
-		/*-------------[ When It's Found, Deactivate That Consumer ]-------------*/
-		if(g_RequestBuffer[a_u16_index].ConsumerID == a_ConsumerID)
-		{
-			g_RequestBuffer[a_u16_index].State = INACTIVE;
-			errorStatus = E_OK;
-			return errorStatus;
-		}
+		return TMU_module_error + INVALID__PARAMETER ;
 	}
 	
-	/*-------------[ Consumer Not Found In Request Buffer ]-------------*/
-	return errorStatus;
-}
-
-
-void TMU_Dispatcher(void)
-{
-	uint16_t a_u16_index;
-	FunPtr a_ConsumerFunction;
+	/* set resolution to global to be used in start function */
 	
-	/*-------------[ Every TMU Tick, Go Through The Request Buffer ]-------------*/
-	if(g_TMR_Ticks_Changed)
-	{
-		for(a_u16_index = ZERO; a_u16_index < REQUEST_BUFFER_LEN; a_u16_index++)
-		{
-			g_RequestBuffer[a_u16_index].Count += g_TMU_TickTime;
+	g_u8_TMU_reselution = TMU_Cfg->TMU_Reselution ;
+	
+	/*		 switch on timer channel		*/
+	
+	switch(TMU_Cfg->Timer_channel){
+		
+		case TMU_TIMER_CH0 :
+		
+			timer_TMU_cfg.Timer_CH_NO = TMU_TIMER_CH0;
+			timer_TMU_cfg.Timer_Mode = TIMER_MODE ;
+			timer_TMU_cfg.Timer_Polling_Or_Interrupt = TIMER_INTERRUPT_MODE;
+			timer_TMU_cfg.Timer_Prescaler = TIMER_PRESCALER_64;
+			timer_TMU_cfg.Timer_Cbk_ptr = ISR_flag_func ;
 			
-			/*-------------[ IF Consumer's Due Time Is Met!  ]-------------*/
-			if(g_RequestBuffer[a_u16_index].Count >= g_RequestBuffer[a_u16_index].Time)
+			/*		initialize timer		 */
+			
+			Timer_Init(&timer_TMU_cfg);
+			
+		
+			break;
+		case TMU_TIMER_CH1 :
+		
+			timer_TMU_cfg.Timer_CH_NO = TMU_TIMER_CH1;
+			timer_TMU_cfg.Timer_Mode = TIMER_MODE ;
+			timer_TMU_cfg.Timer_Polling_Or_Interrupt = TIMER_INTERRUPT_MODE;
+			timer_TMU_cfg.Timer_Prescaler = TIMER_PRESCALER_64;
+			timer_TMU_cfg.Timer_Cbk_ptr = ISR_flag_func ;
+			
+			/*		initialize timer		 */
+			
+			Timer_Init(&timer_TMU_cfg);
+		
+			break;
+		case TMU_TIMER_CH2 :
+			PORTA_DATA = 0xFF ;
+			timer_TMU_cfg.Timer_CH_NO = TMU_TIMER_CH2;
+			timer_TMU_cfg.Timer_Mode = TIMER_MODE ;
+			timer_TMU_cfg.Timer_Polling_Or_Interrupt = TIMER_INTERRUPT_MODE;
+			timer_TMU_cfg.Timer_Prescaler = TIMER_PRESCALER_64;
+			timer_TMU_cfg.Timer_Cbk_ptr = ISR_flag_func ;
+			
+			/*		initialize timer		 */
+			
+			Timer_Init(&timer_TMU_cfg);
+		
+			break;
+		default:
+		/*  invalid timer channel */
+		
+			return TMU_module_error + INVALID__PARAMETER ;
+		break;
+		
+	}
+	return E_OK ;
+}
+
+
+
+/**
+ * Input: Pointer to a structure contains the information needed to de-initialize the TMU. 
+ * Output:
+ * In/Out:			
+ * Return: The error status of the function.			
+ * Description: DeInitiates the module.
+ * 							
+ */
+
+
+ERROR_STATUS TMU_DeInit (TMU_Cfg_s *TMU_Cfg){
+	
+	/* check for null pointer error */
+	if (TMU_Cfg == NULL)
+	return TMU_module_error +NULL_PTR_ERROR ;
+	
+	
+	/* check if the TMU initialized before de-init or not */
+	if (g_u8_TMU_initialzation!= TRUE)
+	{
+		return TMU_module_error + DEINIT_WITHOUT_INIT ;
+	}
+	/*stop timer */
+	
+	Timer_Stop(g_u8_timer_CH);
+	
+	/*free all the buffer */
+	
+	return E_OK ;
+}
+
+
+
+/**
+ * Input: Pointer to a structure contains the information needed to start the TMU. 
+ * Output:
+ * In/Out:			
+ * Return: The error status of the function.			
+ * Description: start the module.
+ * 							
+ */
+
+
+ERROR_STATUS TMU_Start_Timer (TMU_tsak_s *TMU_task){
+	
+	uint8_t count ;
+	/* check for null pointer error */
+	
+	
+	
+	
+	if (TMU_task == NULL)
+	return TMU_module_error +NULL_PTR_ERROR ;
+	
+	if (TMU_task->Ptr_FunctionCall == NULL)
+	return TMU_module_error +NULL_PTR_ERROR ;
+	
+	TMU_task->N_OVFs=TMU_task->delay_time;
+	
+	/*check if the buffer is full */
+	
+	if (TMU_task->TMU_mode!=PERIODIC && TMU_task->TMU_mode!=ONESHOT)
+	{return TMU_module_error + INVALID__PARAMETER ;
+	}
+	
+	if (g_u8_NO_ELEMNT_BUFFER<TMU_BUFFER_SIZE)
+	{	
+		for( count = ZERO_VALUE ; count < TMU_BUFFER_SIZE ; count++)
+		{
+		if (Buffer[count]==NULL)
+		{
+			/*		 set struct in buffer		 */
+			
+			Buffer[count] = TMU_task ;
+			
+			/* increment the no of element in the buffer */
+			
+			g_u8_NO_ELEMNT_BUFFER++;
+			break;
+		}
+		
+		}
+	
+		if (g_u8_first_call_start == FALSE )
+		{
+			Timer_Start(g_u8_timer_CH ,250);
+			
+			
+			g_u8_first_call_start++;
+			
+		}
+	}else
+	
+		return TMU_module_error + FULL_BUFFER ;
+	
+	return E_OK ;
+	
+}
+
+
+
+/**
+ * Input: Pointer to a structure contains the information needed to stop the TMU. 
+ * Output:
+ * In/Out:			
+ * Return: The error status of the function.			
+ * Description: stop the module.
+ * 							
+ */
+
+
+
+ERROR_STATUS TMU_Stop_Timer (TMU_tsak_s *TMU_task){
+
+	if (g_u8_first_call_start!=1)
+	{
+		return STOP_WITHOU_SART + TMU_module_error ;
+	}
+	
+	Remove_task(TMU_task);
+	
+	return E_OK ;
+	
+}
+
+
+
+
+
+
+
+void Remove_task(TMU_tsak_s *TMU_task){
+	
+		uint8_t count ;
+		
+		for (count = ZERO_VALUE ; count<TMU_BUFFER_SIZE ; count++)
+		{
+			if (Buffer[count]!=NULL&& TMU_task->Task_ID==Buffer[count]->Task_ID)
 			{
-				a_ConsumerFunction = g_RequestBuffer[a_u16_index].Consumer_Ptr;
-				
-				/* IF The Consumer Function IS Periodic */
-				if(g_RequestBuffer[a_u16_index].Periodicity == PERIODIC && g_RequestBuffer[a_u16_index].State == ACTIVE)
+				Buffer[count] = NULL ;
+			}
+		}
+	
+}
+
+
+
+/**
+ * Input: void. 
+ * Output:
+ * In/Out:			
+ * Return: The error status of the function.			
+ * Description: Run the basic logic code to calculate the timing
+ * and call the user function depends on the timeout event for each software timer object.
+ * 							
+ */
+
+
+ERROR_STATUS TMU_Dispatch (void){
+	uint8_t count ;
+	
+	if (g_u8_ISR_flag==TRUE)
+	{
+		
+		for (count = ZERO_VALUE ; count<TMU_BUFFER_SIZE ; count++)
+		{
+			if (Buffer[count]!=NULL)
+			{
+				Buffer[count] ->N_OVFs-- ;
+				if ( Buffer[count] ->N_OVFs == ZERO_VALUE)
 				{
-					g_RequestBuffer[a_u16_index].Count = ZERO;
-					a_ConsumerFunction();
-				}
+					Buffer[count]->Ptr_FunctionCall();
+					if (Buffer[count]->TMU_mode== ONESHOT)
+					Remove_task(Buffer[count]);
+					else 
+					Buffer[count]->N_OVFs=Buffer[count]->delay_time ;
+					
 				
-				/* Else IF The Consumer Function IS OneShot (Non-Periodic) */
-				else if (g_RequestBuffer[a_u16_index].Periodicity == ONESHOT && g_RequestBuffer[a_u16_index].State == ACTIVE)
-				{
-					g_RequestBuffer[a_u16_index].State = INACTIVE;
-					a_ConsumerFunction();
+					
 				}
 			}
 		}
-		g_TMR_Ticks_Changed = FALSE;
+		g_u8_ISR_flag = FALSE ;
 	}
+	return E_OK ;
+	
 }
 
-ERROR_STATUS TMU_DeInit(TMU_cfg_s* a_TMU_s)
-{
-	ERROR_STATUS errorStauts = E_OK;
+
+ void ISR_flag_func(void){
 	
-	/*-------------[ Check TMU's Pointer Validity ]-------------*/
-	if(a_TMU_s != NULL)
-	{
-		if(g_TMU.State == ACTIVE || g_TMU.State == INACTIVE)
-		{
-			/*-------------[ TMU DeInitialization ]-------------*/
-			Timer_Stop(g_TMU.Timer_ID);
-			g_TMU.Timer_ID  = a_TMU_s->Timer_ID = ZERO;
-			g_TMU.Tick_Time = a_TMU_s->Tick_Time = ZERO;
-			g_TMU.Timer_Cbk_ptr = NULL;
-			g_TMU.State    = DISABLED;
-			g_TMU_TickTime = g_TMU.Tick_Time = ZERO;
-		}
-		else
-		{
-			errorStauts = TMU_ERROR + NOT_INIT;
-			return errorStauts;
-		}
-	}
-	/*-------------[ In Case Of TMU's Null Pointer ]-------------*/
-	else
-	{
-		errorStauts = TMU_ERROR + NULL_PTR;
-		return errorStauts;
-	}
-	return errorStauts;
+	g_u8_ISR_flag = TRUE ;
+	
+	
 }

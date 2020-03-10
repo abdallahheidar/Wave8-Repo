@@ -13,25 +13,23 @@
 /*                   typedefs for standard types                        */
 /************************************************************************/
 
-#define		NULL						((void *)0)
-typedef		unsigned char				uint8_t;
-typedef		unsigned int				uint16_t;
-typedef		unsigned long int			uint32_t;
-typedef		unsigned long long			uint64_t;
-typedef		signed char					sint8_t;
-typedef		signed int					sint16_t;
-typedef		signed long int				sint32_t;
-typedef		signed long long			sint64_t;
-typedef		volatile uint8_t* const		reg_type8_t;
-typedef		volatile uint16_t* const	reg_type16_t;
-typedef		void (*FunPtr)(void);
+#define NULL	((void *)0)
 
+typedef unsigned char uint8_t;
+typedef unsigned int uint16_t;
+typedef unsigned long int uint32_t;
+typedef unsigned long long uint64_t;
+typedef signed char sint8_t;
+typedef signed int sint16_t;
+typedef signed long int sint32_t;
+typedef signed long long sint64_t;
+typedef volatile uint8_t* const reg_type8_t;
+typedef volatile uint16_t* const reg_type16_t;
+typedef sint16_t ERROR_STATUS ;
 
 /************************************************************************/
 /*				 		defining boolean values                         */
 /************************************************************************/
-
-typedef uint8_t bool;
 #define FALSE 	0	// defines boolean false
 #define TRUE 	1	// defines boolean true
 
@@ -39,42 +37,45 @@ typedef uint8_t bool;
 /************************************************************************/
 /*						 LOW/HIGH defines                               */
 /************************************************************************/
-#define LOW  0x00	// defines LOW value for a bit
+#define LOW  0		// defines LOW value for a bit
 #define HIGH 0xFF	// defines HIGH value for a bit
-#define ZERO 0
+
+#define  E_OK 0
+#define  E_NOK 1
+
+#define ZERO_VALUE 0 
 
 
 /************************************************************************/
-/*	            	 Bit Manipulation Macro defines                     */
+/*					   bitwise operation		                       */
 /************************************************************************/
 
-#define SET_BIT(r, b)     (r |=  (1<<b))
-#define CLEAR_BIT(r, b)   (r &= ~(1<<b))
-#define TOGGLE_BIT(r, b)  (r)^=(b)
-#define GET_BIT(r, b)     (((r)>>(b))&1)
 
-/************************************************************************/
-/*			 			 defining error status             		        */
-/************************************************************************/
+#define SET_BIT(REG,BIT) REG|=(1<<BIT)
 
-#define ERROR_STATUS	uint16_t
-#define E_OK			0
-#define E_NOK			1
+/* Clear a certain bit in any register */
+#define CLEAR_BIT(REG,BIT) REG&=(~(1<<BIT))
 
+/* Toggle a certain bit in any register */
+#define TOGGLE_BIT(REG,BIT) (REG^=(1<<BIT))
 
 
 /************************************************************************/
-/*			 				Bit Definitions             		        */
+/*                   error handling macros		                       */
 /************************************************************************/
 
-#define BIT0	0x01
-#define BIT1	0x02
-#define BIT2	0x04
-#define BIT3	0x08
-#define BIT4	0x10
-#define BIT5	0x20
-#define BIT6	0x40
-#define BIT7	0x80
+#define TMU_module_error -500
+#define DIO_module_error -400
+#define TIMER_module_error -300
 
+#define NULL_PTR_ERROR -1
+#define MODULE_UNINTIALIZED -2
+#define MULTIPLE_INITIALIZATION -3
+#define INVALID__PARAMETER -4
+#define MULTIPLE_START -5
+#define MULTIPLE_STOP -6
+#define FULL_BUFFER -7
+#define DEINIT_WITHOUT_INIT -8
+#define  STOP_WITHOU_SART -9
 
 #endif /* STD_TYPES_H_ */
