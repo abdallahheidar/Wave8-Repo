@@ -9,7 +9,6 @@
 #ifndef	DIO_H
 #define DIO_H
 
-#include "../Common/common_macros.h"
 #include "../Common/std_types.h"
 #include "registers.h"
 /************************************************************************/

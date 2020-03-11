@@ -18,6 +18,7 @@ void CPU_Sleep(uint8_t Sleep_Mood)
 	case IDLE_MODE:
 		MCUCR &= ~(1<<SM0) & ~(1<<SM1) & ~(1<<SM2);
 		MCUCR |= (1<<SE);
+		__asm__ __volatile__ ( "sleep" "\n\t" :: );
 		break;
 
 	case ADC_NOISE_REDUCTION_MODE:
@@ -43,6 +44,7 @@ void CPU_Sleep(uint8_t Sleep_Mood)
 	case EXTENDED_STANDBY_MODE:
 		MCUCR |= (1<<SE) | (1<<SM0) | (1<<SM1) | (1<<SM2);
 		break;
+
 	}
 }
 
