@@ -121,7 +121,6 @@ ERROR_STATUS SOS_createTask(uint8_t Id,void (*callB_fun_ptr)(void),uint8_t lap_t
 		*	1-get lap time eq
 		*	2-setup new task struct
 		*	3-load it in place correspond to its priority
-		*
 		*/
 		/*set how many resolution time it takes to fire event*/
 		lap_time = (lap_time/(SOS_linkCfg.tick_reslution));
@@ -137,11 +136,18 @@ ERROR_STATUS SOS_createTask(uint8_t Id,void (*callB_fun_ptr)(void),uint8_t lap_t
 		}
 		else
 		{
+			/*	loop throught tasks to find the task place corespondent to it's priority
+			*	shift all tasks lower than the current task priority one place to make a cell for the current task
+			*	insert current task in it's cell
+			*	if the current task is the lowest priority then push it at the end
+			*	increment tasks head pointer
+			*/
 			for (;u8_tempCounter <= u8_SOS_objBufferHead ; u8_tempCounter++)
 			{
 				if (gastr_SOS_ObjBuffer[u8_tempCounter].priority >= periority)
 				{
 					uint8_t u8_shiftCounter = (u8_SOS_objBufferHead + ONE);
+					/*shift each task lower than the current task priority one cell right*/
 					while(u8_shiftCounter > u8_tempCounter)
 					{
 						gastr_SOS_ObjBuffer[u8_shiftCounter] = gastr_SOS_ObjBuffer[(u8_shiftCounter-ONE)];
