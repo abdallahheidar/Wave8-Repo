@@ -12,7 +12,7 @@
 /************************************************************************/
 
 #include "SOS.h"
-#include "sleep.h"
+
 
 /************************************************************************/
 /*				         DEFINES								        */
@@ -31,8 +31,6 @@
 static void SOS_TimerOvf_CBK(void);
 static void SOS_ClearTask(uint8_t u8_index);
 static void SOS_ShiftTasks(uint8_t newIndex, uint8_t oldIndex);
-static void SOS_BufferSort();
-
 
 
 
@@ -86,29 +84,27 @@ ERROR_STATUS SOS_Init(void)
 			
 			for(u8_counter = ZERO; u8_counter < MAX_TASK_COUNT; u8_counter++)
 			{
-				gastrSOS_Task_Buff[u8_counter].gptr_SOS_Task		= NULL;
-				gastrSOS_Task_Buff[u8_counter].u8_SOSTask_Priority  = ZERO;
-				gastrSOS_Task_Buff[u8_counter].u8_SOSTask_State		= ZERO;
-				gastrSOS_Task_Buff[u8_counter].u16_Periodicity		= ZERO;
-				gastrSOS_Task_Buff[u8_counter].u16_SOS_TicksCount	= ZERO;
+				gastrSOS_Buff[u8_counter].gptrSOS_Function = NULL;
+				gastrSOS_Buff[u8_counter].u16_Delay		   = ZERO;
+				gastrSOS_Buff[u8_counter].u8_Periodicity   = ZERO;
 			}
 
 
 			/* switch on timer channel AND initialize  */
 			
-			#if TMU_TIMER_CH0
+			#if SOS_TIMER_CH0
 			
 			gstr_Timer_Cfg.Timer_CH_NO = TIMER_CH0;
 			gstr_Timer_Cfg.Timer_Prescaler = TIMER_PRESCALER_64; /* preload = 256 - 250 */
 			gu16_PRELOAD = 256 - 250;
 			
-			#elif TMU_TIMER_CH1
+			#elif SOS_TIMER_CH1
 			
 			gstr_Timer_Cfg.Timer_CH_NO = TIMER_CH1;
 			gstr_Timer_Cfg.Timer_Prescaler = TIMER_PRESCALER_1024; /* preload = 65536 - 156 */
 			gu16_PRELOAD = 65536 - 15;
 			
-			#elif TMU_TIMER_CH2
+			#elif SOS_TIMER_CH2
 			
 			gstr_Timer_Cfg.Timer_CH_NO = TIMER_CH2;
 			gstr_Timer_Cfg.Timer_Prescaler = TIMER_PRESCALER_1024; /* preload = 65536 - 156 */
@@ -125,7 +121,7 @@ ERROR_STATUS SOS_Init(void)
 			
 			u8_status = Timer_Init(&gstr_Timer_Cfg);
 					
-			/* set TMU module is initialized */
+			/* set SOS module is initialized */
 			
 			gsu8_SOSInitStatus = INITIALIZED;
 		}
@@ -159,12 +155,11 @@ ERROR_STATUS SOS_DeInit(void)
 			uint8_t u8_counter;
 			for(u8_counter = ZERO; u8_counter < MAX_TASK_COUNT; u8_counter++)
 			{
-				gastrSOS_Task_Buff[u8_counter].gptr_SOS_Task		= NULL;
-				gastrSOS_Task_Buff[u8_counter].u8_SOSTask_Priority  = ZERO;
-				gastrSOS_Task_Buff[u8_counter].u8_SOSTask_State		= ZERO;
-				gastrSOS_Task_Buff[u8_counter].u16_Periodicity		= ZERO;
+				gastrSOS_Buff[u8_counter].gptrSOS_Function		= NULL;
+				gastrSOS_Buff[u8_counter].u16_Delay				= ZERO;
+				gastrSOS_Buff[u8_counter].u16_MilliSecond_Count = ZERO;
+				gastrSOS_Buff[u8_counter].u8_Periodicity		= ZERO;
 			}
-
 
 	/*Clear the Flags */
 	        gu16_PRELOAD			= ZERO;
@@ -175,16 +170,16 @@ ERROR_STATUS SOS_DeInit(void)
 			
 			/* stop the timer */
 			
-			#if  TMU_TIMER_CH0
+			#if  SOS_TIMER_CH0
 			Timer_Stop(TIMER_CH0);
 			
-			#elif  TMU_TIMER_CH1
+			#elif  SOS_TIMER_CH1
 			Timer_Stop(TIMER_CH1);
-			#elif  TMU_TIMER_CH2
+			#elif  SOS_TIMER_CH2
 			Timer_Stop(TIMER_CH2);
 			#endif
 			
-			/*  TMU module is not initialized */
+			/*  SOS module is not initialized */
 			gsu8_SOSInitStatus = NOT_INITIALIZED;
 			
 		}
@@ -194,12 +189,14 @@ ERROR_STATUS SOS_DeInit(void)
 
 /**
 * @brief: add task to the buffer
-* @param: gptr_SOS_Task: pointer to callback function,
+* @param: gptrSOS_Function: pointer to callback function,
 * 	  u16_Delay: requested delay,
-* 	  u16_Periodicity: periodic or one shot
+* 	  u8_Periodicity: periodic or one shot
 * @return: ERROR_STATUS status code with error code if one occurred
 */
-ERROR_STATUS SOS_CreateTask(strSOS_TCB_t *gptr_SOS_Task)
+ERROR_STATUS SOS_Start(gptrSOS_Function_t gptrSOS_Function,
+					   u16_Delay_t u16_Delay,
+					   uint8_t u8_Periodicity)
 {
 	
 	/*
@@ -215,7 +212,7 @@ ERROR_STATUS SOS_CreateTask(strSOS_TCB_t *gptr_SOS_Task)
 	else
 	{
 			/* check the function pointer  */	
-		if(NULL == gptr_SOS_Task)
+		if(NULL == gptrSOS_Function)
 		{
 			u8_status = SOS_ERROR_BASE + ERROR_NULL_POINTER;
 		}
@@ -227,34 +224,26 @@ ERROR_STATUS SOS_CreateTask(strSOS_TCB_t *gptr_SOS_Task)
 				u8_status = SOS_ERROR_BASE + ERROR_FULL_BUFFER;
 			}
 			else{
-				
 			/* add the task to the buffer */
-			gastrSOS_Task_Buff[gu8_Index].gptr_SOS_Task			= gptr_SOS_Task->gptr_SOS_Task;
-			gastrSOS_Task_Buff[gu8_Index].u16_Periodicity       = gptr_SOS_Task->u16_Periodicity;
-			gastrSOS_Task_Buff[gu8_Index].u8_SOSTask_Priority   = gptr_SOS_Task->u8_SOSTask_Priority;
-			gastrSOS_Task_Buff[gu8_Index].u8_SOSTask_State      = gptr_SOS_Task->u8_SOSTask_State;
-			gastrSOS_Task_Buff[gu8_Index].u16_SOS_TicksCount	= ZERO;
-
-			
+			gastrSOS_Buff[gu8_Index].gptrSOS_Function		= gptrSOS_Function;
+			gastrSOS_Buff[gu8_Index].u16_Delay				= u16_Delay;
+			gastrSOS_Buff[gu8_Index].u16_MilliSecond_Count  = ZERO;
+			gastrSOS_Buff[gu8_Index].u8_Periodicity         = u8_Periodicity;
 
 			/*start the timer for the first time */
 			
 			if(gu8_Index == ZERO)
 			{
-				#if  TMU_TIMER_CH0
+				#if  SOS_TIMER_CH0
 								
 				Timer_Start(TIMER_CH0, gu16_PRELOAD);
 
-				#elif  TMU_TIMER_CH1
+				#elif  SOS_TIMER_CH1
 				Timer_Start(TIMER_CH1, gu16_PRELOAD);
-				#elif  TMU_TIMER_CH2
+				#elif  SOS_TIMER_CH2
 				Timer_Start(TIMER_CH2, gu16_PRELOAD);
 				#endif
-		}else
-		{
-			/* Arrange array based on priority */
-			SOS_BufferSort();
-		}
+			}
 
 			gu8_Index++;
 		} /* end of else */
@@ -265,19 +254,17 @@ ERROR_STATUS SOS_CreateTask(strSOS_TCB_t *gptr_SOS_Task)
 }
 
 /**
-* @brief: SOS_RemoveTask remove the task from buffer
-* @param: gptr_SOS_Task: pointer to callback function
+* @brief: SOS Stop remove the task from buffer
+* @param: gptrSOS_Function: pointer to callback function
 * @return: ERROR_STATUS status code with error code if one occurred
 */
  
-ERROR_STATUS SOS_RemoveTask(gptr_SOS_Task_t gptr_SOS_Task){
-
+ERROR_STATUS SOS_Stop(gptrSOS_Function_t gptrSOS_Function)
+{
 		/*
 		ERROR_STATUS u8_status = E_OK;
 */
 		ERROR_STATUS u8_status = SOS_ERROR_BASE + NO_ERRORS;
-		
-		uint8_t u8_TaskIndex;
 		
 		/* check the module */
 
@@ -298,7 +285,7 @@ ERROR_STATUS SOS_RemoveTask(gptr_SOS_Task_t gptr_SOS_Task){
 		{
 			/* check the function pointer */
 
-			if (NULL == gptr_SOS_Task)
+			if (NULL == gptrSOS_Function)
 			{
 			u8_status = SOS_ERROR_BASE + ERROR_NULL_POINTER;
 			}
@@ -307,7 +294,7 @@ ERROR_STATUS SOS_RemoveTask(gptr_SOS_Task_t gptr_SOS_Task){
 					/* loop to find the task  */
 			for(u8_Counter = ZERO; u8_Counter < MAX_TASK_COUNT; u8_Counter++)
 				{
-					if(gastrSOS_Task_Buff[u8_Counter].gptr_SOS_Task == gptr_SOS_Task)
+					if(gastrSOS_Buff[u8_Counter].gptrSOS_Function == gptrSOS_Function)
 					{
 					/* Check if one task exist or full */
 					if((gu8_Index == 1) || (gu8_Index == MAX_TASK_COUNT))
@@ -317,17 +304,9 @@ ERROR_STATUS SOS_RemoveTask(gptr_SOS_Task_t gptr_SOS_Task){
 						}
 						else
 						{
-							u8_TaskIndex = u8_Counter;
+						SOS_ShiftTasks(u8_Counter , (gu8_Index-1));
 
-							/* Shift TCBs up by one starting from the TCB next to the one to be removed */
-							uint8_t u8_temp;
-							
-							for(u8_temp=(u8_TaskIndex+1); u8_temp<gu8_Index-1; u8_temp++)
-							{
-								SOS_ShiftTasks(u8_temp , (u8_temp+1));
-							}
-						
-						  /* SOS_ClearTask((gu8_Index-1)); */
+						SOS_ClearTask((gu8_Index-1));
 						gu8_Index--;
 						}
 				   }
@@ -339,12 +318,12 @@ ERROR_STATUS SOS_RemoveTask(gptr_SOS_Task_t gptr_SOS_Task){
 		
 		if(gu8_Index == ZERO)
 		{
-			#if  TMU_TIMER_CH0
+			#if  SOS_TIMER_CH0
 			Timer_Stop(TIMER_CH0);
 			
-			#elif  TMU_TIMER_CH1
+			#elif  SOS_TIMER_CH1
 			Timer_Stop(TIMER_CH1); 
-			#elif  TMU_TIMER_CH2
+			#elif  SOS_TIMER_CH2
 			Timer_Stop(TIMER_CH2);
 			#endif
 		}
@@ -353,13 +332,13 @@ ERROR_STATUS SOS_RemoveTask(gptr_SOS_Task_t gptr_SOS_Task){
 }
 
 /**
-* @brief: SOS_Run Loops through task list and execute each one as requested
+* @brief: SOS Loops through task list and execute each one as requested
 * @param: void
 * Input : void
 * Output: None
 * @return: ERROR_STATUS status code with error code if one occurred
 */
-ERROR_STATUS SOS_Run(void)
+ERROR_STATUS SOS_Dispatcher(void)
 {
 		/*
 		ERROR_STATUS u8_status = E_OK;
@@ -374,7 +353,7 @@ ERROR_STATUS SOS_Run(void)
 					/* loop the buffer of tasks */
 		for(u8_Counter = ZERO; u8_Counter < gu8_Index; u8_Counter++)
 		{
-			if(NULL == gastrSOS_Task_Buff[u8_Counter].gptr_SOS_Task)
+			if(NULL == gastrSOS_Buff[u8_Counter].gptrSOS_Function)
 			{
 				/* skip for now until making circular buffer */
 				u8_status = SOS_ERROR_BASE + ERROR_NULL_POINTER;
@@ -382,12 +361,7 @@ ERROR_STATUS SOS_Run(void)
 			}
 			else
 			{
-				gastrSOS_Task_Buff[u8_Counter].u16_SOS_TicksCount++;
-				
-				if ( gastrSOS_Task_Buff[u8_Counter].u16_SOS_TicksCount >= gastrSOS_Task_Buff[u8_Counter].u16_Periodicity)
-				{
-					gastrSOS_Task_Buff[u8_Counter].u8_SOSTask_State = READY_STATE;
-				}
+				gastrSOS_Buff[u8_Counter].u16_MilliSecond_Count++;
 			}
 		}
 
@@ -396,7 +370,7 @@ ERROR_STATUS SOS_Run(void)
 		
 		for(u8_Counter = ZERO; u8_Counter < gu8_Index; u8_Counter++)
 		{
-			if(NULL == gastrSOS_Task_Buff[u8_Counter].gptr_SOS_Task)
+			if(NULL == gastrSOS_Buff[u8_Counter].gptrSOS_Function)
 			{
 				/* skip for now until making circular buffer */
 				u8_status = SOS_ERROR_BASE + ERROR_NULL_POINTER;
@@ -406,26 +380,21 @@ ERROR_STATUS SOS_Run(void)
 			{
 				/* if the delay is complete */
 				
-			if(	gastrSOS_Task_Buff[u8_Counter].u8_SOSTask_State == READY_STATE)
+			if(gastrSOS_Buff[u8_Counter].u16_MilliSecond_Count >= gastrSOS_Buff[u8_Counter].u16_Delay)
 				{
-					gastrSOS_Task_Buff[u8_Counter].u16_SOS_TicksCount = ZERO;
+					gastrSOS_Buff[u8_Counter].u16_MilliSecond_Count = ZERO;
 
-					gastrSOS_Task_Buff[u8_Counter].gptr_SOS_Task();
-					
-					gastrSOS_Task_Buff[u8_Counter].u8_SOSTask_State = WAITING_STATE;
-					
-					break;
+					gastrSOS_Buff[u8_Counter].gptrSOS_Function();
 								
 					/* release it if one shot */
 
-					/*if(gastrSOS_Task_Buff[u8_Counter].u16_Periodicity == ONE_SHOT)
+					if(gastrSOS_Buff[u8_Counter].u8_Periodicity == ONE_SHOT)
 					{
-						TMU_Stop(gastrSOS_Task_Buff[u8_Counter].gptr_SOS_Task);
-					}*/
+						SOS_Stop(gastrSOS_Buff[u8_Counter].gptrSOS_Function);
+					}
 				}	
 			} /* end of else */
 		} /* end of for */
-	gu8_SOS_TimerOvf_Flag = OVF_NOT_TRIGGERED;
 	} /*check the ovf flag */
 	
 	else
@@ -435,12 +404,8 @@ ERROR_STATUS SOS_Run(void)
 	return u8_status;
 }
 
-
-
 static void SOS_TimerOvf_CBK(void)
 {
-		PORTC_DATA ^= HIGH;
-
 	gu8_OvfCounter++;
 	
 	if(gu8_OvfCounter == SOS_RESOLUTION)
@@ -451,57 +416,35 @@ static void SOS_TimerOvf_CBK(void)
 	}
 		
 	/* Restart and pre-load timer */
-	#if  TMU_TIMER_CH0
+	#if  SOS_TIMER_CH0
 	
 	Timer_Start(TIMER_CH0, gu16_PRELOAD);
 	
-	#elif  TMU_TIMER_CH1
+	#elif  SOS_TIMER_CH1
 	Timer_Start(TIMER_CH1, 65286);
-	#elif  TMU_TIMER_CH2
+	#elif  SOS_TIMER_CH2
 	Timer_Start(TIMER_CH2, 6);
 	#endif
 	
 	
 	/*sleep disable to clear SE */
-	//Sleep_Disable();
+	Sleep_Disable();
 }
 
 static void SOS_ClearTask(uint8_t u8_index){
 	
-				gastrSOS_Task_Buff[gu8_Index].gptr_SOS_Task		    = NULL;
-				gastrSOS_Task_Buff[gu8_Index].u8_SOSTask_Priority   = ZERO;
-				gastrSOS_Task_Buff[gu8_Index].u8_SOSTask_State		= ZERO;
-				gastrSOS_Task_Buff[gu8_Index].u16_Periodicity		= ZERO;
-				gastrSOS_Task_Buff[gu8_Index].u16_SOS_TicksCount	= ZERO;
+	  gastrSOS_Buff[gu8_Index].gptrSOS_Function			= NULL;
+	  gastrSOS_Buff[gu8_Index].u16_Delay				= ZERO;
+	  gastrSOS_Buff[gu8_Index].u16_MilliSecond_Count    = ZERO;
+	  gastrSOS_Buff[gu8_Index].u8_Periodicity			= ZERO;
 }
 
 static void SOS_ShiftTasks(uint8_t newIndex, uint8_t oldIndex){
 	
 	
-	  gastrSOS_Task_Buff[newIndex].gptr_SOS_Task		= gastrSOS_Task_Buff[oldIndex].gptr_SOS_Task;		
-	  gastrSOS_Task_Buff[newIndex].u8_SOSTask_Priority  = gastrSOS_Task_Buff[oldIndex].u8_SOSTask_Priority;  
-	  gastrSOS_Task_Buff[newIndex].u8_SOSTask_State		= gastrSOS_Task_Buff[oldIndex].u8_SOSTask_State;		
-	  gastrSOS_Task_Buff[newIndex].u16_Periodicity		= gastrSOS_Task_Buff[oldIndex].u16_Periodicity;		
-	  gastrSOS_Task_Buff[newIndex].u16_SOS_TicksCount	= gastrSOS_Task_Buff[oldIndex].u16_SOS_TicksCount;	
+	  gastrSOS_Buff[newIndex].gptrSOS_Function		= gastrSOS_Buff[oldIndex].gptrSOS_Function;
+	  gastrSOS_Buff[newIndex].u16_Delay				= gastrSOS_Buff[oldIndex].u16_Delay;
+	  gastrSOS_Buff[newIndex].u16_MilliSecond_Count = gastrSOS_Buff[oldIndex].u16_MilliSecond_Count;
+	  gastrSOS_Buff[newIndex].u8_Periodicity		= gastrSOS_Buff[oldIndex].u8_Periodicity;
 
-}
-
-
-static void SOS_BufferSort(){
-
-strSOS_TCB_t str_TempTask = {0};
-uint8_t u8_OuterCounter, u8_InnerCounter;
-
-/* Bubble sort the array based on priority */
-for(u8_OuterCounter = 0; u8_OuterCounter < gu8_Index; u8_OuterCounter++){
-	for(u8_InnerCounter = 0; u8_InnerCounter < (gu8_Index-1); u8_InnerCounter++){
-		
-		if(gastrSOS_Task_Buff[u8_InnerCounter].u8_SOSTask_Priority > gastrSOS_Task_Buff[u8_InnerCounter+1].u8_SOSTask_Priority){
-			str_TempTask = gastrSOS_Task_Buff[u8_InnerCounter+1];
-			gastrSOS_Task_Buff[u8_InnerCounter+1] = gastrSOS_Task_Buff[u8_InnerCounter];
-			gastrSOS_Task_Buff[u8_InnerCounter] = str_TempTask;
-		}
-	 }
-   }
-   
 }

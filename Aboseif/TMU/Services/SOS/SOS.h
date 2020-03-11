@@ -26,45 +26,39 @@
 
  /* function state periodic or one shot */
  
-#define		PERIODIC				(0)
-#define		ONE_SHOT				(1)
+#define PERIODIC				(0)
+#define ONE_SHOT				(1)
 
 /* timer resolution in ms */
 
-#define		SOS_RESOLUTION			(10)
+#define SOS_RESOLUTION			(10)
 
 /* pointer to function type */
 
-typedef void (*gptr_SOS_Task_t) (void);
+typedef void (*gptrSOS_Function_t) (void);
 
 /* module state */
-#define		NOT_INITIALIZED		0
-#define		INITIALIZED			1
-
-/* SOSTask states */
-#define		WAITING_STATE		0
-#define		READY_STATE			1
-
+#define NOT_INITIALIZED		0
+#define INITIALIZED			1
 
 typedef	uint16_t u16_Delay_t;
 
 
 /************************************************************************/
-/*			  Structures Declarations		                            */
+/*			  Structures Dclarations		                            */
 /************************************************************************/
 
 
 typedef struct strSOS_TCB_t
 {
-  gptr_SOS_Task_t gptr_SOS_Task;
-  uint8_t	u8_SOSTask_Priority;
-  uint8_t	u8_SOSTask_State;
-  uint16_t	u16_SOS_TicksCount;
-  uint16_t	u16_Periodicity;
+  gptrSOS_Function_t gptrSOS_Function;
+  u16_Delay_t u16_Delay;
+  u16_Delay_t u16_MilliSecond_Count;
+  uint8_t u8_Periodicity;
 }strSOS_TCB_t;
 
 /* Create the buffer  of tasks */
-strSOS_TCB_t gastrSOS_Task_Buff[MAX_TASK_COUNT];
+strSOS_TCB_t gastrSOS_Buff[MAX_TASK_COUNT];
 
 
 
@@ -73,7 +67,7 @@ strSOS_TCB_t gastrSOS_Task_Buff[MAX_TASK_COUNT];
 /************************************************************************/
 
 /**
-* @brief: TMU Initialization
+* @brief: SOS Initialization
 *		  initialize the timer and buffer
 * @param: void
 * Input : void
@@ -83,7 +77,7 @@ strSOS_TCB_t gastrSOS_Task_Buff[MAX_TASK_COUNT];
 ERROR_STATUS SOS_Init(void);
 
 /**
-* @brief: TMU DeInitialization
+* @brief: SOS DeInitialization
 *			empty the buffer from tasks
 * @param: void
 * Input : void
@@ -94,26 +88,29 @@ ERROR_STATUS SOS_DeInit(void);
 
 /**
 * @brief: add task to the buffer
-* @param: gptr_SOS_Task: task structure 
+* @param: gptrSOS_Function: pointer to callback function,
+* 	  u16_Delay: requested delay,
+* 	  u8_Periodicity: periodic or one shot
 * @return: ERROR_STATUS status code with error code if one occurred
 */
-ERROR_STATUS SOS_CreateTask(strSOS_TCB_t *gptr_SOS_Task);
+ERROR_STATUS SOS_Start(gptrSOS_Function_t gptrSOS_Function,
+						 u16_Delay_t u16_Delay, uint8_t u8_Periodicity);
 
 /**
-* @brief: SOS_RemoveTask remove the task from buffer
-* @param: gptr_SOS_Task: pointer to callback function
+* @brief: SOS Stop remove the task from buffer
+* @param: gptrSOS_Function: pointer to callback function
 * @return: ERROR_STATUS status code with error code if one occurred
 */
-ERROR_STATUS SOS_RemoveTask(gptr_SOS_Task_t gptr_SOS_Task);
+ERROR_STATUS SOS_Stop(gptrSOS_Function_t gptrSOS_Function);
 
 /**
-* @brief: SOS_Run Loops through task list and execute each one as requested
+* @brief: SOS Loops through task list and execute each one as requested
 * @param: void
 * Input : void
 * Output: None
 * @return: ERROR_STATUS status code with error code if one occurred
 */
-ERROR_STATUS SOS_Run(void);
+ERROR_STATUS SOS_Dispatcher(void);
 
 
 #endif /* SOS_H_ */

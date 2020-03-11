@@ -22,9 +22,9 @@
 
 
 
-/* TMU Channels */
+/* SOS Channels */
 
-#define		TMU_TIMER_CH0		1
+#define		SOS_TIMER_CH0		1
 /* #define SOS_TIMER_CH1 */
 /* #define SOS_TIMER_CH2 */
 
