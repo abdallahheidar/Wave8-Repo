@@ -1,0 +1,41 @@
+/*
+ * main.c
+ *
+ *  Created on: Mar 2, 2020
+ *      Author: Youssef Harby
+ */
+
+
+#include "BCM.h"
+
+uint8_t arr[20] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+		11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24};
+
+#define OVERHEAD 		4
+
+#define ELEMENTS(X)		(X + OVERHEAD)
+
+int main(void)
+{
+	strBcmConfig_t BCM_cfg = {
+			BCM_UART_ID,
+			BCM_TRANSMIT
+	};
+
+	strBcmStartConfig_t BCM_startCfg = {
+			BCM_UART_ID,
+			&arr[0],
+			ELEMENTS(20)
+	};
+
+	BCM_Init(&BCM_cfg);
+
+	sei();
+
+	BCM_Send(&BCM_startCfg);
+
+	while(1)
+	{
+		BCM_TxDispatch();
+	}
+}

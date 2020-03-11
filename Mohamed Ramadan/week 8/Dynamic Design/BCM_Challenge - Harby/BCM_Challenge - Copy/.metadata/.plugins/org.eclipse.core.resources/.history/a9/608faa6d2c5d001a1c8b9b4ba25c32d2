@@ -1,0 +1,30 @@
+/*
+ * main.c
+ *
+ *  Created on: Mar 2, 2020
+ *      Author: Youssef Harby
+ */
+
+
+#include "SPI.h"
+#include "UART.h"
+#include "BCM.h"
+#include "util/delay.h"
+
+
+int main(void)
+{
+	strBcmConfig_t cfg = {
+			BCM_UART_ID,
+			BCM_RECEIVE
+	};
+
+	BCM_Init(&cfg);
+
+	sei();
+
+	while(1)
+	{
+		bcm
+	}
+}

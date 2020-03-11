@@ -1,0 +1,19 @@
+/*
+ * BCM_cfg.h
+ *
+ *  Created on: Mar 2, 2020
+ *      Author: Youssef Harby
+ */
+
+#ifndef BCM_CFG_H_
+#define BCM_CFG_H_
+
+typedef unsigned char EnmBCMError_t;
+
+typedef enum{
+	IDLE,
+	SENDING_BYTE,
+	SENDING_COMPLETE
+}BCM_SM;
+
+#endif /* BCM_CFG_H_ */

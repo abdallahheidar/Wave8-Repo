@@ -1,0 +1,18 @@
+/*
+ * BCM.h
+ *
+ *  Created on: Mar 2, 2020
+ *      Author: Youssef Harby
+ */
+
+#ifndef BCM_H_
+#define BCM_H_
+
+
+typedef struct BCM_ConfigType{
+	unsigned char BCM_ModuleID;
+
+}BCM_ConfigType;
+
+
+#endif /* BCM_H_ */

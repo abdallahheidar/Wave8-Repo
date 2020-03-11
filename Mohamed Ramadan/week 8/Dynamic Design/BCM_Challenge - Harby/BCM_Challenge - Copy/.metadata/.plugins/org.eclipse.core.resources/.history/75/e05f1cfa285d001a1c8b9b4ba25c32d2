@@ -1,0 +1,49 @@
+/*
+ * main.c
+ *
+ *  Created on: Mar 2, 2020
+ *      Author: Youssef Harby
+ */
+
+
+#include "SPI.h"
+#include "UART.h"
+#include "BCM.h"
+#include "util/delay.h"
+
+//volatile uint8_t flag = 0;
+uint8_t arr[20];
+volatile uint8_t counter = 0;
+
+void app(void);
+
+strBcmStartConfig_t cfgg = {
+		BCM_UART_ID,
+		&arr[0],
+		20,
+};
+
+void app(void)
+{
+	BCM_Receive(&cfgg);
+	PORTA_DIR = arr[counter];
+	counter++;
+}
+
+int main(void)
+{
+	strBcmConfig_t cfg = {
+			BCM_UART_ID,
+			BCM_RECEIVE,
+			&app
+	};
+
+	BCM_Init(&cfg);
+
+	sei();
+
+	while(1)
+	{
+
+	}
+}

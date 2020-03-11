@@ -1,0 +1,13 @@
+/*
+ * BCM_cfg.h
+ *
+ *  Created on: Mar 2, 2020
+ *      Author: Youssef Harby
+ */
+
+#ifndef BCM_CFG_H_
+#define BCM_CFG_H_
+
+typedef uint8_t EnmBCMError_t;
+
+#endif /* BCM_CFG_H_ */

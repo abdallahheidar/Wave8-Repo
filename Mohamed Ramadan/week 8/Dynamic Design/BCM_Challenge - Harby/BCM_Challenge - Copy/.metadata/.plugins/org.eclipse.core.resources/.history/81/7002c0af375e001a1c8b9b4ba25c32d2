@@ -1,0 +1,266 @@
+/*
+ * BCMTx.c
+ *
+ *  Created on: Mar 2, 2020
+ *      Author: Youssef Harby & Mohamed Ramadan
+ */
+
+
+/*- INCLUDES -----------------------------------------------*/
+
+#include "BCM.h"
+#include "BCM_cfg.h"
+
+
+/*- DEFINITIONS --------------------------------------------*/
+
+#define UNDETERMINED		0x00
+
+
+/*- GLOBAL STATIC VARIABLES --------------------------------*/
+
+static volatile uint8_t gu8_BCM_SENDING_SM = BCM_SENDING_IDLE;
+static volatile uint8_t gu8_BCM_RECEIVING_SM = BCM_RECEIVING_IDLE;
+
+static volatile uint8_t gu8_BCM_BufferState = BCM_BUFFER_UNLOCKED;
+
+static volatile uint8_t gu8_TxFlag = 0;
+static volatile uint8_t gu8_RxFlag = 0;
+
+static strBcmSendConfig_t TxCfg;
+static strBcmSendConfig_t RxCfg;
+
+static volatile uint8_t gu8_TxCounter = 255;
+static volatile uint8_t gu8_RxCounter = 255;
+
+uint8_t gu8_TxCheckSum = 0;
+
+
+/*- CALL BACK FUNCTIONS ------------------------------------*/
+
+void RxApp(void)
+{
+	if(gu8_BCM_BufferState == BCM_BUFFER_LOCKED)
+	{
+		BCM_Receive(&RxCfg);
+		gu8_RxFlag = 1;
+		gu8_RxCounter++;
+	}
+}
+
+void TxApp(void)
+{
+	gu8_TxFlag = 1;
+	gu8_TxCounter++;
+}
+
+
+/*- APIs IMPLEMENTATION ------------------------------------*/
+
+EnmBCMError_t BCM_Init(const strBcmConfig_t* ConfigPtr)
+{
+	uint8_t au8_Ret = E_OK;
+
+	UART_ConfigType UART_cfg = {
+			UART_ASYNCHRONOUS_MODE,
+			UNDETERMINED,
+			UART_EIGHT_BITS,
+			UART_PARITY_DISABLED,
+			UART_ONE_STOP_BIT,
+			UART_INTERRUPT_ENABLED
+	};
+
+	SPI_ConfigType SPI_cfg = {
+			UNDETERMINED,
+			SPI_INTERRUPT_ENABLED,
+			SPI_F_OSC_4
+	};
+
+	switch(ConfigPtr->BCM_DataDirection)
+	{
+	case BCM_TRANSMIT:
+		UART_cfg.communicationMode = UART_SENDER_MODE;
+		SPI_cfg.MasterSlaveSelect = SPI_MASTER;
+		break;
+	case BCM_RECEIVE:
+		UART_cfg.communicationMode = UART_RECEIVER_MODE;
+		SPI_cfg.MasterSlaveSelect = SPI_SLAVE;
+		break;
+	case BCM_TRANSMIT_RECEIVE:
+		UART_cfg.communicationMode = UART_SENDER_RECEIVER_MODE;
+		break;
+	default:
+		au8_Ret = E_NOK;
+		break;
+	}
+
+	switch(ConfigPtr->BCM_ProtocolID)
+	{
+	case BCM_UART_ID:
+		UART_init(&UART_cfg);
+		break;
+	case BCM_SPI_ID:
+		SPI_init(&SPI_cfg);
+		break;
+	default:
+		au8_Ret = E_NOK;
+		break;
+	}
+
+	return au8_Ret;
+}
+
+EnmBCMError_t BCM_DeInit(uint8_t BCM_ProtocolID)
+{
+	uint8_t au8_Ret = E_OK;
+
+	switch(BCM_ProtocolID)
+	{
+	case BCM_UART_ID:
+		UART_deInit();
+		UART_RXC_setCallBack(NULL);
+		UART_TXC_setCallBack(NULL);
+		break;
+	case BCM_SPI_ID:
+		SPI_deInit();
+		SPI_setCallBack(NULL);
+		break;
+	default:
+		au8_Ret = E_NOK;
+		break;
+	}
+
+	return E_OK;
+}
+
+EnmBCMError_t BCM_RxDispatch(void)
+{
+	static uint8_t au8_Ret = E_OK;
+	static uint8_t au8_RxCheckSum = 0;
+
+	if(gu8_BCM_BufferState == BCM_BUFFER_LOCKED)
+	{
+		if(gu8_RxFlag == 1 && gu8_RxCounter < (RxCfg.BCM_ArraySize - 1) && gu8_RxCounter >= 3)
+		{
+			au8_RxCheckSum += RxCfg.BCM_ArrayStartAddress[gu8_RxCounter];
+
+			gu8_RxFlag = 0;
+		}
+
+		if(gu8_RxCounter == RxCfg.BCM_ArraySize - 1)
+		{
+			if(au8_RxCheckSum != RxCfg.BCM_ArrayStartAddress[gu8_RxCounter])
+				au8_Ret = E_NOK;
+		}
+	}
+
+	return au8_Ret;
+}
+
+EnmBCMError_t BCM_TxDispatch(void)
+{
+	if(gu8_TxFlag == 1)
+	{
+		if(gu8_TxCounter < TxCfg.BCM_ArraySize - 4)
+		{
+			gu8_TxCheckSum += TxCfg.BCM_ArrayStartAddress[gu8_TxCounter];
+		}
+
+		BCM_Send(&TxCfg);
+	}
+
+	return E_OK;
+}
+
+EnmBCMError_t BCM_Send(strBcmSendConfig_t* ConfigPtr)
+{
+	uint8_t au8_Ret = E_OK;
+	static uint8_t au8_counter = 0;
+	static PointerToSenderFunction apf_SenderFunction = NULL;
+
+	if(au8_counter == 0)
+	{
+		switch(ConfigPtr->BCM_ProtocolID)
+		{
+		case BCM_UART_ID:
+			UART_TXC_setCallBack(&TxApp);
+			apf_SenderFunction = UART_transmit;
+			break;
+		case BCM_SPI_ID:
+			SPI_setCallBack(&TxApp);
+			apf_SenderFunction = SPI_sendByte;
+			break;
+		default:
+
+			break;
+		}
+
+		ConfigPtr->BCM_ArrayStartAddress[ConfigPtr->BCM_ArraySize - 4] = BCM_ID;
+		ConfigPtr->BCM_ArrayStartAddress[ConfigPtr->BCM_ArraySize - 3] = (uint8_t)((ConfigPtr->BCM_ArraySize-4) >> 8);
+		ConfigPtr->BCM_ArrayStartAddress[ConfigPtr->BCM_ArraySize - 2] =
+				(uint8_t)((ConfigPtr->BCM_ArraySize-4) & 0x00FF);
+	}
+
+	ConfigPtr->BCM_ArrayStartAddress[ConfigPtr->BCM_ArraySize - 1] = gu8_TxCheckSum;
+
+	if(au8_counter < ConfigPtr->BCM_ArraySize)
+	{
+		if(au8_counter <= 2)
+			apf_SenderFunction(ConfigPtr->BCM_ArrayStartAddress[ConfigPtr->BCM_ArraySize - 4 + au8_counter]);
+		else if(au8_counter == ConfigPtr->BCM_ArraySize - 1)
+			apf_SenderFunction(ConfigPtr->BCM_ArrayStartAddress[au8_counter]);
+		else
+			apf_SenderFunction(ConfigPtr->BCM_ArrayStartAddress[au8_counter - 3]);
+		au8_counter++;
+	}
+
+	TxCfg = *ConfigPtr;
+
+	return au8_Ret;
+}
+
+EnmBCMError_t BCM_SetupRxBuffer(uint8_t ProtocolID, uint8_t* ArrayFirstElementAddress, uint8_t ArraySize)
+{
+	uint8_t au8_Ret = E_OK;
+
+	RxCfg.BCM_ArraySize = ArraySize;
+	RxCfg.BCM_ArrayStartAddress = ArrayFirstElementAddress;
+	RxCfg.BCM_ProtocolID = ProtocolID;
+
+	return au8_Ret;
+}
+
+EnmBCMError_t BCM_Receive(strBcmSendConfig_t* ConfigPtr)
+{
+	static uint8_t au8_Ret = E_OK;
+	static uint8_t au8_counter = 0;
+	PointerToReceiverFunction apf_ReceiverFunction = NULL;
+
+	switch(ConfigPtr->BCM_ProtocolID)
+	{
+	case BCM_UART_ID:
+		UART_RXC_setCallBack(&RxApp);
+		apf_ReceiverFunction = UART_receive;
+		break;
+	case BCM_SPI_ID:
+		SPI_setCallBack(&RxApp);
+		apf_ReceiverFunction = SPI_receiveByte;
+		break;
+	default:
+		au8_Ret = E_NOK;
+		break;
+	}
+
+	if(au8_counter < ConfigPtr->BCM_ArraySize && au8_Ret == E_OK)
+	{
+		ConfigPtr->BCM_ArrayStartAddress[au8_counter] = apf_ReceiverFunction();
+		if(ConfigPtr->BCM_ArrayStartAddress[0] != BCM_ID)
+			au8_Ret = E_NOK;
+		else
+			gu8_BCM_BufferState = BCM_BUFFER_LOCKED;
+		PORTD_DIR = ConfigPtr->BCM_ArrayStartAddress[au8_counter];
+		au8_counter++;
+	}
+
+	return au8_Ret;
+}

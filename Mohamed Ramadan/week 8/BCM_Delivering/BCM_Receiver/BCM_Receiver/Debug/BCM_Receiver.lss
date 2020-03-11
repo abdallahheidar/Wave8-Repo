@@ -1,0 +1,1060 @@
+
+BCM_Receiver.elf:     file format elf32-avr
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         0000062a  00000000  00000000  00000094  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  1 .data         0000000e  00800060  0000062a  000006be  2**0
+                  CONTENTS, ALLOC, LOAD, DATA
+  2 .bss          00000017  0080006e  0080006e  000006cc  2**0
+                  ALLOC
+  3 .comment      00000030  00000000  00000000  000006cc  2**0
+                  CONTENTS, READONLY
+  4 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  000006fc  2**2
+                  CONTENTS, READONLY
+  5 .debug_aranges 00000160  00000000  00000000  00000738  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  6 .debug_info   000018a5  00000000  00000000  00000898  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  7 .debug_abbrev 00000ac6  00000000  00000000  0000213d  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  8 .debug_line   000009f3  00000000  00000000  00002c03  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  9 .debug_frame  000003e8  00000000  00000000  000035f8  2**2
+                  CONTENTS, READONLY, DEBUGGING
+ 10 .debug_str    00000b2a  00000000  00000000  000039e0  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 11 .debug_loc    00000a19  00000000  00000000  0000450a  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 12 .debug_ranges 00000120  00000000  00000000  00004f23  2**0
+                  CONTENTS, READONLY, DEBUGGING
+
+Disassembly of section .text:
+
+00000000 <__vectors>:
+   0:	0c 94 2a 00 	jmp	0x54	; 0x54 <__ctors_end>
+   4:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+   8:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+   c:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+  10:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+  14:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+  18:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+  1c:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+  20:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+  24:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+  28:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+  2c:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+  30:	0c 94 f4 01 	jmp	0x3e8	; 0x3e8 <__vector_12>
+  34:	0c 94 4f 02 	jmp	0x49e	; 0x49e <__vector_13>
+  38:	0c 94 78 02 	jmp	0x4f0	; 0x4f0 <__vector_14>
+  3c:	0c 94 a1 02 	jmp	0x542	; 0x542 <__vector_15>
+  40:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+  44:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+  48:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+  4c:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+  50:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+
+00000054 <__ctors_end>:
+  54:	11 24       	eor	r1, r1
+  56:	1f be       	out	0x3f, r1	; 63
+  58:	cf e5       	ldi	r28, 0x5F	; 95
+  5a:	d8 e0       	ldi	r29, 0x08	; 8
+  5c:	de bf       	out	0x3e, r29	; 62
+  5e:	cd bf       	out	0x3d, r28	; 61
+
+00000060 <__do_copy_data>:
+  60:	10 e0       	ldi	r17, 0x00	; 0
+  62:	a0 e6       	ldi	r26, 0x60	; 96
+  64:	b0 e0       	ldi	r27, 0x00	; 0
+  66:	ea e2       	ldi	r30, 0x2A	; 42
+  68:	f6 e0       	ldi	r31, 0x06	; 6
+  6a:	02 c0       	rjmp	.+4      	; 0x70 <__do_copy_data+0x10>
+  6c:	05 90       	lpm	r0, Z+
+  6e:	0d 92       	st	X+, r0
+  70:	ae 36       	cpi	r26, 0x6E	; 110
+  72:	b1 07       	cpc	r27, r17
+  74:	d9 f7       	brne	.-10     	; 0x6c <__do_copy_data+0xc>
+
+00000076 <__do_clear_bss>:
+  76:	20 e0       	ldi	r18, 0x00	; 0
+  78:	ae e6       	ldi	r26, 0x6E	; 110
+  7a:	b0 e0       	ldi	r27, 0x00	; 0
+  7c:	01 c0       	rjmp	.+2      	; 0x80 <.do_clear_bss_start>
+
+0000007e <.do_clear_bss_loop>:
+  7e:	1d 92       	st	X+, r1
+
+00000080 <.do_clear_bss_start>:
+  80:	a5 38       	cpi	r26, 0x85	; 133
+  82:	b2 07       	cpc	r27, r18
+  84:	e1 f7       	brne	.-8      	; 0x7e <.do_clear_bss_loop>
+  86:	0e 94 74 01 	call	0x2e8	; 0x2e8 <main>
+  8a:	0c 94 13 03 	jmp	0x626	; 0x626 <_exit>
+
+0000008e <__bad_interrupt>:
+  8e:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
+
+00000092 <BCM_Init>:
+		}
+	}
+	
+	/** return error number of the function**/
+	return au8_Ret;
+}
+  92:	cf 93       	push	r28
+  94:	df 93       	push	r29
+  96:	cd b7       	in	r28, 0x3d	; 61
+  98:	de b7       	in	r29, 0x3e	; 62
+  9a:	29 97       	sbiw	r28, 0x09	; 9
+  9c:	0f b6       	in	r0, 0x3f	; 63
+  9e:	f8 94       	cli
+  a0:	de bf       	out	0x3e, r29	; 62
+  a2:	0f be       	out	0x3f, r0	; 63
+  a4:	cd bf       	out	0x3d, r28	; 61
+  a6:	9c 01       	movw	r18, r24
+  a8:	86 e0       	ldi	r24, 0x06	; 6
+  aa:	e2 e6       	ldi	r30, 0x62	; 98
+  ac:	f0 e0       	ldi	r31, 0x00	; 0
+  ae:	de 01       	movw	r26, r28
+  b0:	11 96       	adiw	r26, 0x01	; 1
+  b2:	01 90       	ld	r0, Z+
+  b4:	0d 92       	st	X+, r0
+  b6:	8a 95       	dec	r24
+  b8:	e1 f7       	brne	.-8      	; 0xb2 <BCM_Init+0x20>
+  ba:	1f 82       	std	Y+7, r1	; 0x07
+  bc:	80 e8       	ldi	r24, 0x80	; 128
+  be:	88 87       	std	Y+8, r24	; 0x08
+  c0:	19 86       	std	Y+9, r1	; 0x09
+  c2:	f9 01       	movw	r30, r18
+  c4:	91 81       	ldd	r25, Z+1	; 0x01
+  c6:	91 30       	cpi	r25, 0x01	; 1
+  c8:	41 f0       	breq	.+16     	; 0xda <BCM_Init+0x48>
+  ca:	18 f0       	brcs	.+6      	; 0xd2 <BCM_Init+0x40>
+  cc:	92 30       	cpi	r25, 0x02	; 2
+  ce:	41 f0       	breq	.+16     	; 0xe0 <BCM_Init+0x4e>
+  d0:	0a c0       	rjmp	.+20     	; 0xe6 <BCM_Init+0x54>
+  d2:	1a 82       	std	Y+2, r1	; 0x02
+  d4:	81 e0       	ldi	r24, 0x01	; 1
+  d6:	8f 83       	std	Y+7, r24	; 0x07
+  d8:	09 c0       	rjmp	.+18     	; 0xec <BCM_Init+0x5a>
+  da:	81 e0       	ldi	r24, 0x01	; 1
+  dc:	8a 83       	std	Y+2, r24	; 0x02
+  de:	06 c0       	rjmp	.+12     	; 0xec <BCM_Init+0x5a>
+  e0:	82 e0       	ldi	r24, 0x02	; 2
+  e2:	8a 83       	std	Y+2, r24	; 0x02
+  e4:	03 c0       	rjmp	.+6      	; 0xec <BCM_Init+0x5a>
+  e6:	81 e0       	ldi	r24, 0x01	; 1
+  e8:	80 93 70 00 	sts	0x0070, r24	; 0x800070 <au8_Ret.1783>
+  ec:	f9 01       	movw	r30, r18
+  ee:	80 81       	ld	r24, Z
+  f0:	80 3a       	cpi	r24, 0xA0	; 160
+  f2:	19 f0       	breq	.+6      	; 0xfa <BCM_Init+0x68>
+  f4:	81 3a       	cpi	r24, 0xA1	; 161
+  f6:	31 f0       	breq	.+12     	; 0x104 <BCM_Init+0x72>
+  f8:	0a c0       	rjmp	.+20     	; 0x10e <BCM_Init+0x7c>
+  fa:	ce 01       	movw	r24, r28
+  fc:	01 96       	adiw	r24, 0x01	; 1
+  fe:	0e 94 d4 02 	call	0x5a8	; 0x5a8 <UART_init>
+ 102:	08 c0       	rjmp	.+16     	; 0x114 <BCM_Init+0x82>
+ 104:	ce 01       	movw	r24, r28
+ 106:	07 96       	adiw	r24, 0x07	; 7
+ 108:	0e 94 1d 02 	call	0x43a	; 0x43a <SPI_init>
+ 10c:	03 c0       	rjmp	.+6      	; 0x114 <BCM_Init+0x82>
+ 10e:	81 e0       	ldi	r24, 0x01	; 1
+ 110:	80 93 70 00 	sts	0x0070, r24	; 0x800070 <au8_Ret.1783>
+ 114:	80 91 70 00 	lds	r24, 0x0070	; 0x800070 <au8_Ret.1783>
+ 118:	29 96       	adiw	r28, 0x09	; 9
+ 11a:	0f b6       	in	r0, 0x3f	; 63
+ 11c:	f8 94       	cli
+ 11e:	de bf       	out	0x3e, r29	; 62
+ 120:	0f be       	out	0x3f, r0	; 63
+ 122:	cd bf       	out	0x3d, r28	; 61
+ 124:	df 91       	pop	r29
+ 126:	cf 91       	pop	r28
+ 128:	08 95       	ret
+
+0000012a <BCM_RxDispatch>:
+ 12a:	cf 93       	push	r28
+ 12c:	80 91 7b 00 	lds	r24, 0x007B	; 0x80007b <gu8_BCM_Receiving_SM>
+ 130:	82 30       	cpi	r24, 0x02	; 2
+ 132:	01 f5       	brne	.+64     	; 0x174 <BCM_RxDispatch+0x4a>
+ 134:	20 91 60 00 	lds	r18, 0x0060	; 0x800060 <__data_start>
+ 138:	30 e0       	ldi	r19, 0x00	; 0
+ 13a:	80 91 78 00 	lds	r24, 0x0078	; 0x800078 <RxCfg+0x3>
+ 13e:	90 91 79 00 	lds	r25, 0x0079	; 0x800079 <RxCfg+0x4>
+ 142:	01 97       	sbiw	r24, 0x01	; 1
+ 144:	28 17       	cp	r18, r24
+ 146:	39 07       	cpc	r19, r25
+ 148:	a8 f4       	brcc	.+42     	; 0x174 <BCM_RxDispatch+0x4a>
+ 14a:	80 91 60 00 	lds	r24, 0x0060	; 0x800060 <__data_start>
+ 14e:	83 30       	cpi	r24, 0x03	; 3
+ 150:	88 f0       	brcs	.+34     	; 0x174 <BCM_RxDispatch+0x4a>
+ 152:	80 91 60 00 	lds	r24, 0x0060	; 0x800060 <__data_start>
+ 156:	e0 91 76 00 	lds	r30, 0x0076	; 0x800076 <RxCfg+0x1>
+ 15a:	f0 91 77 00 	lds	r31, 0x0077	; 0x800077 <RxCfg+0x2>
+ 15e:	e8 0f       	add	r30, r24
+ 160:	f1 1d       	adc	r31, r1
+ 162:	90 91 74 00 	lds	r25, 0x0074	; 0x800074 <gu8_RxCheckSum>
+ 166:	80 81       	ld	r24, Z
+ 168:	89 0f       	add	r24, r25
+ 16a:	80 93 74 00 	sts	0x0074, r24	; 0x800074 <gu8_RxCheckSum>
+ 16e:	81 e0       	ldi	r24, 0x01	; 1
+ 170:	80 93 7b 00 	sts	0x007B, r24	; 0x80007b <gu8_BCM_Receiving_SM>
+ 174:	20 91 60 00 	lds	r18, 0x0060	; 0x800060 <__data_start>
+ 178:	30 e0       	ldi	r19, 0x00	; 0
+ 17a:	80 91 78 00 	lds	r24, 0x0078	; 0x800078 <RxCfg+0x3>
+ 17e:	90 91 79 00 	lds	r25, 0x0079	; 0x800079 <RxCfg+0x4>
+ 182:	01 97       	sbiw	r24, 0x01	; 1
+ 184:	28 17       	cp	r18, r24
+ 186:	39 07       	cpc	r19, r25
+ 188:	01 f5       	brne	.+64     	; 0x1ca <BCM_RxDispatch+0xa0>
+ 18a:	80 91 60 00 	lds	r24, 0x0060	; 0x800060 <__data_start>
+ 18e:	e0 91 76 00 	lds	r30, 0x0076	; 0x800076 <RxCfg+0x1>
+ 192:	f0 91 77 00 	lds	r31, 0x0077	; 0x800077 <RxCfg+0x2>
+ 196:	e8 0f       	add	r30, r24
+ 198:	f1 1d       	adc	r31, r1
+ 19a:	c1 e0       	ldi	r28, 0x01	; 1
+ 19c:	90 81       	ld	r25, Z
+ 19e:	80 91 74 00 	lds	r24, 0x0074	; 0x800074 <gu8_RxCheckSum>
+ 1a2:	98 13       	cpse	r25, r24
+ 1a4:	01 c0       	rjmp	.+2      	; 0x1a8 <BCM_RxDispatch+0x7e>
+ 1a6:	c0 e0       	ldi	r28, 0x00	; 0
+ 1a8:	10 92 7b 00 	sts	0x007B, r1	; 0x80007b <gu8_BCM_Receiving_SM>
+ 1ac:	10 92 73 00 	sts	0x0073, r1	; 0x800073 <gu8_RxCounter>
+ 1b0:	8f ef       	ldi	r24, 0xFF	; 255
+ 1b2:	80 93 60 00 	sts	0x0060, r24	; 0x800060 <__data_start>
+ 1b6:	10 92 74 00 	sts	0x0074, r1	; 0x800074 <gu8_RxCheckSum>
+ 1ba:	e0 91 71 00 	lds	r30, 0x0071	; 0x800071 <BCM_RxCallBackPtr>
+ 1be:	f0 91 72 00 	lds	r31, 0x0072	; 0x800072 <BCM_RxCallBackPtr+0x1>
+ 1c2:	30 97       	sbiw	r30, 0x00	; 0
+ 1c4:	19 f0       	breq	.+6      	; 0x1cc <BCM_RxDispatch+0xa2>
+ 1c6:	09 95       	icall
+ 1c8:	01 c0       	rjmp	.+2      	; 0x1cc <BCM_RxDispatch+0xa2>
+ 1ca:	c0 e0       	ldi	r28, 0x00	; 0
+ 1cc:	8c 2f       	mov	r24, r28
+ 1ce:	cf 91       	pop	r28
+ 1d0:	08 95       	ret
+
+000001d2 <BCM_SetupRxBuffer>:
+{
+	/**  Error number of the function **/
+	static uint8_t au8_Ret = E_OK;
+
+	/**Setting the parameters of the RX Buffer **/
+	RxCfg.BCM_ArraySize = ArraySize;
+ 1d2:	e5 e7       	ldi	r30, 0x75	; 117
+ 1d4:	f0 e0       	ldi	r31, 0x00	; 0
+ 1d6:	54 83       	std	Z+4, r21	; 0x04
+ 1d8:	43 83       	std	Z+3, r20	; 0x03
+	RxCfg.BCM_ArrayStartAddress = ArrayFirstElementAddress;
+ 1da:	72 83       	std	Z+2, r23	; 0x02
+ 1dc:	61 83       	std	Z+1, r22	; 0x01
+	RxCfg.BCM_ProtocolID = ProtocolID;
+ 1de:	80 83       	st	Z, r24
+	
+	/**switch between Protocols**/
+	switch(ProtocolID)
+ 1e0:	80 3a       	cpi	r24, 0xA0	; 160
+ 1e2:	19 f0       	breq	.+6      	; 0x1ea <BCM_SetupRxBuffer+0x18>
+ 1e4:	81 3a       	cpi	r24, 0xA1	; 161
+ 1e6:	31 f0       	breq	.+12     	; 0x1f4 <BCM_SetupRxBuffer+0x22>
+ 1e8:	0a c0       	rjmp	.+20     	; 0x1fe <BCM_SetupRxBuffer+0x2c>
+	{
+	case BCM_UART_ID:
+		/**Set callback of the RX Buffer**/
+		UART_RXC_setCallBack(&RxApp);
+ 1ea:	87 e5       	ldi	r24, 0x57	; 87
+ 1ec:	91 e0       	ldi	r25, 0x01	; 1
+ 1ee:	0e 94 cf 02 	call	0x59e	; 0x59e <UART_RXC_setCallBack>
+		break;
+ 1f2:	08 c0       	rjmp	.+16     	; 0x204 <BCM_SetupRxBuffer+0x32>
+	case BCM_SPI_ID:
+		/**Set callback of the RX Buffer**/
+		SPI_setCallBack(&RxApp);
+ 1f4:	87 e5       	ldi	r24, 0x57	; 87
+ 1f6:	91 e0       	ldi	r25, 0x01	; 1
+ 1f8:	0e 94 44 02 	call	0x488	; 0x488 <SPI_setCallBack>
+		break;
+ 1fc:	03 c0       	rjmp	.+6      	; 0x204 <BCM_SetupRxBuffer+0x32>
+	default:
+		au8_Ret = E_NOK;
+ 1fe:	81 e0       	ldi	r24, 0x01	; 1
+ 200:	80 93 6f 00 	sts	0x006F, r24	; 0x80006f <au8_Ret.1825>
+		break;
+	}
+
+	/** return error number of the function**/
+	return au8_Ret;
+}
+ 204:	80 91 6f 00 	lds	r24, 0x006F	; 0x80006f <au8_Ret.1825>
+ 208:	08 95       	ret
+
+0000020a <BCM_Receive>:
+ *				  - E_NOK : not successful				
+ *
+ * Description	: function BCM_Receive to receive the stream of data and set call back function of uart/spi to receive data through ISR.
+**/
+EnmBCMError_t BCM_Receive(strBcmSendConfig_t* ConfigPtr)
+{
+ 20a:	0f 93       	push	r16
+ 20c:	1f 93       	push	r17
+ 20e:	cf 93       	push	r28
+ 210:	df 93       	push	r29
+ 212:	ec 01       	movw	r28, r24
+	
+	/**  Defining a static local ppointer to function by NULL **/
+	PointerToReceiverFunction apf_ReceiverFunction = NULL;
+
+	/**switch between Protocols**/
+	switch(ConfigPtr->BCM_ProtocolID)
+ 214:	88 81       	ld	r24, Y
+ 216:	80 3a       	cpi	r24, 0xA0	; 160
+ 218:	19 f0       	breq	.+6      	; 0x220 <BCM_Receive+0x16>
+ 21a:	81 3a       	cpi	r24, 0xA1	; 161
+ 21c:	41 f0       	breq	.+16     	; 0x22e <BCM_Receive+0x24>
+ 21e:	0e c0       	rjmp	.+28     	; 0x23c <BCM_Receive+0x32>
+	{
+	case BCM_UART_ID:
+		/**Set callback of the RX Buffer**/
+		UART_RXC_setCallBack(&RxApp);
+ 220:	87 e5       	ldi	r24, 0x57	; 87
+ 222:	91 e0       	ldi	r25, 0x01	; 1
+ 224:	0e 94 cf 02 	call	0x59e	; 0x59e <UART_RXC_setCallBack>
+		/**assign UART_receive function to the local PointerToSenderFunction **/
+		apf_ReceiverFunction = UART_receive;
+ 228:	ed e0       	ldi	r30, 0x0D	; 13
+ 22a:	f3 e0       	ldi	r31, 0x03	; 3
+		break;
+ 22c:	0b c0       	rjmp	.+22     	; 0x244 <BCM_Receive+0x3a>
+	case BCM_SPI_ID:
+		/**Set callback of the RX Buffer**/
+		SPI_setCallBack(&RxApp);
+ 22e:	87 e5       	ldi	r24, 0x57	; 87
+ 230:	91 e0       	ldi	r25, 0x01	; 1
+ 232:	0e 94 44 02 	call	0x488	; 0x488 <SPI_setCallBack>
+		/**assign SPI receiveByte function to the local PointerToSenderFunction**/
+		apf_ReceiverFunction = SPI_receiveByte;
+ 236:	e9 e4       	ldi	r30, 0x49	; 73
+ 238:	f2 e0       	ldi	r31, 0x02	; 2
+		break;
+ 23a:	04 c0       	rjmp	.+8      	; 0x244 <BCM_Receive+0x3a>
+	default:
+		au8_Ret = E_NOK;
+ 23c:	81 e0       	ldi	r24, 0x01	; 1
+ 23e:	80 93 6e 00 	sts	0x006E, r24	; 0x80006e <__data_end>
+ 242:	2e c0       	rjmp	.+92     	; 0x2a0 <BCM_Receive+0x96>
+		break;
+	}
+
+	/**check if still less tahn the buffer **/
+	if(gu8_RxCounter < ConfigPtr->BCM_ArraySize && au8_Ret == E_OK)
+ 244:	20 91 73 00 	lds	r18, 0x0073	; 0x800073 <gu8_RxCounter>
+ 248:	30 e0       	ldi	r19, 0x00	; 0
+ 24a:	4b 81       	ldd	r20, Y+3	; 0x03
+ 24c:	5c 81       	ldd	r21, Y+4	; 0x04
+ 24e:	24 17       	cp	r18, r20
+ 250:	35 07       	cpc	r19, r21
+ 252:	30 f5       	brcc	.+76     	; 0x2a0 <BCM_Receive+0x96>
+ 254:	80 91 6e 00 	lds	r24, 0x006E	; 0x80006e <__data_end>
+ 258:	81 11       	cpse	r24, r1
+ 25a:	22 c0       	rjmp	.+68     	; 0x2a0 <BCM_Receive+0x96>
+	{
+		/**store the receiving byte in the buffer**/
+		ConfigPtr->BCM_ArrayStartAddress[gu8_RxCounter] = apf_ReceiverFunction();
+ 25c:	89 81       	ldd	r24, Y+1	; 0x01
+ 25e:	9a 81       	ldd	r25, Y+2	; 0x02
+ 260:	8c 01       	movw	r16, r24
+ 262:	02 0f       	add	r16, r18
+ 264:	13 1f       	adc	r17, r19
+ 266:	09 95       	icall
+ 268:	f8 01       	movw	r30, r16
+ 26a:	80 83       	st	Z, r24
+
+		/**In case the ID is not identical**/
+		if(ConfigPtr->BCM_ArrayStartAddress[0] != BCM_ID)
+ 26c:	e9 81       	ldd	r30, Y+1	; 0x01
+ 26e:	fa 81       	ldd	r31, Y+2	; 0x02
+ 270:	80 81       	ld	r24, Z
+ 272:	8a 35       	cpi	r24, 0x5A	; 90
+ 274:	69 f0       	breq	.+26     	; 0x290 <BCM_Receive+0x86>
+		{
+			/**Error**/
+			au8_Ret = E_NOK;
+ 276:	81 e0       	ldi	r24, 0x01	; 1
+ 278:	80 93 6e 00 	sts	0x006E, r24	; 0x80006e <__data_end>
+			
+			/**move the state to IDLE**/
+			gu8_BCM_Receiving_SM = BCM_RECEIVER_IDLE;
+ 27c:	10 92 7b 00 	sts	0x007B, r1	; 0x80007b <gu8_BCM_Receiving_SM>
+			gu8_RxCounter = 0;
+ 280:	10 92 73 00 	sts	0x0073, r1	; 0x800073 <gu8_RxCounter>
+			gu8_RxDispatchCounter = 255;
+ 284:	8f ef       	ldi	r24, 0xFF	; 255
+ 286:	80 93 60 00 	sts	0x0060, r24	; 0x800060 <__data_start>
+			gu8_RxCheckSum = 0;
+ 28a:	10 92 74 00 	sts	0x0074, r1	; 0x800074 <gu8_RxCheckSum>
+ 28e:	03 c0       	rjmp	.+6      	; 0x296 <BCM_Receive+0x8c>
+		}else
+		{
+			/**if ID identical Lock the Buffer**/
+			gu8_BCM_BufferState = BCM_BUFFER_LOCKED;
+ 290:	81 e0       	ldi	r24, 0x01	; 1
+ 292:	80 93 7a 00 	sts	0x007A, r24	; 0x80007a <gu8_BCM_BufferState>
+		}
+
+		/**Increment the index of the receiving buffer**/
+		gu8_RxCounter++;
+ 296:	80 91 73 00 	lds	r24, 0x0073	; 0x800073 <gu8_RxCounter>
+ 29a:	8f 5f       	subi	r24, 0xFF	; 255
+ 29c:	80 93 73 00 	sts	0x0073, r24	; 0x800073 <gu8_RxCounter>
+	}
+	
+	/** return error number of the function**/
+	return au8_Ret;
+}
+ 2a0:	80 91 6e 00 	lds	r24, 0x006E	; 0x80006e <__data_end>
+ 2a4:	df 91       	pop	r29
+ 2a6:	cf 91       	pop	r28
+ 2a8:	1f 91       	pop	r17
+ 2aa:	0f 91       	pop	r16
+ 2ac:	08 95       	ret
+
+000002ae <RxApp>:
+
+/** Call back for Receiver Application **/ 
+void RxApp(void)
+{
+	/**move the state to Receiving byte state**/
+	gu8_BCM_Receiving_SM = BCM_RECEIVING_BYTE;
+ 2ae:	81 e0       	ldi	r24, 0x01	; 1
+ 2b0:	80 93 7b 00 	sts	0x007B, r24	; 0x80007b <gu8_BCM_Receiving_SM>
+	/**calling the receive function and passing Receiver Buffer**/
+	BCM_Receive(&RxCfg);
+ 2b4:	85 e7       	ldi	r24, 0x75	; 117
+ 2b6:	90 e0       	ldi	r25, 0x00	; 0
+ 2b8:	0e 94 05 01 	call	0x20a	; 0x20a <BCM_Receive>
+	/**move the state to complete receiving state**/
+	gu8_BCM_Receiving_SM = BCM_RECEIVING_COMPLETE;
+ 2bc:	82 e0       	ldi	r24, 0x02	; 2
+ 2be:	80 93 7b 00 	sts	0x007B, r24	; 0x80007b <gu8_BCM_Receiving_SM>
+	/**Increment the index of receiving Buffer**/
+	gu8_RxDispatchCounter++;
+ 2c2:	80 91 60 00 	lds	r24, 0x0060	; 0x800060 <__data_start>
+ 2c6:	8f 5f       	subi	r24, 0xFF	; 255
+ 2c8:	80 93 60 00 	sts	0x0060, r24	; 0x800060 <__data_start>
+ 2cc:	08 95       	ret
+
+000002ce <BCM_RxSetCallBack>:
+ *
+ * Description	: function BCM_TxSetCallBack shall assign the Tx call back function to be performed in ISR.
+**/
+void BCM_RxSetCallBack(void (*a_ptr)(void))
+{
+	BCM_RxCallBackPtr = a_ptr;
+ 2ce:	90 93 72 00 	sts	0x0072, r25	; 0x800072 <BCM_RxCallBackPtr+0x1>
+ 2d2:	80 93 71 00 	sts	0x0071, r24	; 0x800071 <BCM_RxCallBackPtr>
+ 2d6:	08 95       	ret
+
+000002d8 <Uart_SendingApp>:
+/*********************************************
+ *				cALL bACK fUNCTIONS  		 *
+ ********************************************/
+void Uart_SendingApp(void)
+{
+	uart_flag = ONE;
+ 2d8:	81 e0       	ldi	r24, 0x01	; 1
+ 2da:	80 93 61 00 	sts	0x0061, r24	; 0x800061 <uart_flag>
+ 2de:	08 95       	ret
+
+000002e0 <Bcm_RxCallBack>:
+}
+
+void Bcm_RxCallBack(void)
+{
+	bcm_flag = BCM_DONE;
+ 2e0:	81 e0       	ldi	r24, 0x01	; 1
+ 2e2:	80 93 7c 00 	sts	0x007C, r24	; 0x80007c <bcm_flag>
+ 2e6:	08 95       	ret
+
+000002e8 <main>:
+}
+
+
+int main(void)
+{
+ 2e8:	cf 93       	push	r28
+ 2ea:	df 93       	push	r29
+ 2ec:	cd b7       	in	r28, 0x3d	; 61
+ 2ee:	de b7       	in	r29, 0x3e	; 62
+ 2f0:	c6 50       	subi	r28, 0x06	; 6
+ 2f2:	d1 40       	sbci	r29, 0x01	; 1
+ 2f4:	0f b6       	in	r0, 0x3f	; 63
+ 2f6:	f8 94       	cli
+ 2f8:	de bf       	out	0x3e, r29	; 62
+ 2fa:	0f be       	out	0x3f, r0	; 63
+ 2fc:	cd bf       	out	0x3d, r28	; 61
+	uint8_t BCM_initOnce = BCM_NOT_INITIALIZED;
+	
+	/**Reinitialize the counter**/
+	uint8_t counter = Zero;
+
+	UART_ConfigType UART_cfg = {
+ 2fe:	86 e0       	ldi	r24, 0x06	; 6
+ 300:	e8 e6       	ldi	r30, 0x68	; 104
+ 302:	f0 e0       	ldi	r31, 0x00	; 0
+ 304:	de 01       	movw	r26, r28
+ 306:	a1 50       	subi	r26, 0x01	; 1
+ 308:	bf 4f       	sbci	r27, 0xFF	; 255
+ 30a:	01 90       	ld	r0, Z+
+ 30c:	0d 92       	st	X+, r0
+ 30e:	8a 95       	dec	r24
+ 310:	e1 f7       	brne	.-8      	; 0x30a <main+0x22>
+			UART_PARITY_DISABLED,
+			UART_ONE_STOP_BIT,
+			UART_INTERRUPT_ENABLED
+	};
+
+	strBcmConfig_t BCM_cfg = {
+ 312:	81 ea       	ldi	r24, 0xA1	; 161
+ 314:	cb 5f       	subi	r28, 0xFB	; 251
+ 316:	de 4f       	sbci	r29, 0xFE	; 254
+ 318:	88 83       	st	Y, r24
+ 31a:	c5 50       	subi	r28, 0x05	; 5
+ 31c:	d1 40       	sbci	r29, 0x01	; 1
+ 31e:	81 e0       	ldi	r24, 0x01	; 1
+ 320:	ca 5f       	subi	r28, 0xFA	; 250
+ 322:	de 4f       	sbci	r29, 0xFE	; 254
+ 324:	88 83       	st	Y, r24
+ 326:	c6 50       	subi	r28, 0x06	; 6
+ 328:	d1 40       	sbci	r29, 0x01	; 1
+	};
+
+	uint8_t uart_counter = Zero;
+
+	/**Receiver Set call back **/
+	BCM_RxSetCallBack(&Bcm_RxCallBack);
+ 32a:	80 e7       	ldi	r24, 0x70	; 112
+ 32c:	91 e0       	ldi	r25, 0x01	; 1
+ 32e:	0e 94 67 01 	call	0x2ce	; 0x2ce <BCM_RxSetCallBack>
+
+	
+	/**Enable Global Interrupt**/
+	sei();
+ 332:	78 94       	sei
+	strBcmConfig_t BCM_cfg = {
+			BCM_SPI_ID,
+			BCM_RECEIVE
+	};
+
+	uint8_t uart_counter = Zero;
+ 334:	d1 2c       	mov	r13, r1
+	
+	/** uart status if uart sending the data completely or not yet**/
+	uint8_t uart_status = UART_NOT_DONE;
+	
+	/**BCM not initialized**/
+	uint8_t BCM_initOnce = BCM_NOT_INITIALIZED;
+ 336:	00 e0       	ldi	r16, 0x00	; 0
+
+
+int main(void)
+{
+	/****/
+	uint8_t UART_InitOnce = UART_NOT_INITIALIZED;
+ 338:	b1 2c       	mov	r11, r1
+			if(BCM_initOnce == BCM_NOT_INITIALIZED)
+			{
+				BCM_Init(&BCM_cfg);
+				BCM_SetupRxBuffer(BCM_SPI_ID, (uint8_t*)SendingString, ELEMENTS(NO_OF_Data));
+
+				BCM_initOnce = BCM_INITIALIZED;
+ 33a:	cc 24       	eor	r12, r12
+ 33c:	c3 94       	inc	r12
+ 33e:	7e 01       	movw	r14, r28
+ 340:	87 e3       	ldi	r24, 0x37	; 55
+ 342:	e8 0e       	add	r14, r24
+ 344:	f1 1c       	adc	r15, r1
+			{
+				UART_transmit('\r');
+
+				for(counter = Zero ; counter < ELEMENTS(50) ; counter++)
+				{
+					SendingString[counter] = ' ';
+ 346:	10 e2       	ldi	r17, 0x20	; 32
+	sei();
+
+	/**Super loop**/
+	while(1)
+	{
+		if(bcm_flag == BCM_DONE && uart_flag == ONE && uart_status == UART_NOT_DONE)
+ 348:	80 91 7c 00 	lds	r24, 0x007C	; 0x80007c <bcm_flag>
+ 34c:	81 30       	cpi	r24, 0x01	; 1
+ 34e:	a9 f5       	brne	.+106    	; 0x3ba <main+0xd2>
+ 350:	80 91 61 00 	lds	r24, 0x0061	; 0x800061 <uart_flag>
+ 354:	81 30       	cpi	r24, 0x01	; 1
+ 356:	c1 f7       	brne	.-16     	; 0x348 <main+0x60>
+		{
+			
+			if(UART_InitOnce == Zero)
+ 358:	b1 10       	cpse	r11, r1
+ 35a:	0a c0       	rjmp	.+20     	; 0x370 <main+0x88>
+			{
+				UART_TXC_setCallBack(&Uart_SendingApp);
+ 35c:	8c e6       	ldi	r24, 0x6C	; 108
+ 35e:	91 e0       	ldi	r25, 0x01	; 1
+ 360:	0e 94 ca 02 	call	0x594	; 0x594 <UART_TXC_setCallBack>
+				UART_init(&UART_cfg);
+ 364:	ce 01       	movw	r24, r28
+ 366:	81 50       	subi	r24, 0x01	; 1
+ 368:	9f 4f       	sbci	r25, 0xFF	; 255
+ 36a:	0e 94 d4 02 	call	0x5a8	; 0x5a8 <UART_init>
+				UART_InitOnce = UART_INITIALIZED;
+ 36e:	bc 2c       	mov	r11, r12
+			}
+
+			if(uart_counter != (ELEMENTS(NO_OF_Data) - ONE) && uart_counter > Two)
+ 370:	8d ef       	ldi	r24, 0xFD	; 253
+ 372:	d8 16       	cp	r13, r24
+ 374:	91 f0       	breq	.+36     	; 0x39a <main+0xb2>
+ 376:	82 e0       	ldi	r24, 0x02	; 2
+ 378:	8d 15       	cp	r24, r13
+ 37a:	58 f4       	brcc	.+22     	; 0x392 <main+0xaa>
+			{
+				UART_transmit(SendingString[uart_counter]);
+ 37c:	e1 e0       	ldi	r30, 0x01	; 1
+ 37e:	f0 e0       	ldi	r31, 0x00	; 0
+ 380:	ec 0f       	add	r30, r28
+ 382:	fd 1f       	adc	r31, r29
+ 384:	ed 0d       	add	r30, r13
+ 386:	f1 1d       	adc	r31, r1
+ 388:	80 81       	ld	r24, Z
+ 38a:	0e 94 07 03 	call	0x60e	; 0x60e <UART_transmit>
+				uart_flag = Zero;
+ 38e:	10 92 61 00 	sts	0x0061, r1	; 0x800061 <uart_flag>
+			}
+
+			uart_counter++;
+ 392:	d3 94       	inc	r13
+			if(uart_counter == ELEMENTS(NO_OF_Data))
+ 394:	8e ef       	ldi	r24, 0xFE	; 254
+ 396:	d8 12       	cpse	r13, r24
+ 398:	10 c0       	rjmp	.+32     	; 0x3ba <main+0xd2>
+			{
+				UART_transmit('\r');
+ 39a:	8d e0       	ldi	r24, 0x0D	; 13
+ 39c:	0e 94 07 03 	call	0x60e	; 0x60e <UART_transmit>
+ 3a0:	fe 01       	movw	r30, r28
+ 3a2:	31 96       	adiw	r30, 0x01	; 1
+
+				for(counter = Zero ; counter < ELEMENTS(50) ; counter++)
+				{
+					SendingString[counter] = ' ';
+ 3a4:	11 93       	st	Z+, r17
+			uart_counter++;
+			if(uart_counter == ELEMENTS(NO_OF_Data))
+			{
+				UART_transmit('\r');
+
+				for(counter = Zero ; counter < ELEMENTS(50) ; counter++)
+ 3a6:	ee 15       	cp	r30, r14
+ 3a8:	ff 05       	cpc	r31, r15
+ 3aa:	e1 f7       	brne	.-8      	; 0x3a4 <main+0xbc>
+				{
+					SendingString[counter] = ' ';
+				}
+
+				bcm_flag = BCM_NOT_DONE;
+ 3ac:	10 92 7c 00 	sts	0x007C, r1	; 0x80007c <bcm_flag>
+			{
+				UART_transmit(SendingString[uart_counter]);
+				uart_flag = Zero;
+			}
+
+			uart_counter++;
+ 3b0:	0f 2e       	mov	r0, r31
+ 3b2:	fe ef       	ldi	r31, 0xFE	; 254
+ 3b4:	df 2e       	mov	r13, r31
+ 3b6:	f0 2d       	mov	r31, r0
+ 3b8:	06 c0       	rjmp	.+12     	; 0x3c6 <main+0xde>
+				bcm_flag = BCM_NOT_DONE;
+				BCM_initOnce = BCM_NOT_INITIALIZED;
+			}
+		}
+
+		if(bcm_flag == BCM_NOT_DONE)
+ 3ba:	80 91 7c 00 	lds	r24, 0x007C	; 0x80007c <bcm_flag>
+ 3be:	81 11       	cpse	r24, r1
+ 3c0:	c3 cf       	rjmp	.-122    	; 0x348 <main+0x60>
+		{
+			if(BCM_initOnce == BCM_NOT_INITIALIZED)
+ 3c2:	01 11       	cpse	r16, r1
+ 3c4:	0e c0       	rjmp	.+28     	; 0x3e2 <main+0xfa>
+			{
+				BCM_Init(&BCM_cfg);
+ 3c6:	ce 01       	movw	r24, r28
+ 3c8:	8b 5f       	subi	r24, 0xFB	; 251
+ 3ca:	9e 4f       	sbci	r25, 0xFE	; 254
+ 3cc:	0e 94 49 00 	call	0x92	; 0x92 <BCM_Init>
+				BCM_SetupRxBuffer(BCM_SPI_ID, (uint8_t*)SendingString, ELEMENTS(NO_OF_Data));
+ 3d0:	4e ef       	ldi	r20, 0xFE	; 254
+ 3d2:	50 e0       	ldi	r21, 0x00	; 0
+ 3d4:	be 01       	movw	r22, r28
+ 3d6:	6f 5f       	subi	r22, 0xFF	; 255
+ 3d8:	7f 4f       	sbci	r23, 0xFF	; 255
+ 3da:	81 ea       	ldi	r24, 0xA1	; 161
+ 3dc:	0e 94 e9 00 	call	0x1d2	; 0x1d2 <BCM_SetupRxBuffer>
+
+				BCM_initOnce = BCM_INITIALIZED;
+ 3e0:	0c 2d       	mov	r16, r12
+			}
+
+			BCM_RxDispatch();
+ 3e2:	0e 94 95 00 	call	0x12a	; 0x12a <BCM_RxDispatch>
+ 3e6:	b0 cf       	rjmp	.-160    	; 0x348 <main+0x60>
+
+000003e8 <__vector_12>:
+	/* send the data */
+	SPDR = data;
+	/* busy-waiting the SPIE bit in the SPCR register in case interrupts are disabled */
+	if(BIT_IS_CLEAR(SPCR, SPIE))
+	{
+		while(BIT_IS_CLEAR(SPSR, SPIF));
+ 3e8:	1f 92       	push	r1
+ 3ea:	0f 92       	push	r0
+ 3ec:	0f b6       	in	r0, 0x3f	; 63
+ 3ee:	0f 92       	push	r0
+ 3f0:	11 24       	eor	r1, r1
+ 3f2:	2f 93       	push	r18
+ 3f4:	3f 93       	push	r19
+ 3f6:	4f 93       	push	r20
+ 3f8:	5f 93       	push	r21
+ 3fa:	6f 93       	push	r22
+ 3fc:	7f 93       	push	r23
+ 3fe:	8f 93       	push	r24
+ 400:	9f 93       	push	r25
+ 402:	af 93       	push	r26
+ 404:	bf 93       	push	r27
+ 406:	ef 93       	push	r30
+ 408:	ff 93       	push	r31
+ 40a:	e0 91 7d 00 	lds	r30, 0x007D	; 0x80007d <g_SPI_callBackPtr>
+ 40e:	f0 91 7e 00 	lds	r31, 0x007E	; 0x80007e <g_SPI_callBackPtr+0x1>
+ 412:	30 97       	sbiw	r30, 0x00	; 0
+ 414:	09 f0       	breq	.+2      	; 0x418 <__LOCK_REGION_LENGTH__+0x18>
+ 416:	09 95       	icall
+ 418:	ff 91       	pop	r31
+ 41a:	ef 91       	pop	r30
+ 41c:	bf 91       	pop	r27
+ 41e:	af 91       	pop	r26
+ 420:	9f 91       	pop	r25
+ 422:	8f 91       	pop	r24
+ 424:	7f 91       	pop	r23
+ 426:	6f 91       	pop	r22
+ 428:	5f 91       	pop	r21
+ 42a:	4f 91       	pop	r20
+ 42c:	3f 91       	pop	r19
+ 42e:	2f 91       	pop	r18
+ 430:	0f 90       	pop	r0
+ 432:	0f be       	out	0x3f, r0	; 63
+ 434:	0f 90       	pop	r0
+ 436:	1f 90       	pop	r1
+ 438:	18 95       	reti
+
+0000043a <SPI_init>:
+ 43a:	fc 01       	movw	r30, r24
+ 43c:	80 81       	ld	r24, Z
+ 43e:	81 11       	cpse	r24, r1
+ 440:	06 c0       	rjmp	.+12     	; 0x44e <SPI_init+0x14>
+ 442:	87 b3       	in	r24, 0x17	; 23
+ 444:	8f 74       	andi	r24, 0x4F	; 79
+ 446:	87 bb       	out	0x17, r24	; 23
+ 448:	be 9a       	sbi	0x17, 6	; 23
+ 44a:	6c 98       	cbi	0x0d, 4	; 13
+ 44c:	07 c0       	rjmp	.+14     	; 0x45c <SPI_init+0x22>
+ 44e:	81 30       	cpi	r24, 0x01	; 1
+ 450:	29 f4       	brne	.+10     	; 0x45c <SPI_init+0x22>
+ 452:	87 b3       	in	r24, 0x17	; 23
+ 454:	80 6b       	ori	r24, 0xB0	; 176
+ 456:	87 bb       	out	0x17, r24	; 23
+ 458:	be 98       	cbi	0x17, 6	; 23
+ 45a:	6c 9a       	sbi	0x0d, 4	; 13
+ 45c:	8d b1       	in	r24, 0x0d	; 13
+ 45e:	8f 77       	andi	r24, 0x7F	; 127
+ 460:	91 81       	ldd	r25, Z+1	; 0x01
+ 462:	89 2b       	or	r24, r25
+ 464:	8d b9       	out	0x0d, r24	; 13
+ 466:	6e 9a       	sbi	0x0d, 6	; 13
+ 468:	9d b1       	in	r25, 0x0d	; 13
+ 46a:	82 81       	ldd	r24, Z+2	; 0x02
+ 46c:	83 70       	andi	r24, 0x03	; 3
+ 46e:	9c 7f       	andi	r25, 0xFC	; 252
+ 470:	98 2b       	or	r25, r24
+ 472:	9d b9       	out	0x0d, r25	; 13
+ 474:	9e b1       	in	r25, 0x0e	; 14
+ 476:	82 81       	ldd	r24, Z+2	; 0x02
+ 478:	28 2f       	mov	r18, r24
+ 47a:	26 95       	lsr	r18
+ 47c:	26 95       	lsr	r18
+ 47e:	89 2f       	mov	r24, r25
+ 480:	8e 7f       	andi	r24, 0xFE	; 254
+ 482:	82 2b       	or	r24, r18
+ 484:	8e b9       	out	0x0e, r24	; 14
+ 486:	08 95       	ret
+
+00000488 <SPI_setCallBack>:
+ 488:	90 93 7e 00 	sts	0x007E, r25	; 0x80007e <g_SPI_callBackPtr+0x1>
+ 48c:	80 93 7d 00 	sts	0x007D, r24	; 0x80007d <g_SPI_callBackPtr>
+ 490:	08 95       	ret
+
+00000492 <SPI_receiveByte>:
+ * Description : A Function to receive a byte.
+ */
+uint8_t SPI_receiveByte(void)
+{
+	/* busy-waiting the SPIE bit in case the interrupts are disabled */
+	if(BIT_IS_CLEAR(SPCR, SPIE))
+ 492:	6f 99       	sbic	0x0d, 7	; 13
+ 494:	02 c0       	rjmp	.+4      	; 0x49a <SPI_receiveByte+0x8>
+	{
+		while(BIT_IS_CLEAR(SPSR, SPIF));
+ 496:	77 9b       	sbis	0x0e, 7	; 14
+ 498:	fe cf       	rjmp	.-4      	; 0x496 <SPI_receiveByte+0x4>
+	}
+	/* read the data */
+	return SPDR;
+ 49a:	8f b1       	in	r24, 0x0f	; 15
+}
+ 49c:	08 95       	ret
+
+0000049e <__vector_13>:
+void UART_deInit(void)
+{
+	UCSRA_R = 0x20;
+	UCSRB_R = 0x00;
+	UCSRC_R = 0x06;
+	UBRRL_R = 0x00;
+ 49e:	1f 92       	push	r1
+ 4a0:	0f 92       	push	r0
+ 4a2:	0f b6       	in	r0, 0x3f	; 63
+ 4a4:	0f 92       	push	r0
+ 4a6:	11 24       	eor	r1, r1
+ 4a8:	2f 93       	push	r18
+ 4aa:	3f 93       	push	r19
+ 4ac:	4f 93       	push	r20
+ 4ae:	5f 93       	push	r21
+ 4b0:	6f 93       	push	r22
+ 4b2:	7f 93       	push	r23
+ 4b4:	8f 93       	push	r24
+ 4b6:	9f 93       	push	r25
+ 4b8:	af 93       	push	r26
+ 4ba:	bf 93       	push	r27
+ 4bc:	ef 93       	push	r30
+ 4be:	ff 93       	push	r31
+ 4c0:	e0 91 81 00 	lds	r30, 0x0081	; 0x800081 <g_RXC_callBackPtr>
+ 4c4:	f0 91 82 00 	lds	r31, 0x0082	; 0x800082 <g_RXC_callBackPtr+0x1>
+ 4c8:	30 97       	sbiw	r30, 0x00	; 0
+ 4ca:	09 f0       	breq	.+2      	; 0x4ce <__vector_13+0x30>
+ 4cc:	09 95       	icall
+ 4ce:	ff 91       	pop	r31
+ 4d0:	ef 91       	pop	r30
+ 4d2:	bf 91       	pop	r27
+ 4d4:	af 91       	pop	r26
+ 4d6:	9f 91       	pop	r25
+ 4d8:	8f 91       	pop	r24
+ 4da:	7f 91       	pop	r23
+ 4dc:	6f 91       	pop	r22
+ 4de:	5f 91       	pop	r21
+ 4e0:	4f 91       	pop	r20
+ 4e2:	3f 91       	pop	r19
+ 4e4:	2f 91       	pop	r18
+ 4e6:	0f 90       	pop	r0
+ 4e8:	0f be       	out	0x3f, r0	; 63
+ 4ea:	0f 90       	pop	r0
+ 4ec:	1f 90       	pop	r1
+ 4ee:	18 95       	reti
+
+000004f0 <__vector_14>:
+ 4f0:	1f 92       	push	r1
+ 4f2:	0f 92       	push	r0
+ 4f4:	0f b6       	in	r0, 0x3f	; 63
+ 4f6:	0f 92       	push	r0
+ 4f8:	11 24       	eor	r1, r1
+ 4fa:	2f 93       	push	r18
+ 4fc:	3f 93       	push	r19
+ 4fe:	4f 93       	push	r20
+ 500:	5f 93       	push	r21
+ 502:	6f 93       	push	r22
+ 504:	7f 93       	push	r23
+ 506:	8f 93       	push	r24
+ 508:	9f 93       	push	r25
+ 50a:	af 93       	push	r26
+ 50c:	bf 93       	push	r27
+ 50e:	ef 93       	push	r30
+ 510:	ff 93       	push	r31
+ 512:	e0 91 7f 00 	lds	r30, 0x007F	; 0x80007f <g_UDRE_callBackPtr>
+ 516:	f0 91 80 00 	lds	r31, 0x0080	; 0x800080 <g_UDRE_callBackPtr+0x1>
+ 51a:	30 97       	sbiw	r30, 0x00	; 0
+ 51c:	09 f0       	breq	.+2      	; 0x520 <__vector_14+0x30>
+ 51e:	09 95       	icall
+ 520:	ff 91       	pop	r31
+ 522:	ef 91       	pop	r30
+ 524:	bf 91       	pop	r27
+ 526:	af 91       	pop	r26
+ 528:	9f 91       	pop	r25
+ 52a:	8f 91       	pop	r24
+ 52c:	7f 91       	pop	r23
+ 52e:	6f 91       	pop	r22
+ 530:	5f 91       	pop	r21
+ 532:	4f 91       	pop	r20
+ 534:	3f 91       	pop	r19
+ 536:	2f 91       	pop	r18
+ 538:	0f 90       	pop	r0
+ 53a:	0f be       	out	0x3f, r0	; 63
+ 53c:	0f 90       	pop	r0
+ 53e:	1f 90       	pop	r1
+ 540:	18 95       	reti
+
+00000542 <__vector_15>:
+ 542:	1f 92       	push	r1
+ 544:	0f 92       	push	r0
+ 546:	0f b6       	in	r0, 0x3f	; 63
+ 548:	0f 92       	push	r0
+ 54a:	11 24       	eor	r1, r1
+ 54c:	2f 93       	push	r18
+ 54e:	3f 93       	push	r19
+ 550:	4f 93       	push	r20
+ 552:	5f 93       	push	r21
+ 554:	6f 93       	push	r22
+ 556:	7f 93       	push	r23
+ 558:	8f 93       	push	r24
+ 55a:	9f 93       	push	r25
+ 55c:	af 93       	push	r26
+ 55e:	bf 93       	push	r27
+ 560:	ef 93       	push	r30
+ 562:	ff 93       	push	r31
+ 564:	e0 91 83 00 	lds	r30, 0x0083	; 0x800083 <g_TXC_callBackPtr>
+ 568:	f0 91 84 00 	lds	r31, 0x0084	; 0x800084 <g_TXC_callBackPtr+0x1>
+ 56c:	30 97       	sbiw	r30, 0x00	; 0
+ 56e:	09 f0       	breq	.+2      	; 0x572 <__vector_15+0x30>
+ 570:	09 95       	icall
+ 572:	ff 91       	pop	r31
+ 574:	ef 91       	pop	r30
+ 576:	bf 91       	pop	r27
+ 578:	af 91       	pop	r26
+ 57a:	9f 91       	pop	r25
+ 57c:	8f 91       	pop	r24
+ 57e:	7f 91       	pop	r23
+ 580:	6f 91       	pop	r22
+ 582:	5f 91       	pop	r21
+ 584:	4f 91       	pop	r20
+ 586:	3f 91       	pop	r19
+ 588:	2f 91       	pop	r18
+ 58a:	0f 90       	pop	r0
+ 58c:	0f be       	out	0x3f, r0	; 63
+ 58e:	0f 90       	pop	r0
+ 590:	1f 90       	pop	r1
+ 592:	18 95       	reti
+
+00000594 <UART_TXC_setCallBack>:
+ 594:	90 93 84 00 	sts	0x0084, r25	; 0x800084 <g_TXC_callBackPtr+0x1>
+ 598:	80 93 83 00 	sts	0x0083, r24	; 0x800083 <g_TXC_callBackPtr>
+ 59c:	08 95       	ret
+
+0000059e <UART_RXC_setCallBack>:
+ 59e:	90 93 82 00 	sts	0x0082, r25	; 0x800082 <g_RXC_callBackPtr+0x1>
+ 5a2:	80 93 81 00 	sts	0x0081, r24	; 0x800081 <g_RXC_callBackPtr>
+ 5a6:	08 95       	ret
+
+000005a8 <UART_init>:
+ 5a8:	fc 01       	movw	r30, r24
+ 5aa:	59 9a       	sbi	0x0b, 1	; 11
+ 5ac:	81 81       	ldd	r24, Z+1	; 0x01
+ 5ae:	81 30       	cpi	r24, 0x01	; 1
+ 5b0:	51 f0       	breq	.+20     	; 0x5c6 <UART_init+0x1e>
+ 5b2:	18 f0       	brcs	.+6      	; 0x5ba <UART_init+0x12>
+ 5b4:	82 30       	cpi	r24, 0x02	; 2
+ 5b6:	69 f0       	breq	.+26     	; 0x5d2 <UART_init+0x2a>
+ 5b8:	13 c0       	rjmp	.+38     	; 0x5e0 <UART_init+0x38>
+ 5ba:	53 9a       	sbi	0x0a, 3	; 10
+ 5bc:	85 81       	ldd	r24, Z+5	; 0x05
+ 5be:	81 30       	cpi	r24, 0x01	; 1
+ 5c0:	79 f4       	brne	.+30     	; 0x5e0 <UART_init+0x38>
+ 5c2:	56 9a       	sbi	0x0a, 6	; 10
+ 5c4:	0d c0       	rjmp	.+26     	; 0x5e0 <UART_init+0x38>
+ 5c6:	54 9a       	sbi	0x0a, 4	; 10
+ 5c8:	85 81       	ldd	r24, Z+5	; 0x05
+ 5ca:	81 30       	cpi	r24, 0x01	; 1
+ 5cc:	49 f4       	brne	.+18     	; 0x5e0 <UART_init+0x38>
+ 5ce:	57 9a       	sbi	0x0a, 7	; 10
+ 5d0:	07 c0       	rjmp	.+14     	; 0x5e0 <UART_init+0x38>
+ 5d2:	53 9a       	sbi	0x0a, 3	; 10
+ 5d4:	54 9a       	sbi	0x0a, 4	; 10
+ 5d6:	85 81       	ldd	r24, Z+5	; 0x05
+ 5d8:	81 30       	cpi	r24, 0x01	; 1
+ 5da:	11 f4       	brne	.+4      	; 0x5e0 <UART_init+0x38>
+ 5dc:	56 9a       	sbi	0x0a, 6	; 10
+ 5de:	57 9a       	sbi	0x0a, 7	; 10
+ 5e0:	8a b1       	in	r24, 0x0a	; 10
+ 5e2:	92 81       	ldd	r25, Z+2	; 0x02
+ 5e4:	94 70       	andi	r25, 0x04	; 4
+ 5e6:	8b 7f       	andi	r24, 0xFB	; 251
+ 5e8:	89 2b       	or	r24, r25
+ 5ea:	8a b9       	out	0x0a, r24	; 10
+ 5ec:	80 b5       	in	r24, 0x20	; 32
+ 5ee:	92 81       	ldd	r25, Z+2	; 0x02
+ 5f0:	93 70       	andi	r25, 0x03	; 3
+ 5f2:	99 0f       	add	r25, r25
+ 5f4:	20 81       	ld	r18, Z
+ 5f6:	29 2b       	or	r18, r25
+ 5f8:	93 81       	ldd	r25, Z+3	; 0x03
+ 5fa:	89 2b       	or	r24, r25
+ 5fc:	80 68       	ori	r24, 0x80	; 128
+ 5fe:	94 81       	ldd	r25, Z+4	; 0x04
+ 600:	89 2b       	or	r24, r25
+ 602:	82 2b       	or	r24, r18
+ 604:	80 bd       	out	0x20, r24	; 32
+ 606:	10 bc       	out	0x20, r1	; 32
+ 608:	8f ec       	ldi	r24, 0xCF	; 207
+ 60a:	89 b9       	out	0x09, r24	; 9
+ 60c:	08 95       	ret
+
+0000060e <UART_transmit>:
+}
+
+void UART_transmit(const uint8_t data)
+{
+	/* busy-waiting the UDRE bit in the UCSRA register in case interrupt is disabled */
+	if(BIT_IS_CLEAR(UCSRB_R, TXCIE))
+ 60e:	56 99       	sbic	0x0a, 6	; 10
+ 610:	02 c0       	rjmp	.+4      	; 0x616 <UART_transmit+0x8>
+		while(BIT_IS_CLEAR(UCSRA_R, UDRE));
+ 612:	5d 9b       	sbis	0x0b, 5	; 11
+ 614:	fe cf       	rjmp	.-4      	; 0x612 <UART_transmit+0x4>
+	/* sending the data */
+	UDR = data;
+ 616:	8c b9       	out	0x0c, r24	; 12
+ 618:	08 95       	ret
+
+0000061a <UART_receive>:
+}
+
+uint8_t UART_receive(void)
+{
+	/* busy-waiting the RXC bit in the UCSRA register in case interrupt is disabled */
+	if(BIT_IS_CLEAR(UCSRB_R, RXCIE))
+ 61a:	57 99       	sbic	0x0a, 7	; 10
+ 61c:	02 c0       	rjmp	.+4      	; 0x622 <UART_receive+0x8>
+		while(BIT_IS_CLEAR(UCSRA_R, RXC));
+ 61e:	5f 9b       	sbis	0x0b, 7	; 11
+ 620:	fe cf       	rjmp	.-4      	; 0x61e <UART_receive+0x4>
+	/* read the received data */
+	return UDR;
+ 622:	8c b1       	in	r24, 0x0c	; 12
+}
+ 624:	08 95       	ret
+
+00000626 <_exit>:
+ 626:	f8 94       	cli
+
+00000628 <__stop_program>:
+ 628:	ff cf       	rjmp	.-2      	; 0x628 <__stop_program>

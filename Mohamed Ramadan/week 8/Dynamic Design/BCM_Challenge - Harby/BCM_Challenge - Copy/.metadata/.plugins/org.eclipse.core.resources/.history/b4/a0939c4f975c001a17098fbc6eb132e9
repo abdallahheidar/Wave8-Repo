@@ -1,0 +1,126 @@
+/*
+ * BCM.c
+ *
+ *  Created on: Mar 2, 2020
+ *      Author: Youssef Harby
+ */
+
+
+#include "BCM.h"
+#include "BCM_cfg.h"
+
+
+#define UNDETERMINED		0x00
+
+
+static volatile uint8_t gu8_BCM_UART_SM;
+static volatile uint8_t gu8_BCM_SPI_SM;
+
+
+EnmBCMError_t BCM_Init(const strBcmConfig_t* ConfigPtr)
+{
+	uint8_t au8_Ret = E_OK;
+
+	UART_ConfigType UART_cfg = {
+			UART_ASYNCHRONOUS_MODE,
+			UNDETERMINED,
+			UART_EIGHT_BITS,
+			UART_PARITY_DISABLED,
+			UART_ONE_STOP_BIT,
+			UART_INTERRUPT_ENABLED
+	};
+
+	SPI_ConfigType SPI_cfg = {
+			UNDETERMINED,
+			SPI_INTERRUPT_ENABLED,
+			SPI_F_OSC_4
+	};
+
+	switch(ConfigPtr->BCM_DataDirection)
+	{
+	case BCM_TRANSMIT:
+		UART_cfg.communicationMode = UART_SENDER_MODE;
+		SPI_cfg.MasterSlaveSelect = SPI_MASTER;
+		break;
+	case BCM_RECEIVE:
+		UART_cfg.communicationMode = UART_RECEIVER_MODE;
+		SPI_cfg.MasterSlaveSelect = SPI_SLAVE;
+		break;
+	case BCM_TRANSMIT_RECEIVE:
+		UART_cfg.communicationMode = UART_SENDER_RECEIVER_MODE;
+		break;
+	default:
+		au8_Ret = E_NOK;
+		break;
+	}
+
+	switch(ConfigPtr->BCM_ProtocolID)
+	{
+	case BCM_UART_ID:
+		UART_init(&UART_cfg);
+		gu8_BCM_UART_SM = (uint8_t)BCM_IDLE;
+		break;
+	case BCM_SPI_ID:
+		SPI_init(&SPI_cfg);
+		gu8_BCM_SPI_SM = (uint8_t)BCM_IDLE;
+		break;
+	default:
+		au8_Ret = E_NOK;
+		break;
+	}
+
+	return au8_Ret;
+}
+
+EnmBCMError_t BCM_DeInit(uint8_t BCM_ProtocolID)
+{
+	uint8_t au8_Ret = E_OK;
+
+	switch(BCM_ProtocolID)
+	{
+	case BCM_UART_ID:
+		UART_deInit();
+		UART_RXC_setCallBack(NULL);
+		UART_TXC_setCallBack(NULL);
+		gu8_BCM_UART_SM = (uint8_t)BCM_UNINITIALIZED;
+		break;
+	case BCM_SPI_ID:
+		SPI_deInit();
+		SPI_setCallBack(NULL);
+		gu8_BCM_SPI_SM = (uint8_t)BCM_UNINITIALIZED;
+		break;
+	default:
+		au8_Ret = E_NOK;
+		break;
+	}
+
+	return E_OK;
+}
+
+EnmBCMError_t BCM_RxDispatch(void)
+{
+
+
+	return E_OK;
+}
+
+EnmBCMError_t BCM_TxDispatch(void)
+{
+
+
+	return E_OK;
+}
+
+EnmBCMError_t BCM_Send(void)
+{
+
+
+	return E_OK;
+}
+
+EnmBCMError_t BCM_Receive(void)
+{
+
+
+	return E_OK;
+}

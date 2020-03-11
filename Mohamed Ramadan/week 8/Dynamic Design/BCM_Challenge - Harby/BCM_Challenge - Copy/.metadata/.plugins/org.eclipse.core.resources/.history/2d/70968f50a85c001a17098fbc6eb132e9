@@ -1,0 +1,21 @@
+/*
+ * BCM.h
+ *
+ *  Created on: Mar 2, 2020
+ *      Author: Youssef Harby
+ */
+
+#ifndef BCM_H_
+#define BCM_H_
+
+
+#include "SPI.h"
+#include "UART.h"
+
+typedef struct BCM_ConfigType{
+	uint8_t BCM_ModuleID;
+
+}BCM_ConfigType;
+
+
+#endif /* BCM_H_ */
