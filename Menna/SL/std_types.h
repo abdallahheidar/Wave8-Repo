@@ -26,6 +26,7 @@ typedef signed long long sint64_t;
 typedef volatile uint8_t* const reg_type8_t;
 typedef volatile uint16_t* const reg_type16_t;
 typedef sint16_t ERROR_STATUS ;
+typedef		void (*FunPtr)(void);
 
 /************************************************************************/
 /*				 		defining boolean values                         */
@@ -33,6 +34,7 @@ typedef sint16_t ERROR_STATUS ;
 #define FALSE 	0	// defines boolean false
 #define TRUE 	1	// defines boolean true
 
+#define ZERO 0
 
 /************************************************************************/
 /*						 LOW/HIGH defines                               */

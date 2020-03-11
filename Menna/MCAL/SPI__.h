@@ -10,10 +10,10 @@
 #define SPI___H_
 
 
-#include "../util/std_types.h"
-#include "../util/registers.h"
-#include "../MCAL/DIO.h"
-#include "../util/interrupt.h"
+#include "std_types.h"
+#include "registers.h"
+#include "DIO.h"
+#include "interrupt.h"
 
 #define ZERO 0 
 

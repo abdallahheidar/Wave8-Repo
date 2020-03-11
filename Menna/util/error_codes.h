@@ -27,7 +27,7 @@
 #define INVALID_IN				4
 #define MULTI_STOP				5
 #define MULTI_START				6
-#define FULL_BUFFER				7
+//#define FULL_BUFFER				-7
 #define BUFFER_ALREADY_UNLOCKED 8
 #define BUFFER_ALREADY_LOCKED   9
 #define WRONG_ID				10

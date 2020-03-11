@@ -9,8 +9,8 @@
 #ifndef UART_H_
 #define UART_H_
 
-#include "../util/registers.h"
-#include "../util/interrupt.h"
+#include "registers.h"
+#include "interrupt.h"
 #include "UART_cfg.h"
 
 

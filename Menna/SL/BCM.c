@@ -7,8 +7,8 @@
 
 #include "BCM.h"
 #include "BCM_cfg.h"
-#include "../MCAL/UART.h"
-#include "../MCAL/SPI__.h"
+#include "UART.h"
+#include "SPI__.h"
 
 
 /*===================================================================================*/
@@ -532,7 +532,7 @@ ERROR_STATUS BCM_Setup_RxBuffer(BCM_cfg_s* a_BCM, uint16_t a_Buffer_Len, uint8_t
  * 			
  */
 
-ERROR_STATUS BCM_Get_msgLEN(uint8_t* msg_Lentgh)
+ERROR_STATUS BCM_Get_msgLEN( uint8_t* msg_Lentgh)
 
 {
 	ERROR_STATUS errorStatus = BCM_ERROR + E_NOK;

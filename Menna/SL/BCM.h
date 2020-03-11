@@ -9,8 +9,8 @@
 #ifndef BCM_H_
 #define BCM_H_
 
-#include "../util/error_codes.h"
-#include "../util/std_types.h"
+#include "error_codes.h"
+#include "std_types.h"
 
 
 /*======================================*/
@@ -145,6 +145,6 @@ void BCM_Rx_Dispatcher(void);
  * Description: Gets The Message Length From The BCM Receiver
  * 			
  */
-ERROR_STATUS BCM_Get_msgLEN(uint8_t* msg_Lentgh);
+ERROR_STATUS BCM_Get_msgLEN( uint8_t* msg_Lentgh);
 
 #endif /* BCM_H_ */
