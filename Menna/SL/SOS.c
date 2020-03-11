@@ -6,8 +6,12 @@
  */ 
 
 
+
+
 #include "Timer.h"
 #include "SOS.h"
+
+
 
 
 static void ISR_flag_func(void);
@@ -28,6 +32,56 @@ static uint8_t g_u8_SOS_initialzation = FALSE ;
 static uint8_t g_u8_first_call_start = FALSE ;
 
 
+
+
+
+void sort() {
+
+	/* Sort the given array number, of length n */
+	SOS_tsak_s * temp ;
+	uint8_t au8_iterator_j , au8_iterator_i, au8_iterator_x , au8_iterator_y;
+
+	for ( au8_iterator_x = 0 ;  au8_iterator_x < SOS_BUFFER_SIZE  ; au8_iterator_x++){
+
+		if(Buffer[au8_iterator_x]==NULL){
+			au8_iterator_y = au8_iterator_x ;
+			au8_iterator_y++ ;
+			while(Buffer[au8_iterator_y]==NULL ) {
+				au8_iterator_y++;
+				if(au8_iterator_y==SOS_BUFFER_SIZE){
+					au8_iterator_x = SOS_BUFFER_SIZE;
+					break ;
+				}
+				
+			}
+			Buffer[au8_iterator_x] = Buffer[au8_iterator_y] ;
+			Buffer[au8_iterator_y] = NULL ;
+		}
+	}
+	
+
+	for (au8_iterator_i = 1; au8_iterator_i < SOS_BUFFER_SIZE -1; au8_iterator_i++) {
+
+		for (au8_iterator_j = 0 ; au8_iterator_j < SOS_BUFFER_SIZE - au8_iterator_i; au8_iterator_j++) {
+
+			if(Buffer[au8_iterator_j] == NULL || Buffer[au8_iterator_j+1] == NULL)
+			break ;
+			else if (Buffer[au8_iterator_j]->Priority > Buffer[au8_iterator_j + 1]->Priority) {
+				
+				temp = Buffer[au8_iterator_j];
+				Buffer[au8_iterator_j] = Buffer[au8_iterator_j + 1];
+				Buffer[au8_iterator_j + 1] = temp;
+			}
+		}
+	}
+	
+	
+}
+
+
+
+
+
 /**
  * Input: Pointer to a structure contains the information needed to initialize the SOS. 
  * Output:
@@ -46,6 +100,7 @@ ERROR_STATUS SOS_Init (SOS_Cfg_s *SOS_Cfg){
 	
 	/* check if the module is initialized before */
 	
+	
 	if (g_u8_SOS_initialzation== FALSE )
 		g_u8_SOS_initialzation = TRUE ;
 	else
@@ -53,6 +108,7 @@ ERROR_STATUS SOS_Init (SOS_Cfg_s *SOS_Cfg){
 	
 	Timer_cfg_s timer_SOS_cfg ;
 	g_u8_timer_CH = SOS_Cfg->Timer_channel;
+	
 	
 	/* check for available range of resolution */
 	
@@ -97,7 +153,6 @@ ERROR_STATUS SOS_Init (SOS_Cfg_s *SOS_Cfg){
 		
 			break;
 		case SOS_TIMER_CH2 :
-			PORTA_DATA = 0xFF ;
 			timer_SOS_cfg.Timer_CH_NO = SOS_TIMER_CH2;
 			timer_SOS_cfg.Timer_Mode = TIMER_MODE ;
 			timer_SOS_cfg.Timer_Polling_Or_Interrupt = TIMER_INTERRUPT_MODE;
@@ -116,6 +171,7 @@ ERROR_STATUS SOS_Init (SOS_Cfg_s *SOS_Cfg){
 		break;
 		
 	}
+	
 	return E_OK ;
 }
 
@@ -164,57 +220,59 @@ ERROR_STATUS SOS_DeInit (SOS_Cfg_s *SOS_Cfg){
  */
 
 
-ERROR_STATUS SOS_Start_Timer (SOS_tsak_s *SOS_task){
+ERROR_STATUS SOS_Create_Task (SOS_tsak_s *SOS_task){
 	
 	uint8_t count ;
+	
 	/* check for null pointer error */
 	
-	
-	
-	
 	if (SOS_task == NULL)
-	return SOS_module_error +NULL_PTR_ERROR ;
+		return SOS_module_error +NULL_PTR_ERROR ;
 	
 	if (SOS_task->Ptr_FunctionCall == NULL)
-	return SOS_module_error +NULL_PTR_ERROR ;
-	
-	SOS_task->N_OVFs=SOS_task->delay_time;
+		return SOS_module_error +NULL_PTR_ERROR ;
 	
 	/*check if the buffer is full */
 	
 	if (SOS_task->SOS_mode!=PERIODIC && SOS_task->SOS_mode!=ONESHOT)
-	{return SOS_module_error + INVALID__PARAMETER ;
-	}
+		return SOS_module_error + INVALID__PARAMETER ;
 	
+	/* set the user struct in the internal struct   */
+		
+	SOS_task-> N_OVFs = SOS_task-> delay_time ;
+		
 	if (g_u8_NO_ELEMNT_BUFFER<SOS_BUFFER_SIZE)
 	{	
 		for( count = ZERO_VALUE ; count < SOS_BUFFER_SIZE ; count++)
 		{
-		if (Buffer[count]==NULL)
+		if (Buffer[count] == NULL)
 		{
 			/*		 set struct in buffer		 */
 			
 			Buffer[count] = SOS_task ;
 			
+			
 			/* increment the no of element in the buffer */
 			
 			g_u8_NO_ELEMNT_BUFFER++;
 			break;
+			
+		}
 		}
 		
-		}
-	
 		if (g_u8_first_call_start == FALSE )
 		{
 			Timer_Start(g_u8_timer_CH ,250);
-			
 			
 			g_u8_first_call_start++;
 			
 		}
 	}else
 	
+	
 		return SOS_module_error + FULL_BUFFER ;
+		
+	sort() ;
 	
 	return E_OK ;
 	
@@ -233,7 +291,7 @@ ERROR_STATUS SOS_Start_Timer (SOS_tsak_s *SOS_task){
 
 
 
-ERROR_STATUS SOS_Stop_Timer (SOS_tsak_s *SOS_task){
+ERROR_STATUS SOS_Remove_Task (SOS_tsak_s *SOS_task){
 
 	if (g_u8_first_call_start!=1)
 	{
@@ -279,30 +337,36 @@ void Remove_task(SOS_tsak_s *SOS_task){
  */
 
 
-ERROR_STATUS SOS_Dispatch (void){
+ERROR_STATUS SOS_Run (void){
 	uint8_t count ;
 	
-	if (g_u8_ISR_flag==TRUE)
+	
+	if (g_u8_ISR_flag == TRUE)
 	{
 		
-		for (count = ZERO_VALUE ; count<SOS_BUFFER_SIZE ; count++)
-		{
-			if (Buffer[count]!=NULL)
-			{
-				Buffer[count] ->N_OVFs-- ;
-				if ( Buffer[count] ->N_OVFs == ZERO_VALUE)
-				{
-					Buffer[count]->Ptr_FunctionCall();
-					if (Buffer[count]->SOS_mode== ONESHOT)
-					Remove_task(Buffer[count]);
-					else 
-					Buffer[count]->N_OVFs=Buffer[count]->delay_time ;
-					
-				
-					
-				}
-			}
-		}
+		
+ 		for (count = ZERO_VALUE ; count<SOS_BUFFER_SIZE ; count++)
+ 		{
+			
+			 
+  			if (Buffer[count]!=NULL)
+  			{
+ 				
+  				Buffer[count] ->N_OVFs-- ;
+  				if ( Buffer[count] ->N_OVFs == ZERO_VALUE)
+  				{
+ 						 
+  					Buffer[count]-> Ptr_FunctionCall();
+ 			
+  					if (Buffer[count]->SOS_mode == ONESHOT)
+ 					 Buffer[count] = NULL ;
+  					else 
+  					Buffer[count]->N_OVFs=Buffer[count]->delay_time ;
+  					
+  					
+  				}
+  			}
+ 		}
 		g_u8_ISR_flag = FALSE ;
 	}
 	return E_OK ;

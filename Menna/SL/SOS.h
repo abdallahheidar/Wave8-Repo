@@ -58,8 +58,12 @@ typedef struct SOS_tsak_s{
 	uint16_t delay_time ;
 	uint8_t SOS_mode ;/* periodic or one shot*/
 	uint16_t N_OVFs ;
+	uint8_t Priority ;
 	
 	}SOS_tsak_s;
+	
+	
+
 
 
 
@@ -106,7 +110,7 @@ ERROR_STATUS SOS_DeInit (SOS_Cfg_s *SOS_Cfg);
  */
 
 
-ERROR_STATUS SOS_Start_Timer (SOS_tsak_s *SOS_task);
+ERROR_STATUS SOS_Create_Task (SOS_tsak_s *SOS_task);
 
 
 /**
@@ -119,7 +123,7 @@ ERROR_STATUS SOS_Start_Timer (SOS_tsak_s *SOS_task);
  */
 
 
-ERROR_STATUS SOS_Stop_Timer (SOS_tsak_s *SOS_task);
+ERROR_STATUS SOS_Remove_Task (SOS_tsak_s *SOS_task);
 
 
 /**
@@ -133,7 +137,7 @@ ERROR_STATUS SOS_Stop_Timer (SOS_tsak_s *SOS_task);
  */
 
 
-ERROR_STATUS SOS_Dispatch (void);
+ERROR_STATUS SOS_Run (void);
 
 
 

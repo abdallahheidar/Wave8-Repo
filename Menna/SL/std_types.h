@@ -69,6 +69,7 @@ typedef		void (*FunPtr)(void);
 #define TMU_module_error -500
 #define DIO_module_error -400
 #define TIMER_module_error -300
+#define  SOS_module_error -200
 
 #define NULL_PTR_ERROR -1
 #define MODULE_UNINTIALIZED -2
