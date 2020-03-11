@@ -20,7 +20,7 @@ typedef void(*BCM_UserNotifier)(ERROR_STATUS status);
 #define BCM_SPI_CHANAL		1
 #define BCM_I2C_CHANAL		2
 
-#define BCM_MAX_CHANALS		3 /*hardware avaliable chanales*/
+#define BCM_MAX_CHANALS		3 /*hardware available chanales*/
 
 /*use these values for mod in bcmTask_cfg*/
 #define BCM_SENDER			0
@@ -38,7 +38,7 @@ typedef struct bcmTask_cfg{
 	uint8_t *buffer;			/*data buffer to receive or send data*/
 	uint8_t *lock;				/*lock variable on buffer*/
 	BCM_UserNotifier bcm_cbf;	/*notify function*/
-	uint16_t size;				/*size of buffer*/
+	uint8_t *size;				/*size of buffer*/
 	uint8_t chanal;				/*uart spi i2c*/
 	uint8_t mode;				/*send || recive*/
 }gstr_BCM_Task_cfg_t;
