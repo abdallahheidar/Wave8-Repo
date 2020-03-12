@@ -1,0 +1,707 @@
+
+TMU.elf:     file format elf32-avr
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         00000394  00000000  00000000  00000094  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  1 .data         0000001c  00800060  00000394  00000428  2**0
+                  CONTENTS, ALLOC, LOAD, DATA
+  2 .bss          00000020  0080007c  0080007c  00000444  2**0
+                  ALLOC
+  3 .comment      00000030  00000000  00000000  00000444  2**0
+                  CONTENTS, READONLY
+  4 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  00000474  2**2
+                  CONTENTS, READONLY
+  5 .debug_aranges 000000e0  00000000  00000000  000004b0  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  6 .debug_info   00000e43  00000000  00000000  00000590  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  7 .debug_abbrev 0000089b  00000000  00000000  000013d3  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  8 .debug_line   000007e6  00000000  00000000  00001c6e  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  9 .debug_frame  00000188  00000000  00000000  00002454  2**2
+                  CONTENTS, READONLY, DEBUGGING
+ 10 .debug_str    000005fb  00000000  00000000  000025dc  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 11 .debug_loc    000006de  00000000  00000000  00002bd7  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 12 .debug_ranges 000000c8  00000000  00000000  000032b5  2**0
+                  CONTENTS, READONLY, DEBUGGING
+
+Disassembly of section .text:
+
+00000000 <__vectors>:
+   0:	0c 94 2a 00 	jmp	0x54	; 0x54 <__ctors_end>
+   4:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+   8:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+   c:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+  10:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+  14:	0c 94 cb 00 	jmp	0x196	; 0x196 <__vector_5>
+  18:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+  1c:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+  20:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+  24:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+  28:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+  2c:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+  30:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+  34:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+  38:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+  3c:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+  40:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+  44:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+  48:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+  4c:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+  50:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+
+00000054 <__ctors_end>:
+  54:	11 24       	eor	r1, r1
+  56:	1f be       	out	0x3f, r1	; 63
+  58:	cf e5       	ldi	r28, 0x5F	; 95
+  5a:	d8 e0       	ldi	r29, 0x08	; 8
+  5c:	de bf       	out	0x3e, r29	; 62
+  5e:	cd bf       	out	0x3d, r28	; 61
+
+00000060 <__do_copy_data>:
+  60:	10 e0       	ldi	r17, 0x00	; 0
+  62:	a0 e6       	ldi	r26, 0x60	; 96
+  64:	b0 e0       	ldi	r27, 0x00	; 0
+  66:	e4 e9       	ldi	r30, 0x94	; 148
+  68:	f3 e0       	ldi	r31, 0x03	; 3
+  6a:	02 c0       	rjmp	.+4      	; 0x70 <__do_copy_data+0x10>
+  6c:	05 90       	lpm	r0, Z+
+  6e:	0d 92       	st	X+, r0
+  70:	ac 37       	cpi	r26, 0x7C	; 124
+  72:	b1 07       	cpc	r27, r17
+  74:	d9 f7       	brne	.-10     	; 0x6c <__do_copy_data+0xc>
+
+00000076 <__do_clear_bss>:
+  76:	20 e0       	ldi	r18, 0x00	; 0
+  78:	ac e7       	ldi	r26, 0x7C	; 124
+  7a:	b0 e0       	ldi	r27, 0x00	; 0
+  7c:	01 c0       	rjmp	.+2      	; 0x80 <.do_clear_bss_start>
+
+0000007e <.do_clear_bss_loop>:
+  7e:	1d 92       	st	X+, r1
+
+00000080 <.do_clear_bss_start>:
+  80:	ac 39       	cpi	r26, 0x9C	; 156
+  82:	b2 07       	cpc	r27, r18
+  84:	e1 f7       	brne	.-8      	; 0x7e <.do_clear_bss_loop>
+  86:	0e 94 49 00 	call	0x92	; 0x92 <main>
+  8a:	0c 94 c8 01 	jmp	0x390	; 0x390 <_exit>
+
+0000008e <__bad_interrupt>:
+  8e:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
+
+00000092 <main>:
+#define  F_CPU  (16000000UL)	 
+	 
+
+int main(){
+	/**enable global interrupt**/
+	sei();
+  92:	78 94       	sei
+	
+	/**Initialize the SOS **/
+	Sos_Init(&ConfigPtr);
+  94:	8a e7       	ldi	r24, 0x7A	; 122
+  96:	90 e0       	ldi	r25, 0x00	; 0
+  98:	0e 94 ee 00 	call	0x1dc	; 0x1dc <Sos_Init>
+
+	/**SOS start three tasks**/
+	Sos_Start(&Sos_Cfg_start_Fun1);
+  9c:	82 e7       	ldi	r24, 0x72	; 114
+  9e:	90 e0       	ldi	r25, 0x00	; 0
+  a0:	0e 94 0e 01 	call	0x21c	; 0x21c <Sos_Start>
+	Sos_Start(&Sos_Cfg_start_Fun2);
+  a4:	8a e6       	ldi	r24, 0x6A	; 106
+  a6:	90 e0       	ldi	r25, 0x00	; 0
+  a8:	0e 94 0e 01 	call	0x21c	; 0x21c <Sos_Start>
+	Sos_Start(&Sos_Cfg_start_Fun3);
+  ac:	82 e6       	ldi	r24, 0x62	; 98
+  ae:	90 e0       	ldi	r25, 0x00	; 0
+  b0:	0e 94 0e 01 	call	0x21c	; 0x21c <Sos_Start>
+	
+	while(1)
+	{
+		/**perform the tasks**/
+		Sos_Dispatch();
+  b4:	0e 94 69 01 	call	0x2d2	; 0x2d2 <Sos_Dispatch>
+  b8:	fd cf       	rjmp	.-6      	; 0xb4 <main+0x22>
+
+000000ba <Timer_Init>:
+			break;
+		default:
+			Er_Status = E_NOK;
+	}
+	return	Er_Status;
+}
+  ba:	fc 01       	movw	r30, r24
+  bc:	89 2b       	or	r24, r25
+  be:	c9 f1       	breq	.+114    	; 0x132 <Timer_Init+0x78>
+  c0:	80 81       	ld	r24, Z
+  c2:	81 30       	cpi	r24, 0x01	; 1
+  c4:	a1 f0       	breq	.+40     	; 0xee <Timer_Init+0x34>
+  c6:	18 f0       	brcs	.+6      	; 0xce <Timer_Init+0x14>
+  c8:	82 30       	cpi	r24, 0x02	; 2
+  ca:	19 f1       	breq	.+70     	; 0x112 <Timer_Init+0x58>
+  cc:	34 c0       	rjmp	.+104    	; 0x136 <Timer_Init+0x7c>
+  ce:	93 b7       	in	r25, 0x33	; 51
+  d0:	81 81       	ldd	r24, Z+1	; 0x01
+  d2:	89 2b       	or	r24, r25
+  d4:	83 bf       	out	0x33, r24	; 51
+  d6:	99 b7       	in	r25, 0x39	; 57
+  d8:	82 81       	ldd	r24, Z+2	; 0x02
+  da:	89 2b       	or	r24, r25
+  dc:	89 bf       	out	0x39, r24	; 57
+  de:	83 81       	ldd	r24, Z+3	; 0x03
+  e0:	90 e0       	ldi	r25, 0x00	; 0
+  e2:	90 93 97 00 	sts	0x0097, r25	; 0x800097 <prescaler_Timer0+0x1>
+  e6:	80 93 96 00 	sts	0x0096, r24	; 0x800096 <prescaler_Timer0>
+  ea:	80 e0       	ldi	r24, 0x00	; 0
+  ec:	08 95       	ret
+  ee:	8e b5       	in	r24, 0x2e	; 46
+  f0:	9f b5       	in	r25, 0x2f	; 47
+  f2:	21 81       	ldd	r18, Z+1	; 0x01
+  f4:	82 2b       	or	r24, r18
+  f6:	9f bd       	out	0x2f, r25	; 47
+  f8:	8e bd       	out	0x2e, r24	; 46
+  fa:	99 b7       	in	r25, 0x39	; 57
+  fc:	82 81       	ldd	r24, Z+2	; 0x02
+  fe:	89 2b       	or	r24, r25
+ 100:	89 bf       	out	0x39, r24	; 57
+ 102:	83 81       	ldd	r24, Z+3	; 0x03
+ 104:	90 e0       	ldi	r25, 0x00	; 0
+ 106:	90 93 9b 00 	sts	0x009B, r25	; 0x80009b <prescaler_Timer1+0x1>
+ 10a:	80 93 9a 00 	sts	0x009A, r24	; 0x80009a <prescaler_Timer1>
+ 10e:	80 e0       	ldi	r24, 0x00	; 0
+ 110:	08 95       	ret
+ 112:	95 b5       	in	r25, 0x25	; 37
+ 114:	81 81       	ldd	r24, Z+1	; 0x01
+ 116:	89 2b       	or	r24, r25
+ 118:	85 bd       	out	0x25, r24	; 37
+ 11a:	99 b7       	in	r25, 0x39	; 57
+ 11c:	82 81       	ldd	r24, Z+2	; 0x02
+ 11e:	89 2b       	or	r24, r25
+ 120:	89 bf       	out	0x39, r24	; 57
+ 122:	83 81       	ldd	r24, Z+3	; 0x03
+ 124:	90 e0       	ldi	r25, 0x00	; 0
+ 126:	90 93 99 00 	sts	0x0099, r25	; 0x800099 <prescaler_Timer2+0x1>
+ 12a:	80 93 98 00 	sts	0x0098, r24	; 0x800098 <prescaler_Timer2>
+ 12e:	80 e0       	ldi	r24, 0x00	; 0
+ 130:	08 95       	ret
+ 132:	81 e0       	ldi	r24, 0x01	; 1
+ 134:	08 95       	ret
+ 136:	81 e0       	ldi	r24, 0x01	; 1
+ 138:	08 95       	ret
+
+0000013a <Timer_Start>:
+ 13a:	81 30       	cpi	r24, 0x01	; 1
+ 13c:	71 f0       	breq	.+28     	; 0x15a <Timer_Start+0x20>
+ 13e:	18 f0       	brcs	.+6      	; 0x146 <Timer_Start+0xc>
+ 140:	82 30       	cpi	r24, 0x02	; 2
+ 142:	e9 f0       	breq	.+58     	; 0x17e <Timer_Start+0x44>
+ 144:	26 c0       	rjmp	.+76     	; 0x192 <Timer_Start+0x58>
+ 146:	82 b7       	in	r24, 0x32	; 50
+ 148:	68 2b       	or	r22, r24
+ 14a:	62 bf       	out	0x32, r22	; 50
+ 14c:	93 b7       	in	r25, 0x33	; 51
+ 14e:	80 91 96 00 	lds	r24, 0x0096	; 0x800096 <prescaler_Timer0>
+ 152:	89 2b       	or	r24, r25
+ 154:	83 bf       	out	0x33, r24	; 51
+ 156:	80 e0       	ldi	r24, 0x00	; 0
+ 158:	08 95       	ret
+ 15a:	8c b5       	in	r24, 0x2c	; 44
+ 15c:	9d b5       	in	r25, 0x2d	; 45
+ 15e:	68 2b       	or	r22, r24
+ 160:	79 2b       	or	r23, r25
+ 162:	7d bd       	out	0x2d, r23	; 45
+ 164:	6c bd       	out	0x2c, r22	; 44
+ 166:	2e b5       	in	r18, 0x2e	; 46
+ 168:	3f b5       	in	r19, 0x2f	; 47
+ 16a:	80 91 9a 00 	lds	r24, 0x009A	; 0x80009a <prescaler_Timer1>
+ 16e:	90 91 9b 00 	lds	r25, 0x009B	; 0x80009b <prescaler_Timer1+0x1>
+ 172:	82 2b       	or	r24, r18
+ 174:	93 2b       	or	r25, r19
+ 176:	9f bd       	out	0x2f, r25	; 47
+ 178:	8e bd       	out	0x2e, r24	; 46
+ 17a:	80 e0       	ldi	r24, 0x00	; 0
+ 17c:	08 95       	ret
+ 17e:	84 b5       	in	r24, 0x24	; 36
+ 180:	68 2b       	or	r22, r24
+ 182:	64 bd       	out	0x24, r22	; 36
+ 184:	95 b5       	in	r25, 0x25	; 37
+ 186:	80 91 98 00 	lds	r24, 0x0098	; 0x800098 <prescaler_Timer2>
+ 18a:	89 2b       	or	r24, r25
+ 18c:	85 bd       	out	0x25, r24	; 37
+ 18e:	80 e0       	ldi	r24, 0x00	; 0
+ 190:	08 95       	ret
+ 192:	81 e0       	ldi	r24, 0x01	; 1
+ 194:	08 95       	ret
+
+00000196 <__vector_5>:
+
+
+
+
+
+ISR(TIMER2_OVF_vect){
+ 196:	1f 92       	push	r1
+ 198:	0f 92       	push	r0
+ 19a:	0f b6       	in	r0, 0x3f	; 63
+ 19c:	0f 92       	push	r0
+ 19e:	11 24       	eor	r1, r1
+ 1a0:	8f 93       	push	r24
+ 1a2:	9f 93       	push	r25
+	/** Raise the flag of the ISR to refer that 1 ms is passed**/
+	Sos_FLag_Fun = ONE;
+ 1a4:	81 e0       	ldi	r24, 0x01	; 1
+ 1a6:	90 e0       	ldi	r25, 0x00	; 0
+ 1a8:	90 93 61 00 	sts	0x0061, r25	; 0x800061 <Sos_FLag_Fun+0x1>
+ 1ac:	80 93 60 00 	sts	0x0060, r24	; 0x800060 <Sos_FLag_Fun>
+	
+}
+ 1b0:	9f 91       	pop	r25
+ 1b2:	8f 91       	pop	r24
+ 1b4:	0f 90       	pop	r0
+ 1b6:	0f be       	out	0x3f, r0	; 63
+ 1b8:	0f 90       	pop	r0
+ 1ba:	1f 90       	pop	r1
+ 1bc:	18 95       	reti
+
+000001be <func1>:
+ ********************************************/
+
+void func1(void)
+{
+	
+	PORTA_DATA^=FIRSTPIN;
+ 1be:	9b b3       	in	r25, 0x1b	; 27
+ 1c0:	81 e0       	ldi	r24, 0x01	; 1
+ 1c2:	89 27       	eor	r24, r25
+ 1c4:	8b bb       	out	0x1b, r24	; 27
+ 1c6:	08 95       	ret
+
+000001c8 <func2>:
+}
+
+void func2(void)
+{
+	PORTA_DATA^=THIRDPIN;
+ 1c8:	9b b3       	in	r25, 0x1b	; 27
+ 1ca:	84 e0       	ldi	r24, 0x04	; 4
+ 1cc:	89 27       	eor	r24, r25
+ 1ce:	8b bb       	out	0x1b, r24	; 27
+ 1d0:	08 95       	ret
+
+000001d2 <func3>:
+}
+
+void func3(void)
+{
+	PORTA_DATA^=SECONDPIN;
+ 1d2:	9b b3       	in	r25, 0x1b	; 27
+ 1d4:	82 e0       	ldi	r24, 0x02	; 2
+ 1d6:	89 27       	eor	r24, r25
+ 1d8:	8b bb       	out	0x1b, r24	; 27
+ 1da:	08 95       	ret
+
+000001dc <Sos_Init>:
+ * 				  - E_OK : successful									   *
+ *				  - E_NOK : not successful				
+ *
+ * Description	: Initialize (timer channel ,resolution of the Sos)
+ */
+ uint8_t Sos_Init(const Sos_ConfigType * ConfigPtr){
+ 1dc:	cf 93       	push	r28
+ 1de:	df 93       	push	r29
+ 1e0:	00 d0       	rcall	.+0      	; 0x1e2 <Sos_Init+0x6>
+ 1e2:	00 d0       	rcall	.+0      	; 0x1e4 <Sos_Init+0x8>
+ 1e4:	cd b7       	in	r28, 0x3d	; 61
+ 1e6:	de b7       	in	r29, 0x3e	; 62
+	 uint8_t Err_status  = E_OK;
+	
+	 if (ConfigPtr == NULL)
+ 1e8:	00 97       	sbiw	r24, 0x00	; 0
+ 1ea:	81 f0       	breq	.+32     	; 0x20c <Sos_Init+0x30>
+ 1ec:	fc 01       	movw	r30, r24
+	 {
+		 //create an object for timer structure
+		 Timer_Cfg_S Timer_Cfg;
+		 
+		 //Declaring Sos_Ch_TimerNo to store timer channel
+		 Sos_Ch_TimerNo  = ConfigPtr->Sos_Ch_Timer;
+ 1ee:	80 81       	ld	r24, Z
+ 1f0:	80 93 7d 00 	sts	0x007D, r24	; 0x80007d <Sos_Ch_TimerNo>
+		 
+		 //Definition of timer
+		 Timer_Cfg.Timer_CH_NO = Sos_Ch_TimerNo;
+ 1f4:	89 83       	std	Y+1, r24	; 0x01
+		 Timer_Cfg.Timer_Mode  = Zero;
+ 1f6:	1a 82       	std	Y+2, r1	; 0x02
+		 Timer_Cfg.Timer_Polling_Or_Interrupt = T2_INTERRUPT_NORMAL;   
+ 1f8:	80 e4       	ldi	r24, 0x40	; 64
+ 1fa:	8b 83       	std	Y+3, r24	; 0x03
+		 Timer_Cfg.Timer_Prescaler = T2_PRESCALER_64;
+ 1fc:	84 e0       	ldi	r24, 0x04	; 4
+ 1fe:	8c 83       	std	Y+4, r24	; 0x04
+		 Timer_Init(&Timer_Cfg);
+ 200:	ce 01       	movw	r24, r28
+ 202:	01 96       	adiw	r24, 0x01	; 1
+ 204:	0e 94 5d 00 	call	0xba	; 0xba <Timer_Init>
+ *				  - E_NOK : not successful				
+ *
+ * Description	: Initialize (timer channel ,resolution of the Sos)
+ */
+ uint8_t Sos_Init(const Sos_ConfigType * ConfigPtr){
+	 uint8_t Err_status  = E_OK;
+ 208:	80 e0       	ldi	r24, 0x00	; 0
+ 20a:	01 c0       	rjmp	.+2      	; 0x20e <Sos_Init+0x32>
+	
+	 if (ConfigPtr == NULL)
+	 {
+		 Err_status = NULL_PTR;
+ 20c:	82 e0       	ldi	r24, 0x02	; 2
+		 Timer_Cfg.Timer_Polling_Or_Interrupt = T2_INTERRUPT_NORMAL;   
+		 Timer_Cfg.Timer_Prescaler = T2_PRESCALER_64;
+		 Timer_Init(&Timer_Cfg);
+	 }
+	return Err_status;
+ }
+ 20e:	0f 90       	pop	r0
+ 210:	0f 90       	pop	r0
+ 212:	0f 90       	pop	r0
+ 214:	0f 90       	pop	r0
+ 216:	df 91       	pop	r29
+ 218:	cf 91       	pop	r28
+ 21a:	08 95       	ret
+
+0000021c <Sos_Start>:
+ * Description	: Start the Sos (one shot or period , delay time, call back function)
+ */
+
+uint8_t Sos_Start(Sos_Cfg_start * SosStartPtr){
+	uint8_t Err_Status =E_OK;
+	if (SosStartPtr==NULL)
+ 21c:	00 97       	sbiw	r24, 0x00	; 0
+ 21e:	e9 f0       	breq	.+58     	; 0x25a <Sos_Start+0x3e>
+ 220:	fc 01       	movw	r30, r24
+		Err_Status=NULL_PTR;
+	} 
+	else
+	{
+	/*****Fill  the elements of the array to start the  tasks ******/
+	Sos_CBK_Arr_Struct[arr_counter] = *SosStartPtr;
+ 222:	80 91 7c 00 	lds	r24, 0x007C	; 0x80007c <__data_end>
+ 226:	a8 2f       	mov	r26, r24
+ 228:	b0 e0       	ldi	r27, 0x00	; 0
+ 22a:	aa 0f       	add	r26, r26
+ 22c:	bb 1f       	adc	r27, r27
+ 22e:	aa 0f       	add	r26, r26
+ 230:	bb 1f       	adc	r27, r27
+ 232:	aa 0f       	add	r26, r26
+ 234:	bb 1f       	adc	r27, r27
+ 236:	a2 58       	subi	r26, 0x82	; 130
+ 238:	bf 4f       	sbci	r27, 0xFF	; 255
+ 23a:	98 e0       	ldi	r25, 0x08	; 8
+ 23c:	01 90       	ld	r0, Z+
+ 23e:	0d 92       	st	X+, r0
+ 240:	9a 95       	dec	r25
+ 242:	e1 f7       	brne	.-8      	; 0x23c <Sos_Start+0x20>
+	
+	/*******Increment the arr_counter to move to the next elemnt of the array and reinitialized in Deinit function****/
+	arr_counter++;
+ 244:	8f 5f       	subi	r24, 0xFF	; 255
+ 246:	80 93 7c 00 	sts	0x007C, r24	; 0x80007c <__data_end>
+	
+	//start timer to count delay
+	Timer_Start(Sos_Ch_TimerNo,Zero);
+ 24a:	60 e0       	ldi	r22, 0x00	; 0
+ 24c:	70 e0       	ldi	r23, 0x00	; 0
+ 24e:	80 91 7d 00 	lds	r24, 0x007D	; 0x80007d <Sos_Ch_TimerNo>
+ 252:	0e 94 9d 00 	call	0x13a	; 0x13a <Timer_Start>
+ *
+ * Description	: Start the Sos (one shot or period , delay time, call back function)
+ */
+
+uint8_t Sos_Start(Sos_Cfg_start * SosStartPtr){
+	uint8_t Err_Status =E_OK;
+ 256:	80 e0       	ldi	r24, 0x00	; 0
+ 258:	08 95       	ret
+	if (SosStartPtr==NULL)
+	{
+		Err_Status=NULL_PTR;
+ 25a:	82 e0       	ldi	r24, 0x02	; 2
+	
+	//start timer to count delay
+	Timer_Start(Sos_Ch_TimerNo,Zero);
+	}
+	return Err_Status;
+}
+ 25c:	08 95       	ret
+
+0000025e <Sos_Stop_Timer>:
+ *				  - E_NOK : not successful				
+ *
+ * Description	: stop(call back function)
+ */
+ 
+void Sos_Stop_Timer (void(*ptr)(void)){
+ 25e:	cf 93       	push	r28
+ 260:	df 93       	push	r29
+ 262:	bc 01       	movw	r22, r24
+	
+	/***********initilaize arr_counter**********/
+	 uint8_t S_Arr_counter; 
+	 //arr_counter
+	 for(S_Arr_counter = Zero;S_Arr_counter<arr_counter;S_Arr_counter++){
+ 264:	20 91 7c 00 	lds	r18, 0x007C	; 0x80007c <__data_end>
+ 268:	22 23       	and	r18, r18
+ 26a:	81 f1       	breq	.+96     	; 0x2cc <Sos_Stop_Timer+0x6e>
+ 26c:	90 e0       	ldi	r25, 0x00	; 0
+		
+		if(Sos_CBK_Arr_Struct[S_Arr_counter].Sos_Cbk_ptr==ptr){
+ 26e:	a9 2f       	mov	r26, r25
+ 270:	b0 e0       	ldi	r27, 0x00	; 0
+ 272:	fd 01       	movw	r30, r26
+ 274:	ee 0f       	add	r30, r30
+ 276:	ff 1f       	adc	r31, r31
+ 278:	ee 0f       	add	r30, r30
+ 27a:	ff 1f       	adc	r31, r31
+ 27c:	ee 0f       	add	r30, r30
+ 27e:	ff 1f       	adc	r31, r31
+ 280:	e2 58       	subi	r30, 0x82	; 130
+ 282:	ff 4f       	sbci	r31, 0xFF	; 255
+ 284:	46 81       	ldd	r20, Z+6	; 0x06
+ 286:	57 81       	ldd	r21, Z+7	; 0x07
+ 288:	46 17       	cp	r20, r22
+ 28a:	57 07       	cpc	r21, r23
+ 28c:	d1 f4       	brne	.+52     	; 0x2c2 <Sos_Stop_Timer+0x64>
+			
+			Sos_CBK_Arr_Struct[S_Arr_counter] = Sos_CBK_Arr_Struct[arr_counter-ONE];
+ 28e:	c2 2f       	mov	r28, r18
+ 290:	d0 e0       	ldi	r29, 0x00	; 0
+ 292:	df 01       	movw	r26, r30
+ 294:	cc 0f       	add	r28, r28
+ 296:	dd 1f       	adc	r29, r29
+ 298:	cc 0f       	add	r28, r28
+ 29a:	dd 1f       	adc	r29, r29
+ 29c:	cc 0f       	add	r28, r28
+ 29e:	dd 1f       	adc	r29, r29
+ 2a0:	ca 58       	subi	r28, 0x8A	; 138
+ 2a2:	df 4f       	sbci	r29, 0xFF	; 255
+ 2a4:	88 e0       	ldi	r24, 0x08	; 8
+ 2a6:	fe 01       	movw	r30, r28
+ 2a8:	01 90       	ld	r0, Z+
+ 2aa:	0d 92       	st	X+, r0
+ 2ac:	8a 95       	dec	r24
+ 2ae:	e1 f7       	brne	.-8      	; 0x2a8 <Sos_Stop_Timer+0x4a>
+			
+			Sos_CBK_Arr_Struct[arr_counter-1].Sos_Cbk_ptr = NULL;
+ 2b0:	1f 82       	std	Y+7, r1	; 0x07
+ 2b2:	1e 82       	std	Y+6, r1	; 0x06
+			Sos_CBK_Arr_Struct[arr_counter-1].Sos_delay = Zero;
+ 2b4:	19 82       	std	Y+1, r1	; 0x01
+ 2b6:	18 82       	st	Y, r1
+			Sos_CBK_Arr_Struct[arr_counter-1].Sos_periodicity =Zero;
+ 2b8:	1b 82       	std	Y+3, r1	; 0x03
+ 2ba:	1a 82       	std	Y+2, r1	; 0x02
+			
+			/*************Decrement the structures of the array*******************/
+			arr_counter--;
+ 2bc:	21 50       	subi	r18, 0x01	; 1
+ 2be:	20 93 7c 00 	sts	0x007C, r18	; 0x80007c <__data_end>
+void Sos_Stop_Timer (void(*ptr)(void)){
+	
+	/***********initilaize arr_counter**********/
+	 uint8_t S_Arr_counter; 
+	 //arr_counter
+	 for(S_Arr_counter = Zero;S_Arr_counter<arr_counter;S_Arr_counter++){
+ 2c2:	9f 5f       	subi	r25, 0xFF	; 255
+ 2c4:	20 91 7c 00 	lds	r18, 0x007C	; 0x80007c <__data_end>
+ 2c8:	92 17       	cp	r25, r18
+ 2ca:	88 f2       	brcs	.-94     	; 0x26e <Sos_Stop_Timer+0x10>
+			/*************Decrement the structures of the array*******************/
+			arr_counter--;
+			
+		} 
+	 }
+ }
+ 2cc:	df 91       	pop	r29
+ 2ce:	cf 91       	pop	r28
+ 2d0:	08 95       	ret
+
+000002d2 <Sos_Dispatch>:
+ *				  - E_NOK : not successful				
+ *
+ * Description	: 
+ */
+ 
+ uint8_t Sos_Dispatch(){
+ 2d2:	ef 92       	push	r14
+ 2d4:	ff 92       	push	r15
+ 2d6:	0f 93       	push	r16
+ 2d8:	1f 93       	push	r17
+ 2da:	cf 93       	push	r28
+		
+		uint8_t Err_Status = E_OK;
+		
+		if (Sos_FLag_Fun == ONE)
+ 2dc:	80 91 60 00 	lds	r24, 0x0060	; 0x800060 <Sos_FLag_Fun>
+ 2e0:	90 91 61 00 	lds	r25, 0x0061	; 0x800061 <Sos_FLag_Fun+0x1>
+ 2e4:	01 97       	sbiw	r24, 0x01	; 1
+ 2e6:	09 f0       	breq	.+2      	; 0x2ea <Sos_Dispatch+0x18>
+ 2e8:	48 c0       	rjmp	.+144    	; 0x37a <Sos_Dispatch+0xa8>
+		{
+			
+			Sos_CBK_Arr_Struct[Zero].Sos_Counter++;
+ 2ea:	ee e7       	ldi	r30, 0x7E	; 126
+ 2ec:	f0 e0       	ldi	r31, 0x00	; 0
+ 2ee:	84 81       	ldd	r24, Z+4	; 0x04
+ 2f0:	95 81       	ldd	r25, Z+5	; 0x05
+ 2f2:	01 96       	adiw	r24, 0x01	; 1
+ 2f4:	95 83       	std	Z+5, r25	; 0x05
+ 2f6:	84 83       	std	Z+4, r24	; 0x04
+			Sos_CBK_Arr_Struct[ONE].Sos_Counter++;
+ 2f8:	84 85       	ldd	r24, Z+12	; 0x0c
+ 2fa:	95 85       	ldd	r25, Z+13	; 0x0d
+ 2fc:	01 96       	adiw	r24, 0x01	; 1
+ 2fe:	95 87       	std	Z+13, r25	; 0x0d
+ 300:	84 87       	std	Z+12, r24	; 0x0c
+			Sos_CBK_Arr_Struct[TWO].Sos_Counter++;
+ 302:	84 89       	ldd	r24, Z+20	; 0x14
+ 304:	95 89       	ldd	r25, Z+21	; 0x15
+ 306:	01 96       	adiw	r24, 0x01	; 1
+ 308:	95 8b       	std	Z+21, r25	; 0x15
+ 30a:	84 8b       	std	Z+20, r24	; 0x14
+			Sos_FLag_Fun=Zero;
+ 30c:	10 92 61 00 	sts	0x0061, r1	; 0x800061 <Sos_FLag_Fun+0x1>
+ 310:	10 92 60 00 	sts	0x0060, r1	; 0x800060 <Sos_FLag_Fun>
+		else
+		{
+			//do Nothing
+		}
+		
+		if (arr_counter==Zero)
+ 314:	80 91 7c 00 	lds	r24, 0x007C	; 0x80007c <__data_end>
+ 318:	88 23       	and	r24, r24
+ 31a:	59 f1       	breq	.+86     	; 0x372 <Sos_Dispatch+0xa0>
+ *				  - E_NOK : not successful				
+ *
+ * Description	: 
+ */
+ 
+ uint8_t Sos_Dispatch(){
+ 31c:	c0 e0       	ldi	r28, 0x00	; 0
+		else
+		{
+		for (uint8_t i=Zero; i<arr_counter ; i++)
+		{
+			
+			if (Sos_CBK_Arr_Struct[i].Sos_Counter==Sos_CBK_Arr_Struct[i].Sos_delay)
+ 31e:	0c 2f       	mov	r16, r28
+ 320:	10 e0       	ldi	r17, 0x00	; 0
+ 322:	f8 01       	movw	r30, r16
+ 324:	ee 0f       	add	r30, r30
+ 326:	ff 1f       	adc	r31, r31
+ 328:	ee 0f       	add	r30, r30
+ 32a:	ff 1f       	adc	r31, r31
+ 32c:	ee 0f       	add	r30, r30
+ 32e:	ff 1f       	adc	r31, r31
+ 330:	e2 58       	subi	r30, 0x82	; 130
+ 332:	ff 4f       	sbci	r31, 0xFF	; 255
+ 334:	24 81       	ldd	r18, Z+4	; 0x04
+ 336:	35 81       	ldd	r19, Z+5	; 0x05
+ 338:	80 81       	ld	r24, Z
+ 33a:	91 81       	ldd	r25, Z+1	; 0x01
+ 33c:	28 17       	cp	r18, r24
+ 33e:	39 07       	cpc	r19, r25
+ 340:	89 f4       	brne	.+34     	; 0x364 <Sos_Dispatch+0x92>
+			{
+								
+				Sos_CBK_Arr_Struct[i].Sos_Cbk_ptr();
+ 342:	7f 01       	movw	r14, r30
+ 344:	06 80       	ldd	r0, Z+6	; 0x06
+ 346:	f7 81       	ldd	r31, Z+7	; 0x07
+ 348:	e0 2d       	mov	r30, r0
+ 34a:	09 95       	icall
+				Sos_CBK_Arr_Struct[i].Sos_Counter=Zero;
+ 34c:	f7 01       	movw	r30, r14
+ 34e:	15 82       	std	Z+5, r1	; 0x05
+ 350:	14 82       	std	Z+4, r1	; 0x04
+				
+				if (Sos_CBK_Arr_Struct[i].Sos_periodicity == Zero)
+ 352:	82 81       	ldd	r24, Z+2	; 0x02
+ 354:	93 81       	ldd	r25, Z+3	; 0x03
+ 356:	89 2b       	or	r24, r25
+ 358:	29 f4       	brne	.+10     	; 0x364 <Sos_Dispatch+0x92>
+				{
+					Sos_Stop_Timer(Sos_CBK_Arr_Struct[i].Sos_Cbk_ptr);
+ 35a:	f7 01       	movw	r30, r14
+ 35c:	86 81       	ldd	r24, Z+6	; 0x06
+ 35e:	97 81       	ldd	r25, Z+7	; 0x07
+ 360:	0e 94 2f 01 	call	0x25e	; 0x25e <Sos_Stop_Timer>
+			
+			Err_Status = EMPTY_BUFFER;
+		} 
+		else
+		{
+		for (uint8_t i=Zero; i<arr_counter ; i++)
+ 364:	cf 5f       	subi	r28, 0xFF	; 255
+ 366:	80 91 7c 00 	lds	r24, 0x007C	; 0x80007c <__data_end>
+ 36a:	c8 17       	cp	r28, r24
+ 36c:	c0 f2       	brcs	.-80     	; 0x31e <Sos_Dispatch+0x4c>
+ * Description	: 
+ */
+ 
+ uint8_t Sos_Dispatch(){
+		
+		uint8_t Err_Status = E_OK;
+ 36e:	80 e0       	ldi	r24, 0x00	; 0
+ 370:	09 c0       	rjmp	.+18     	; 0x384 <Sos_Dispatch+0xb2>
+		}
+		
+		if (arr_counter==Zero)
+		{
+			
+			Err_Status = EMPTY_BUFFER;
+ 372:	8a e0       	ldi	r24, 0x0A	; 10
+ 374:	07 c0       	rjmp	.+14     	; 0x384 <Sos_Dispatch+0xb2>
+ 376:	8a e0       	ldi	r24, 0x0A	; 10
+			{
+				//do Nothing
+			}
+		}
+			}
+	  return Err_Status;
+ 378:	05 c0       	rjmp	.+10     	; 0x384 <Sos_Dispatch+0xb2>
+		else
+		{
+			//do Nothing
+		}
+		
+		if (arr_counter==Zero)
+ 37a:	80 91 7c 00 	lds	r24, 0x007C	; 0x80007c <__data_end>
+ 37e:	88 23       	and	r24, r24
+ 380:	d1 f3       	breq	.-12     	; 0x376 <Sos_Dispatch+0xa4>
+ 382:	cc cf       	rjmp	.-104    	; 0x31c <Sos_Dispatch+0x4a>
+				//do Nothing
+			}
+		}
+			}
+	  return Err_Status;
+ }
+ 384:	cf 91       	pop	r28
+ 386:	1f 91       	pop	r17
+ 388:	0f 91       	pop	r16
+ 38a:	ff 90       	pop	r15
+ 38c:	ef 90       	pop	r14
+ 38e:	08 95       	ret
+
+00000390 <_exit>:
+ 390:	f8 94       	cli
+
+00000392 <__stop_program>:
+ 392:	ff cf       	rjmp	.-2      	; 0x392 <__stop_program>
