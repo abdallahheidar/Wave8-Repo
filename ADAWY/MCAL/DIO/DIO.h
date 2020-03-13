@@ -141,4 +141,18 @@ ERROR_STATUS DIO_Toggle (uint8_t GPIO, uint8_t pins);
 
 
 
+/*
+*Input: GPIO -> to get PORT name
+*					- GPIOA
+*					- GPIOB
+*					- GPIOC
+*					- GPIOD
+*		value 	-> The desired value
+*Output: No output
+*In/Out: No In/Out
+*Description: This function can set the value of a full port, a nibble
+* 			  or even one pin.
+*/
+ERROR_STATUS DIO_Write_Port (uint8_t GPIO, uint8_t value);
+
 #endif
