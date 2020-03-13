@@ -1,7 +1,7 @@
-/*final edition
+/*
  * App.c
  *
- * Created: 3/11/2020 10:25:29 AM
+ * Created: 2/24/2020 10:25:29 PM
  * Author : Mohamed Ramadan
  */ 
 
@@ -12,21 +12,21 @@
 	 
 
 int main(){
+	
 	/**enable global interrupt**/
 	sei();
-	
 	/**Initialize the SOS **/
 	Sos_Init(&ConfigPtr);
-	
+
 	/**SOS start three tasks**/
-	Create_Task(&Sos_cfg_start_Fun1);
-	Create_Task(&Sos_cfg_start_Fun2);
-	Create_Task(&Sos_cfg_start_Fun3);
+	Sos_Start(&Sos_Cfg_start_Fun1);
+	Sos_Start(&Sos_Cfg_start_Fun2);
+	Sos_Start(&Sos_Cfg_start_Fun3);
 	
 	while(1)
 	{
 		/**perform the tasks**/
-		Sos_Run();
+		Sos_Dispatch();
 		
 	}
 	
