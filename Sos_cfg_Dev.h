@@ -1,5 +1,5 @@
-#ifndef SOS_CFG_H_
-#define	SOS_CFG_H_
+#ifndef Sos_cfg_H_
+#define	Sos_cfg_H_
 
 #include "std_types.h"
 
