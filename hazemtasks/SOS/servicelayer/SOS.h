@@ -29,41 +29,41 @@
 #define LAST_TASK         BUFFER_SIZE-1 
 /*- PRIMITIVE TYPES ----------------------------------------*/
 
-typedef struct SOS_Configtype
+typedef struct TMU_Configtype
 {
 	uint8_t u8_res;
-	uint8_t u8_SOS_timerid;
-}SOS_Configtype;
-typedef   SOS_Configtype *  PtrSOS_Configtype;
+	uint8_t u8_TMU_timerid;
+}TMU_Configtype;
+typedef   TMU_Configtype *  PtrTMU_Configtype;
 typedef void(*ptrtotask)(void);
 typedef  sint8_t EnmTMUError_t;
 
 /*- Extern --------------------------------------------------*/
 
-extern SOS_Configtype gstr_OSCONFIG;
+extern TMU_Configtype gstr_TMUCONFIG;
 
 
 /*- FUNCTION DECLARATIONS ----------------------------------*/
 
 /************************************************************************/
 /* TMU_Init
-EnmTMUError_t TMU_Init (const SOS_Configtype * ConfigPtr )
+EnmTMUError_t TMU_Init (const TMU_Configtype * ConfigPtr )
 ConfigPtr Pointer to a selected configuration structure*/
 /************************************************************************/
-extern EnmTMUError_t SOS_Init (const PtrSOS_Configtype ConfigPtr );
+extern EnmTMUError_t TMU_Init (const PtrTMU_Configtype ConfigPtr );
 /*
 Function Name 	TMU_Start_Timer
 Syntax:
 Return:*/
 
-extern EnmTMUError_t SOS_Start_Timer(uint16_t u16_time,ptrtotask pf_task,uint8_t u8_periodicORoneshot);
+extern EnmTMUError_t TMU_Start_Timer(uint16_t u16_time,ptrtotask pf_task,uint8_t u8_periodicORoneshot);
 /**
 * @brief: TMU Stop
 * @param: ptrFun: pointer to callback function
 * @return: EnmTMUError_t status code with error code if one occurred
 */
 
-extern EnmTMUError_t SOS_Stop_Timer(ptrtotask ptrtofun);
+extern EnmTMUError_t TMU_Stop_Timer(ptrtotask ptrtofun);
 
 /**
 * @brief: TMU Loops through task list and service each one as requested
@@ -72,7 +72,7 @@ extern EnmTMUError_t SOS_Stop_Timer(ptrtotask ptrtofun);
 * Output: None
 * @return: EnmTMUError_t status code with error code if one occurred
 */
-extern EnmTMUError_t SOS_Dispatch(void);
+extern EnmTMUError_t TMU_Dispatch(void);
 
 /**
 * @brief: TMU DeInitialization
@@ -81,16 +81,16 @@ extern EnmTMUError_t SOS_Dispatch(void);
 * Output: None
 * @return: EnmTMUError_t status code with error code if one occurred
 */
-extern EnmTMUError_t SOS_DeInit(void);
+extern EnmTMUError_t TMU_DeInit(void);
 
 /**
-* @brief: SOS_schadulertime
+* @brief: TMU_schadulertime
 * @param: void
 * Input : void
 * Output: None
 * @return: void
 */
-extern void SOS_schedulertime(void);
+extern void TMU_schedulertime(void);
 
 
 
