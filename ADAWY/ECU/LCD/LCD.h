@@ -39,8 +39,12 @@
 
 
 
-
-
+extern uint8_t gu8_LCD_InitFlag;
+extern uint8_t gu8_LCD_SencCommandFlag;
+extern uint8_t gu8_LCD_DisplayCharFlag;
+extern uint8_t gu8_LCD_DisplayStringFlag;
+extern uint8_t gu8_LCD_LCD_DisplayStringRowColumnFlag;
+extern  uint8_t gu8_LCD_GoToRowColumFlag;
 /*************************************************************/
 /***************** APIS FUNCTION PROTOTYPE ******************/
 /***********************************************************/
