@@ -11,7 +11,6 @@
 #include "SOS.h"
 #include "/tmu/tmuapp/tmuapp/MCAL/timer.h"
 #include "/tmu/tmuapp/tmuapp/Error_table.h"
-#include "/tmu/tmuapp/tmuapp/MCAL/registers.h"
 
 /************************************************************************/
 /*							DEFINES                                    */
@@ -52,7 +51,7 @@ static uint8_t Timer_started = ZERO;
 /*create array of Tasks*/
 st_SOS_TaskType_t Timer_tasks[SOS_BUFFER] = {{ZERO}};
 
-static volatile void Timer_callback(void);
+static void Timer_callback(void);
 /************************************************************************/
 /*							APIS                                        */
 /************************************************************************/
