@@ -68,12 +68,18 @@
  static ERROR_STATUS LCD_Send (uint8_t Data);
 
 
-
-
  /*************************************************************/
  /*************** LOCAL FUNCTION IMPLEMENTAION ***************/
  /***********************************************************/
 
+ /**
+ * Input: Data or command need to send to LCD.
+ * Output:
+ * In/Out: 
+ * Return:
+ * Description: This function read the LCD port bit0 and keep it's value
+ *              and write the desired value thought 4 bit mode
+ */
 ERROR_STATUS LCD_Send (uint8_t Data)
 {
    uint8_t au8_Data = ZERO;
@@ -94,15 +100,18 @@ ERROR_STATUS LCD_Send (uint8_t Data)
 	return au8_Error;
 }
 
-
-
-
-
-
  /*************************************************************/
  /*************** APIS FUNCTION IMPLEMENTAION ****************/
  /***********************************************************/
 
+ /**
+ * Input:
+ * Output:
+ * In/Out:
+ * Return: The error status of the function.
+ * Description: Initiates the LCD.
+ *
+ */
  ERROR_STATUS LCD_init (void)
  {
     uint8_t au8_Error = E_OK;
@@ -203,7 +212,14 @@ ERROR_STATUS LCD_Send (uint8_t Data)
 	 return au8_Error;
  }
 
-
+ /**
+ * Input: Command need to execute.
+ * Output:
+ * In/Out:
+ * Return: The error status of the function.
+ * Description: execute LCD command.
+ *
+ */
  ERROR_STATUS LCD_SendCommand (uint8_t Command)
  {
 	 uint8_t au8_Error = E_OK;
@@ -241,7 +257,14 @@ ERROR_STATUS LCD_Send (uint8_t Data)
 	 return au8_Error;
  }
 
-
+ /**
+ * Input: address of needed char in the LCD CGROM.
+ * Output:
+ * In/Out:
+ * Return: The error status of the function.
+ * Description: Display a character on LCD.
+ *
+ */
  ERROR_STATUS LCD_DisplayChar (uint8_t LCD_Char)
  {
     uint8_t au8_Error = E_OK;
@@ -286,7 +309,14 @@ ERROR_STATUS LCD_Send (uint8_t Data)
 	 return au8_Error;
  }
 
-
+ /**
+ * Input: Pointer to a string and string size.
+ * Output:
+ * In/Out:
+ * Return: The error status of the function.
+ * Description: Display a string on LCD.
+ *
+ */
  ERROR_STATUS LCD_DisplayString (uint8_t * LCD_String, uint8_t String_Size)
  {
     uint8_t au8_Error = E_OK;
@@ -333,7 +363,14 @@ ERROR_STATUS LCD_Send (uint8_t Data)
 	 return au8_Error;
  }
  
-
+/**
+* Input: Pointer to a string and string size and position (0:31).
+* Output:
+* In/Out:
+* Return: The error status of the function.
+* Description: Display a string on LCD on specific position.
+*
+*/
  ERROR_STATUS LCD_DisplayStringRowColumn (uint8_t * LCD_String, uint8_t String_Size, uint8_t Pos)
  {
     uint8_t au8_Error = E_OK;
@@ -382,7 +419,14 @@ ERROR_STATUS LCD_Send (uint8_t Data)
 	 return au8_Error;
  }
  
-
+ /**
+ * Input:
+ * Output:
+ * In/Out:
+ * Return: The error status of the function.
+ * Description: Clear the LCD.
+ *
+ */
  ERROR_STATUS LCD_Clear (void)
  {
     uint8_t au8_Error = E_OK;
@@ -392,7 +436,14 @@ ERROR_STATUS LCD_Send (uint8_t Data)
 	 return au8_Error;
  }
  
-
+ /**
+ * Input:  position on the LCD (0:31)
+ * Output:
+ * In/Out:
+ * Return: The error status of the function.
+ * Description: go to specific position on the LCD.
+ *
+ */
  ERROR_STATUS LCD_GoToRowColumn (uint8_t Pos)
  {
     uint8_t au8_Error = E_OK;
