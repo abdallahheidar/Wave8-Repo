@@ -48,7 +48,7 @@
 #define WAIT_COUNTER_INITAIL_VALUE 0
 #define LCD_4BIT_MODE_2LINE_DISPLAY_5_8_FONT 0x28
 #define LCD_DISPLAY_OFF 0x08
-#define LCD_DISPLAY_ON_BLINK_CURSOR 0x0F
+#define LCD_DISPLAY_ON_CURSOR_OFF 0x0C
 #define LCD_ENTERY_MODE_RIGHT_INCREASED 0x06
 
 
@@ -200,7 +200,7 @@ ERROR_STATUS LCD_Send (uint8_t Data)
 		    else if (INIT_COMMAND_SECOND == au8_InitCommandCounter)
 		    {
 			    /*display on, blink cursor on*/
-			    au8_Error = LCD_SendCommand(LCD_DISPLAY_ON_BLINK_CURSOR);
+			    au8_Error = LCD_SendCommand(LCD_DISPLAY_ON_CURSOR_OFF);
 			    au8_InitCommandCounter++ ;
 		    }
 

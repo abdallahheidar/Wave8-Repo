@@ -7,6 +7,7 @@
 
 
 #include "LCD_APP.h"
+#include "../MCAL/DIO/DIO.h"
 
  #define CLEAR                           30
  #define PRINT_FIRST_LINE                CLEAR +1
@@ -27,7 +28,7 @@
  #define QUE5                            QUE4 +1
  #define QUE6                            QUE5 +1
  
-
+ #define ANSWER_WAIT        30
 
  #define INTERNAL_STATUS_1  1
  #define INTERNAL_STATUS_2  2
@@ -56,6 +57,12 @@
 	 static uint8_t au8_QueNumber = 1;
 	 uint8_t au8_ButtonStatus = NOT_INITIALIZED;
 	 static uint8_t au8_Score = ZERO;
+	 static uint8_t au8_WaitCounter = ZERO;
+	  DIO_Cfg_s str_DIO_Info;
+	  str_DIO_Info.dir = OUTPUT;
+	  str_DIO_Info.GPIO = GPIOB;
+	  str_DIO_Info.pins = BIT3|BIT4|BIT5|BIT6|BIT7;
+	  DIO_init(&str_DIO_Info);
 
 	 switch (au8_AppStatus)
 	 {
@@ -203,27 +210,51 @@
 		case RIGHT_ANSWER:
 		if (INITIALIZED != gu8_LCD_DisplayStringRowColumnFlag)
 		{
-			LCD_DisplayStringRowColumn("RIGHT ANSWER",12,16);
+			LCD_DisplayStringRowColumn("RIGHT ANSWER",12,0);
 			
 		}
 		else
 		{
-			gu8_LCD_DisplayStringRowColumnFlag = NOT_INITIALIZED;
-			au8_Score++;
-			au8_AppStatus = CLEAR;
+			if (ANSWER_WAIT > au8_WaitCounter)
+			{
+				au8_WaitCounter++;
+				if (ZERO == (au8_WaitCounter%4))
+				{
+				   DIO_Toggle(GPIOB,UPPER_NIBBLE);
+				}
+			}
+			else
+			{
+				gu8_LCD_DisplayStringRowColumnFlag = NOT_INITIALIZED;
+				au8_AppStatus = CLEAR;
+				au8_WaitCounter = ZERO;
+				au8_Score ++;
+				DIO_Write(GPIOB,UPPER_NIBBLE,LOW);
+			}
 		}
     	break;
 		/*****************************************************************************************************************/
 		case WRONG_ANSWER:
 		if (INITIALIZED != gu8_LCD_DisplayStringRowColumnFlag)
 		{
-			LCD_DisplayStringRowColumn("WRONG ANSWER",12,16);
+			LCD_DisplayStringRowColumn("WRONG ANSWER",12,0);
 			
 		}
 		else
 		{
-			gu8_LCD_DisplayStringRowColumnFlag = NOT_INITIALIZED;
-			au8_AppStatus = CLEAR;
+			if (ANSWER_WAIT > au8_WaitCounter)
+			{
+			   au8_WaitCounter++;
+				DIO_Write(GPIOB,BIT3,HIGH);
+			} 
+			else
+			{
+			   gu8_LCD_DisplayStringRowColumnFlag = NOT_INITIALIZED;
+			   au8_AppStatus = CLEAR;
+				au8_WaitCounter = ZERO;
+				DIO_Write(GPIOB,BIT3,LOW);
+			}
+			
 		}
 		break;
 		 /***************************************************************************************************************/
@@ -249,24 +280,24 @@
 
 			case 3:
 			PTR1 = "Is the death";
-			au8_QueSize1 = 13;
-			PTR2 = "rate of virus 5%?";
+			au8_QueSize1 = 12;
+			PTR2 = "rate of virus 7%?";
 			au8_QueSize2 = 16;
 			au8_CheckCounter = QUE3;
 			break;
 
 			case 4:
-			PTR1 = "IncubationPeriod";
-			au8_QueSize1 = 16;
-			PTR2 = ",is 15 days?";
-			au8_QueSize2 = 12;
+			PTR1 = "Is incubation";
+			au8_QueSize1 = 13;
+			PTR2 = "Period 15 days?";
+			au8_QueSize2 = 15;
 			au8_CheckCounter = QUE4;
 			break;
 
 			case 5:
 			PTR1 = "Does it lasts" ;
 			au8_QueSize1 = 13;
-			PTR2 = "for 5hr on skin";
+			PTR2 = "for 5hr on skin?";
 			au8_QueSize2 = 16;
 			au8_CheckCounter = QUE5;
 			break;

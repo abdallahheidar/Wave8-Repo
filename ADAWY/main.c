@@ -25,7 +25,7 @@ int main (void)
 	OS_Init(&str_OS_InitConf);
 	
 	Task_Creat(1,0,PERIODIC,Task1);
-	Task_Creat(50,1,PERIODIC,LCD_APP);
+	Task_Creat(40,1,PERIODIC,LCD_APP);
 //	Task_Creat(1,2,PERIODIC,Task3);
 
 	OS_RUN();
