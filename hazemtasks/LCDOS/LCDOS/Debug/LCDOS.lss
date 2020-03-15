@@ -1,0 +1,1033 @@
+
+LCDOS.elf:     file format elf32-avr
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         0000040c  00000000  00000000  00000094  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  1 .data         0000001a  00800060  0000040c  000004a0  2**0
+                  CONTENTS, ALLOC, LOAD, DATA
+  2 .bss          00000002  0080007a  0080007a  000004ba  2**0
+                  ALLOC
+  3 .comment      00000030  00000000  00000000  000004ba  2**0
+                  CONTENTS, READONLY
+  4 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  000004ec  2**2
+                  CONTENTS, READONLY
+  5 .debug_aranges 00000150  00000000  00000000  00000528  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  6 .debug_info   0000142d  00000000  00000000  00000678  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  7 .debug_abbrev 000009df  00000000  00000000  00001aa5  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  8 .debug_line   000011a5  00000000  00000000  00002484  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  9 .debug_frame  00000270  00000000  00000000  0000362c  2**2
+                  CONTENTS, READONLY, DEBUGGING
+ 10 .debug_str    000041c1  00000000  00000000  0000389c  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 11 .debug_loc    00000d24  00000000  00000000  00007a5d  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 12 .debug_ranges 000000e8  00000000  00000000  00008781  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 13 .debug_macro  000011b4  00000000  00000000  00008869  2**0
+                  CONTENTS, READONLY, DEBUGGING
+
+Disassembly of section .text:
+
+00000000 <__vectors>:
+   0:	29 c0       	rjmp	.+82     	; 0x54 <__ctors_end>
+   2:	00 00       	nop
+   4:	42 c0       	rjmp	.+132    	; 0x8a <__bad_interrupt>
+   6:	00 00       	nop
+   8:	40 c0       	rjmp	.+128    	; 0x8a <__bad_interrupt>
+   a:	00 00       	nop
+   c:	3e c0       	rjmp	.+124    	; 0x8a <__bad_interrupt>
+   e:	00 00       	nop
+  10:	3c c0       	rjmp	.+120    	; 0x8a <__bad_interrupt>
+  12:	00 00       	nop
+  14:	3a c0       	rjmp	.+116    	; 0x8a <__bad_interrupt>
+  16:	00 00       	nop
+  18:	38 c0       	rjmp	.+112    	; 0x8a <__bad_interrupt>
+  1a:	00 00       	nop
+  1c:	36 c0       	rjmp	.+108    	; 0x8a <__bad_interrupt>
+  1e:	00 00       	nop
+  20:	34 c0       	rjmp	.+104    	; 0x8a <__bad_interrupt>
+  22:	00 00       	nop
+  24:	32 c0       	rjmp	.+100    	; 0x8a <__bad_interrupt>
+  26:	00 00       	nop
+  28:	30 c0       	rjmp	.+96     	; 0x8a <__bad_interrupt>
+  2a:	00 00       	nop
+  2c:	a9 c1       	rjmp	.+850    	; 0x380 <__vector_11>
+  2e:	00 00       	nop
+  30:	2c c0       	rjmp	.+88     	; 0x8a <__bad_interrupt>
+  32:	00 00       	nop
+  34:	2a c0       	rjmp	.+84     	; 0x8a <__bad_interrupt>
+  36:	00 00       	nop
+  38:	28 c0       	rjmp	.+80     	; 0x8a <__bad_interrupt>
+  3a:	00 00       	nop
+  3c:	26 c0       	rjmp	.+76     	; 0x8a <__bad_interrupt>
+  3e:	00 00       	nop
+  40:	24 c0       	rjmp	.+72     	; 0x8a <__bad_interrupt>
+  42:	00 00       	nop
+  44:	22 c0       	rjmp	.+68     	; 0x8a <__bad_interrupt>
+  46:	00 00       	nop
+  48:	20 c0       	rjmp	.+64     	; 0x8a <__bad_interrupt>
+  4a:	00 00       	nop
+  4c:	1e c0       	rjmp	.+60     	; 0x8a <__bad_interrupt>
+  4e:	00 00       	nop
+  50:	1c c0       	rjmp	.+56     	; 0x8a <__bad_interrupt>
+	...
+
+00000054 <__ctors_end>:
+  54:	11 24       	eor	r1, r1
+  56:	1f be       	out	0x3f, r1	; 63
+  58:	cf e5       	ldi	r28, 0x5F	; 95
+  5a:	d8 e0       	ldi	r29, 0x08	; 8
+  5c:	de bf       	out	0x3e, r29	; 62
+  5e:	cd bf       	out	0x3d, r28	; 61
+
+00000060 <__do_copy_data>:
+  60:	10 e0       	ldi	r17, 0x00	; 0
+  62:	a0 e6       	ldi	r26, 0x60	; 96
+  64:	b0 e0       	ldi	r27, 0x00	; 0
+  66:	ec e0       	ldi	r30, 0x0C	; 12
+  68:	f4 e0       	ldi	r31, 0x04	; 4
+  6a:	02 c0       	rjmp	.+4      	; 0x70 <__do_copy_data+0x10>
+  6c:	05 90       	lpm	r0, Z+
+  6e:	0d 92       	st	X+, r0
+  70:	aa 37       	cpi	r26, 0x7A	; 122
+  72:	b1 07       	cpc	r27, r17
+  74:	d9 f7       	brne	.-10     	; 0x6c <__do_copy_data+0xc>
+
+00000076 <__do_clear_bss>:
+  76:	20 e0       	ldi	r18, 0x00	; 0
+  78:	aa e7       	ldi	r26, 0x7A	; 122
+  7a:	b0 e0       	ldi	r27, 0x00	; 0
+  7c:	01 c0       	rjmp	.+2      	; 0x80 <.do_clear_bss_start>
+
+0000007e <.do_clear_bss_loop>:
+  7e:	1d 92       	st	X+, r1
+
+00000080 <.do_clear_bss_start>:
+  80:	ac 37       	cpi	r26, 0x7C	; 124
+  82:	b2 07       	cpc	r27, r18
+  84:	e1 f7       	brne	.-8      	; 0x7e <.do_clear_bss_loop>
+  86:	a3 d1       	rcall	.+838    	; 0x3ce <main>
+  88:	bf c1       	rjmp	.+894    	; 0x408 <_exit>
+
+0000008a <__bad_interrupt>:
+  8a:	ba cf       	rjmp	.-140    	; 0x0 <__vectors>
+
+0000008c <softwareDelayMs>:
+
+#include "softwareDelay.h"
+
+/* this is the implementation of software delay function*/
+
+void softwareDelayMs(uint32_t u32_delay_in_ms){
+  8c:	ab 01       	movw	r20, r22
+  8e:	bc 01       	movw	r22, r24
+	
+	for (uint16_t counter=0;counter<u32_delay_in_ms;counter++){
+  90:	41 15       	cp	r20, r1
+  92:	51 05       	cpc	r21, r1
+  94:	61 05       	cpc	r22, r1
+  96:	71 05       	cpc	r23, r1
+  98:	71 f4       	brne	.+28     	; 0xb6 <softwareDelayMs+0x2a>
+  9a:	08 95       	ret
+  9c:	01 97       	sbiw	r24, 0x01	; 1
+		for(uint16_t internalcounter=0;internalcounter<1000;internalcounter++){
+  9e:	f1 f7       	brne	.-4      	; 0x9c <softwareDelayMs+0x10>
+
+/* this is the implementation of software delay function*/
+
+void softwareDelayMs(uint32_t u32_delay_in_ms){
+	
+	for (uint16_t counter=0;counter<u32_delay_in_ms;counter++){
+  a0:	2f 5f       	subi	r18, 0xFF	; 255
+  a2:	3f 4f       	sbci	r19, 0xFF	; 255
+  a4:	c9 01       	movw	r24, r18
+  a6:	a0 e0       	ldi	r26, 0x00	; 0
+  a8:	b0 e0       	ldi	r27, 0x00	; 0
+  aa:	84 17       	cp	r24, r20
+  ac:	95 07       	cpc	r25, r21
+  ae:	a6 07       	cpc	r26, r22
+  b0:	b7 07       	cpc	r27, r23
+  b2:	18 f0       	brcs	.+6      	; 0xba <softwareDelayMs+0x2e>
+  b4:	08 95       	ret
+  b6:	20 e0       	ldi	r18, 0x00	; 0
+  b8:	30 e0       	ldi	r19, 0x00	; 0
+
+#include "softwareDelay.h"
+
+/* this is the implementation of software delay function*/
+
+void softwareDelayMs(uint32_t u32_delay_in_ms){
+  ba:	88 ee       	ldi	r24, 0xE8	; 232
+  bc:	93 e0       	ldi	r25, 0x03	; 3
+  be:	ee cf       	rjmp	.-36     	; 0x9c <softwareDelayMs+0x10>
+
+000000c0 <LCD_send_nibble>:
+	DIO_Write(str_lcdEnconfig.GPIO, str_lcdEnconfig.pins, HIGH);
+	DIO_Write(str_lcdEnconfig.GPIO, str_lcdEnconfig.pins, LOW);
+}
+
+static void LCD_send_nibble(uint8_t data)
+{
+  c0:	cf 93       	push	r28
+	uint8_t u8_mask = 1;
+	data >>= 4;
+  c2:	c8 2f       	mov	r28, r24
+  c4:	c2 95       	swap	r28
+  c6:	cf 70       	andi	r28, 0x0F	; 15
+	if(data&u8_mask)
+  c8:	c0 ff       	sbrs	r28, 0
+  ca:	05 c0       	rjmp	.+10     	; 0xd6 <LCD_send_nibble+0x16>
+	DIO_Write(LCD_D4_GPIO, LCD_D4_PIN, HIGH);
+  cc:	4f ef       	ldi	r20, 0xFF	; 255
+  ce:	60 e1       	ldi	r22, 0x10	; 16
+  d0:	80 e0       	ldi	r24, 0x00	; 0
+  d2:	08 d1       	rcall	.+528    	; 0x2e4 <DIO_Write>
+  d4:	04 c0       	rjmp	.+8      	; 0xde <LCD_send_nibble+0x1e>
+	else
+	DIO_Write(LCD_D4_GPIO, LCD_D4_PIN, LOW);
+  d6:	40 e0       	ldi	r20, 0x00	; 0
+  d8:	60 e1       	ldi	r22, 0x10	; 16
+  da:	80 e0       	ldi	r24, 0x00	; 0
+  dc:	03 d1       	rcall	.+518    	; 0x2e4 <DIO_Write>
+	u8_mask *= 2;
+	if(data&u8_mask)
+  de:	c1 ff       	sbrs	r28, 1
+  e0:	05 c0       	rjmp	.+10     	; 0xec <LCD_send_nibble+0x2c>
+	DIO_Write(LCD_D5_GPIO, LCD_D5_PIN, HIGH);
+  e2:	4f ef       	ldi	r20, 0xFF	; 255
+  e4:	60 e2       	ldi	r22, 0x20	; 32
+  e6:	80 e0       	ldi	r24, 0x00	; 0
+  e8:	fd d0       	rcall	.+506    	; 0x2e4 <DIO_Write>
+  ea:	04 c0       	rjmp	.+8      	; 0xf4 <LCD_send_nibble+0x34>
+	else
+	DIO_Write(LCD_D5_GPIO, LCD_D5_PIN, LOW);
+  ec:	40 e0       	ldi	r20, 0x00	; 0
+  ee:	60 e2       	ldi	r22, 0x20	; 32
+  f0:	80 e0       	ldi	r24, 0x00	; 0
+  f2:	f8 d0       	rcall	.+496    	; 0x2e4 <DIO_Write>
+	u8_mask *= 2;
+	if(data&u8_mask)
+  f4:	c2 ff       	sbrs	r28, 2
+	DIO_Write(LCD_D6_GPIO, LCD_D6_PIN, HIGH);
+  f6:	05 c0       	rjmp	.+10     	; 0x102 <LCD_send_nibble+0x42>
+  f8:	4f ef       	ldi	r20, 0xFF	; 255
+  fa:	60 e4       	ldi	r22, 0x40	; 64
+  fc:	80 e0       	ldi	r24, 0x00	; 0
+  fe:	f2 d0       	rcall	.+484    	; 0x2e4 <DIO_Write>
+	else
+	DIO_Write(LCD_D6_GPIO, LCD_D6_PIN, LOW);
+ 100:	04 c0       	rjmp	.+8      	; 0x10a <LCD_send_nibble+0x4a>
+ 102:	40 e0       	ldi	r20, 0x00	; 0
+ 104:	60 e4       	ldi	r22, 0x40	; 64
+ 106:	80 e0       	ldi	r24, 0x00	; 0
+	u8_mask *= 2;
+	if(data&u8_mask)
+ 108:	ed d0       	rcall	.+474    	; 0x2e4 <DIO_Write>
+ 10a:	c8 70       	andi	r28, 0x08	; 8
+	DIO_Write(LCD_D7_GPIO, LCD_D7_PIN, HIGH);
+ 10c:	29 f0       	breq	.+10     	; 0x118 <LCD_send_nibble+0x58>
+ 10e:	4f ef       	ldi	r20, 0xFF	; 255
+ 110:	60 e8       	ldi	r22, 0x80	; 128
+ 112:	80 e0       	ldi	r24, 0x00	; 0
+ 114:	e7 d0       	rcall	.+462    	; 0x2e4 <DIO_Write>
+	else
+	DIO_Write(LCD_D7_GPIO, LCD_D7_PIN, LOW);
+ 116:	04 c0       	rjmp	.+8      	; 0x120 <LCD_send_nibble+0x60>
+ 118:	40 e0       	ldi	r20, 0x00	; 0
+ 11a:	60 e8       	ldi	r22, 0x80	; 128
+ 11c:	80 e0       	ldi	r24, 0x00	; 0
+ 11e:	e2 d0       	rcall	.+452    	; 0x2e4 <DIO_Write>
+}
+ 120:	cf 91       	pop	r28
+ 122:	08 95       	ret
+
+00000124 <LCD_EN_pulse>:
+static void LCD_EN_pulse(void);
+static void LCD_send_nibble(uint8_t data);
+/*- LOCAL FUNCTIONS implementation ----------------------------*/
+
+ static void LCD_EN_pulse(void)
+{
+ 124:	cf 93       	push	r28
+ 126:	df 93       	push	r29
+	DIO_Write(str_lcdEnconfig.GPIO, str_lcdEnconfig.pins, HIGH);
+ 128:	c1 e6       	ldi	r28, 0x61	; 97
+ 12a:	d0 e0       	ldi	r29, 0x00	; 0
+ 12c:	4f ef       	ldi	r20, 0xFF	; 255
+ 12e:	69 81       	ldd	r22, Y+1	; 0x01
+ 130:	88 81       	ld	r24, Y
+ 132:	d8 d0       	rcall	.+432    	; 0x2e4 <DIO_Write>
+	DIO_Write(str_lcdEnconfig.GPIO, str_lcdEnconfig.pins, LOW);
+ 134:	40 e0       	ldi	r20, 0x00	; 0
+ 136:	69 81       	ldd	r22, Y+1	; 0x01
+ 138:	88 81       	ld	r24, Y
+ 13a:	d4 d0       	rcall	.+424    	; 0x2e4 <DIO_Write>
+}
+ 13c:	df 91       	pop	r29
+ 13e:	cf 91       	pop	r28
+ 140:	08 95       	ret
+
+00000142 <LCD_sendCommand>:
+	LCD_sendCommand(LCD_CLEAR);	
+}
+
+
+ENMULCDERROR  LCD_sendCommand(uint8_t u8_command)
+{
+ 142:	cf 93       	push	r28
+ 144:	c8 2f       	mov	r28, r24
+	DIO_Write(str_lcdRSconfig.GPIO, str_lcdRSconfig.pins, LOW);
+ 146:	e7 e6       	ldi	r30, 0x67	; 103
+ 148:	f0 e0       	ldi	r31, 0x00	; 0
+ 14a:	40 e0       	ldi	r20, 0x00	; 0
+ 14c:	61 81       	ldd	r22, Z+1	; 0x01
+ 14e:	80 81       	ld	r24, Z
+ 150:	c9 d0       	rcall	.+402    	; 0x2e4 <DIO_Write>
+    LCD_send_nibble(u8_command);	
+ 152:	8c 2f       	mov	r24, r28
+    LCD_EN_pulse();
+ 154:	b5 df       	rcall	.-150    	; 0xc0 <LCD_send_nibble>
+ 156:	e6 df       	rcall	.-52     	; 0x124 <LCD_EN_pulse>
+    softwareDelayMs(1);
+ 158:	61 e0       	ldi	r22, 0x01	; 1
+ 15a:	70 e0       	ldi	r23, 0x00	; 0
+ 15c:	80 e0       	ldi	r24, 0x00	; 0
+ 15e:	90 e0       	ldi	r25, 0x00	; 0
+ 160:	95 df       	rcall	.-214    	; 0x8c <softwareDelayMs>
+    LCD_send_nibble(u8_command<<4);
+ 162:	8c 2f       	mov	r24, r28
+ 164:	82 95       	swap	r24
+ 166:	80 7f       	andi	r24, 0xF0	; 240
+ 168:	ab df       	rcall	.-170    	; 0xc0 <LCD_send_nibble>
+	LCD_EN_pulse();
+ 16a:	dc df       	rcall	.-72     	; 0x124 <LCD_EN_pulse>
+    softwareDelayMs(1);
+ 16c:	61 e0       	ldi	r22, 0x01	; 1
+ 16e:	70 e0       	ldi	r23, 0x00	; 0
+ 170:	80 e0       	ldi	r24, 0x00	; 0
+ 172:	90 e0       	ldi	r25, 0x00	; 0
+ 174:	8b df       	rcall	.-234    	; 0x8c <softwareDelayMs>
+ 176:	cf 91       	pop	r28
+}
+ 178:	08 95       	ret
+
+0000017a <LCD_init>:
+ 17a:	8a e6       	ldi	r24, 0x6A	; 106
+}
+
+/*- APIs IMPLEMENTATION -----------------------------------*/
+ENMULCDERROR  LCD_init(void)
+{
+	DIO_init(&str_lcddataconfig);
+ 17c:	90 e0       	ldi	r25, 0x00	; 0
+ 17e:	51 d0       	rcall	.+162    	; 0x222 <DIO_init>
+	DIO_init(&str_lcdEnconfig);
+ 180:	81 e6       	ldi	r24, 0x61	; 97
+ 182:	90 e0       	ldi	r25, 0x00	; 0
+ 184:	4e d0       	rcall	.+156    	; 0x222 <DIO_init>
+	DIO_init(&str_lcdRSconfig);
+ 186:	87 e6       	ldi	r24, 0x67	; 103
+ 188:	90 e0       	ldi	r25, 0x00	; 0
+ 18a:	4b d0       	rcall	.+150    	; 0x222 <DIO_init>
+	DIO_init(&str_lcdRWconfig);	
+ 18c:	84 e6       	ldi	r24, 0x64	; 100
+ 18e:	90 e0       	ldi	r25, 0x00	; 0
+ 190:	48 d0       	rcall	.+144    	; 0x222 <DIO_init>
+ 192:	e7 e6       	ldi	r30, 0x67	; 103
+	DIO_Write(str_lcdRSconfig.GPIO, str_lcdRSconfig.pins, LOW);
+ 194:	f0 e0       	ldi	r31, 0x00	; 0
+ 196:	40 e0       	ldi	r20, 0x00	; 0
+ 198:	61 81       	ldd	r22, Z+1	; 0x01
+ 19a:	80 81       	ld	r24, Z
+ 19c:	a3 d0       	rcall	.+326    	; 0x2e4 <DIO_Write>
+ 19e:	e4 e6       	ldi	r30, 0x64	; 100
+	DIO_Write(str_lcdRWconfig.GPIO, str_lcdRWconfig.pins, LOW);
+ 1a0:	f0 e0       	ldi	r31, 0x00	; 0
+ 1a2:	40 e0       	ldi	r20, 0x00	; 0
+ 1a4:	61 81       	ldd	r22, Z+1	; 0x01
+ 1a6:	80 81       	ld	r24, Z
+ 1a8:	9d d0       	rcall	.+314    	; 0x2e4 <DIO_Write>
+ 1aa:	e1 e6       	ldi	r30, 0x61	; 97
+	DIO_Write(str_lcdEnconfig.GPIO, str_lcdEnconfig.pins, LOW);
+ 1ac:	f0 e0       	ldi	r31, 0x00	; 0
+ 1ae:	40 e0       	ldi	r20, 0x00	; 0
+ 1b0:	61 81       	ldd	r22, Z+1	; 0x01
+ 1b2:	80 81       	ld	r24, Z
+ 1b4:	97 d0       	rcall	.+302    	; 0x2e4 <DIO_Write>
+	LCD_sendCommand(LCD_ST);
+ 1b6:	82 e3       	ldi	r24, 0x32	; 50
+ 1b8:	c4 df       	rcall	.-120    	; 0x142 <LCD_sendCommand>
+	LCD_sendCommand(gu8_lcdmode); 
+ 1ba:	80 91 60 00 	lds	r24, 0x0060	; 0x800060 <__data_start>
+ 1be:	c1 df       	rcall	.-126    	; 0x142 <LCD_sendCommand>
+ 1c0:	8c e0       	ldi	r24, 0x0C	; 12
+	LCD_sendCommand(LCD_CURSOR_OFF);
+ 1c2:	bf df       	rcall	.-130    	; 0x142 <LCD_sendCommand>
+ 1c4:	81 e0       	ldi	r24, 0x01	; 1
+ 1c6:	bd cf       	rjmp	.-134    	; 0x142 <LCD_sendCommand>
+	LCD_sendCommand(LCD_CLEAR);	
+ 1c8:	08 95       	ret
+
+000001ca <LCD_displayChar>:
+ 1ca:	cf 93       	push	r28
+ 1cc:	c8 2f       	mov	r28, r24
+}
+ 1ce:	e7 e6       	ldi	r30, 0x67	; 103
+
+
+
+ENMULCDERROR LCD_displayChar(uint8_t u8_char)
+{
+	 DIO_Write(str_lcdRSconfig.GPIO, str_lcdRSconfig.pins, HIGH);
+ 1d0:	f0 e0       	ldi	r31, 0x00	; 0
+ 1d2:	4f ef       	ldi	r20, 0xFF	; 255
+ 1d4:	61 81       	ldd	r22, Z+1	; 0x01
+ 1d6:	80 81       	ld	r24, Z
+ 1d8:	85 d0       	rcall	.+266    	; 0x2e4 <DIO_Write>
+     LCD_send_nibble(u8_char);
+ 1da:	8c 2f       	mov	r24, r28
+	 LCD_EN_pulse();
+ 1dc:	71 df       	rcall	.-286    	; 0xc0 <LCD_send_nibble>
+ 1de:	a2 df       	rcall	.-188    	; 0x124 <LCD_EN_pulse>
+     LCD_send_nibble(u8_char<<4);
+ 1e0:	8c 2f       	mov	r24, r28
+ 1e2:	82 95       	swap	r24
+ 1e4:	80 7f       	andi	r24, 0xF0	; 240
+	 LCD_EN_pulse();
+ 1e6:	6c df       	rcall	.-296    	; 0xc0 <LCD_send_nibble>
+ 1e8:	9d df       	rcall	.-198    	; 0x124 <LCD_EN_pulse>
+}
+ 1ea:	cf 91       	pop	r28
+ 1ec:	08 95       	ret
+
+000001ee <LCD_displayString>:
+
+
+ENMULCDERROR  LCD_displayString(uint8_t au8_char[])
+{
+ 1ee:	0f 93       	push	r16
+ 1f0:	1f 93       	push	r17
+ 1f2:	cf 93       	push	r28
+ 1f4:	fc 01       	movw	r30, r24
+	uint8_t u8_counter=0;
+	while(au8_char[u8_counter]!='\0')
+ 1f6:	80 81       	ld	r24, Z
+ 1f8:	88 23       	and	r24, r24
+ 1fa:	79 f0       	breq	.+30     	; 0x21a <LCD_displayString+0x2c>
+ 1fc:	8f 01       	movw	r16, r30
+ 1fe:	c0 e0       	ldi	r28, 0x00	; 0
+	{
+		LCD_displayChar(au8_char[u8_counter]);
+ 200:	e4 df       	rcall	.-56     	; 0x1ca <LCD_displayChar>
+		u8_counter++;
+ 202:	cf 5f       	subi	r28, 0xFF	; 255
+		softwareDelayMs(1);
+ 204:	61 e0       	ldi	r22, 0x01	; 1
+ 206:	70 e0       	ldi	r23, 0x00	; 0
+ 208:	80 e0       	ldi	r24, 0x00	; 0
+ 20a:	90 e0       	ldi	r25, 0x00	; 0
+ 20c:	3f df       	rcall	.-386    	; 0x8c <softwareDelayMs>
+
+
+ENMULCDERROR  LCD_displayString(uint8_t au8_char[])
+{
+	uint8_t u8_counter=0;
+	while(au8_char[u8_counter]!='\0')
+ 20e:	f8 01       	movw	r30, r16
+ 210:	ec 0f       	add	r30, r28
+ 212:	f1 1d       	adc	r31, r1
+ 214:	80 81       	ld	r24, Z
+ 216:	81 11       	cpse	r24, r1
+ 218:	f3 cf       	rjmp	.-26     	; 0x200 <LCD_displayString+0x12>
+	{
+		LCD_displayChar(au8_char[u8_counter]);
+		u8_counter++;
+		softwareDelayMs(1);
+	}
+ 21a:	cf 91       	pop	r28
+ 21c:	1f 91       	pop	r17
+ 21e:	0f 91       	pop	r16
+ 220:	08 95       	ret
+
+00000222 <DIO_init>:
+/*Output: No output*/
+/*Return:Error status*/
+/*Description: This function can set the direction of a full port, a nibble or even one pin.*/
+/******************************************************************************************/
+ERROR_STATUS DIO_init (DIO_Cfg_s *DIO_info)
+{/*ERROR RET VARIBALE*/
+ 222:	fc 01       	movw	r30, r24
+	ERROR_STATUS  EROR=E_OK;
+	/*check if the pointer is not null*/
+	if(DIO_info!=NULL)
+ 224:	89 2b       	or	r24, r25
+ 226:	09 f4       	brne	.+2      	; 0x22a <DIO_init+0x8>
+ 228:	51 c0       	rjmp	.+162    	; 0x2cc <DIO_init+0xaa>
+	{
+		/*choose any PORT*/
+		switch(DIO_info->GPIO)
+ 22a:	80 81       	ld	r24, Z
+ 22c:	81 30       	cpi	r24, 0x01	; 1
+ 22e:	c1 f0       	breq	.+48     	; 0x260 <DIO_init+0x3e>
+ 230:	28 f0       	brcs	.+10     	; 0x23c <DIO_init+0x1a>
+ 232:	82 30       	cpi	r24, 0x02	; 2
+ 234:	39 f1       	breq	.+78     	; 0x284 <DIO_init+0x62>
+ 236:	83 30       	cpi	r24, 0x03	; 3
+ 238:	b9 f1       	breq	.+110    	; 0x2a8 <DIO_init+0x86>
+ 23a:	4a c0       	rjmp	.+148    	; 0x2d0 <DIO_init+0xae>
+		{
+			case GPIOA:
+			if(DIO_info->dir==OUTPUT)
+ 23c:	82 81       	ldd	r24, Z+2	; 0x02
+ 23e:	8f 3f       	cpi	r24, 0xFF	; 255
+ 240:	31 f4       	brne	.+12     	; 0x24e <DIO_init+0x2c>
+			PORTA_DIR|=(DIO_info->pins);
+ 242:	9a b3       	in	r25, 0x1a	; 26
+ 244:	81 81       	ldd	r24, Z+1	; 0x01
+ 246:	89 2b       	or	r24, r25
+ 248:	8a bb       	out	0x1a, r24	; 26
+/*Return:Error status*/
+/*Description: This function can set the direction of a full port, a nibble or even one pin.*/
+/******************************************************************************************/
+ERROR_STATUS DIO_init (DIO_Cfg_s *DIO_info)
+{/*ERROR RET VARIBALE*/
+	ERROR_STATUS  EROR=E_OK;
+ 24a:	81 e0       	ldi	r24, 0x01	; 1
+ 24c:	08 95       	ret
+		switch(DIO_info->GPIO)
+		{
+			case GPIOA:
+			if(DIO_info->dir==OUTPUT)
+			PORTA_DIR|=(DIO_info->pins);
+			else if(DIO_info->dir==INPUT)
+ 24e:	81 11       	cpse	r24, r1
+ 250:	41 c0       	rjmp	.+130    	; 0x2d4 <DIO_init+0xb2>
+			PORTA_DIR&=~(DIO_info->pins);
+ 252:	9a b3       	in	r25, 0x1a	; 26
+ 254:	81 81       	ldd	r24, Z+1	; 0x01
+ 256:	80 95       	com	r24
+ 258:	89 23       	and	r24, r25
+ 25a:	8a bb       	out	0x1a, r24	; 26
+/*Return:Error status*/
+/*Description: This function can set the direction of a full port, a nibble or even one pin.*/
+/******************************************************************************************/
+ERROR_STATUS DIO_init (DIO_Cfg_s *DIO_info)
+{/*ERROR RET VARIBALE*/
+	ERROR_STATUS  EROR=E_OK;
+ 25c:	81 e0       	ldi	r24, 0x01	; 1
+ 25e:	08 95       	ret
+			PORTA_DIR&=~(DIO_info->pins);
+			else
+			EROR=E_NOK;
+			break;
+			case GPIOB:
+			if(DIO_info->dir==OUTPUT)
+ 260:	82 81       	ldd	r24, Z+2	; 0x02
+ 262:	8f 3f       	cpi	r24, 0xFF	; 255
+ 264:	31 f4       	brne	.+12     	; 0x272 <DIO_init+0x50>
+			PORTB_DIR|=(DIO_info->pins);
+ 266:	97 b3       	in	r25, 0x17	; 23
+ 268:	81 81       	ldd	r24, Z+1	; 0x01
+ 26a:	89 2b       	or	r24, r25
+ 26c:	87 bb       	out	0x17, r24	; 23
+/*Return:Error status*/
+/*Description: This function can set the direction of a full port, a nibble or even one pin.*/
+/******************************************************************************************/
+ERROR_STATUS DIO_init (DIO_Cfg_s *DIO_info)
+{/*ERROR RET VARIBALE*/
+	ERROR_STATUS  EROR=E_OK;
+ 26e:	81 e0       	ldi	r24, 0x01	; 1
+ 270:	08 95       	ret
+			EROR=E_NOK;
+			break;
+			case GPIOB:
+			if(DIO_info->dir==OUTPUT)
+			PORTB_DIR|=(DIO_info->pins);
+			else if(DIO_info->dir==INPUT)
+ 272:	81 11       	cpse	r24, r1
+ 274:	31 c0       	rjmp	.+98     	; 0x2d8 <DIO_init+0xb6>
+			PORTB_DIR&=~(DIO_info->pins);
+ 276:	97 b3       	in	r25, 0x17	; 23
+ 278:	81 81       	ldd	r24, Z+1	; 0x01
+ 27a:	80 95       	com	r24
+ 27c:	89 23       	and	r24, r25
+ 27e:	87 bb       	out	0x17, r24	; 23
+/*Return:Error status*/
+/*Description: This function can set the direction of a full port, a nibble or even one pin.*/
+/******************************************************************************************/
+ERROR_STATUS DIO_init (DIO_Cfg_s *DIO_info)
+{/*ERROR RET VARIBALE*/
+	ERROR_STATUS  EROR=E_OK;
+ 280:	81 e0       	ldi	r24, 0x01	; 1
+ 282:	08 95       	ret
+			PORTB_DIR&=~(DIO_info->pins);
+			else
+			EROR=E_NOK;
+			break;
+			case GPIOC:
+			if(DIO_info->dir==OUTPUT)
+ 284:	82 81       	ldd	r24, Z+2	; 0x02
+ 286:	8f 3f       	cpi	r24, 0xFF	; 255
+ 288:	31 f4       	brne	.+12     	; 0x296 <DIO_init+0x74>
+			PORTC_DIR|=(DIO_info->pins);
+ 28a:	94 b3       	in	r25, 0x14	; 20
+ 28c:	81 81       	ldd	r24, Z+1	; 0x01
+ 28e:	89 2b       	or	r24, r25
+ 290:	84 bb       	out	0x14, r24	; 20
+/*Return:Error status*/
+/*Description: This function can set the direction of a full port, a nibble or even one pin.*/
+/******************************************************************************************/
+ERROR_STATUS DIO_init (DIO_Cfg_s *DIO_info)
+{/*ERROR RET VARIBALE*/
+	ERROR_STATUS  EROR=E_OK;
+ 292:	81 e0       	ldi	r24, 0x01	; 1
+ 294:	08 95       	ret
+			EROR=E_NOK;
+			break;
+			case GPIOC:
+			if(DIO_info->dir==OUTPUT)
+			PORTC_DIR|=(DIO_info->pins);
+			else if(DIO_info->dir==INPUT)
+ 296:	81 11       	cpse	r24, r1
+ 298:	21 c0       	rjmp	.+66     	; 0x2dc <DIO_init+0xba>
+			PORTC_DIR&=~(DIO_info->pins);
+ 29a:	94 b3       	in	r25, 0x14	; 20
+ 29c:	81 81       	ldd	r24, Z+1	; 0x01
+ 29e:	80 95       	com	r24
+ 2a0:	89 23       	and	r24, r25
+ 2a2:	84 bb       	out	0x14, r24	; 20
+/*Return:Error status*/
+/*Description: This function can set the direction of a full port, a nibble or even one pin.*/
+/******************************************************************************************/
+ERROR_STATUS DIO_init (DIO_Cfg_s *DIO_info)
+{/*ERROR RET VARIBALE*/
+	ERROR_STATUS  EROR=E_OK;
+ 2a4:	81 e0       	ldi	r24, 0x01	; 1
+ 2a6:	08 95       	ret
+			PORTC_DIR&=~(DIO_info->pins);
+			else
+			EROR=E_NOK;
+			break;
+			case GPIOD:
+			if(DIO_info->dir==OUTPUT)
+ 2a8:	82 81       	ldd	r24, Z+2	; 0x02
+ 2aa:	8f 3f       	cpi	r24, 0xFF	; 255
+ 2ac:	31 f4       	brne	.+12     	; 0x2ba <DIO_init+0x98>
+			PORTD_DIR|=(DIO_info->pins);
+ 2ae:	91 b3       	in	r25, 0x11	; 17
+ 2b0:	81 81       	ldd	r24, Z+1	; 0x01
+ 2b2:	89 2b       	or	r24, r25
+ 2b4:	81 bb       	out	0x11, r24	; 17
+/*Return:Error status*/
+/*Description: This function can set the direction of a full port, a nibble or even one pin.*/
+/******************************************************************************************/
+ERROR_STATUS DIO_init (DIO_Cfg_s *DIO_info)
+{/*ERROR RET VARIBALE*/
+	ERROR_STATUS  EROR=E_OK;
+ 2b6:	81 e0       	ldi	r24, 0x01	; 1
+ 2b8:	08 95       	ret
+			EROR=E_NOK;
+			break;
+			case GPIOD:
+			if(DIO_info->dir==OUTPUT)
+			PORTD_DIR|=(DIO_info->pins);
+			else if(DIO_info->dir==INPUT)
+ 2ba:	81 11       	cpse	r24, r1
+ 2bc:	11 c0       	rjmp	.+34     	; 0x2e0 <DIO_init+0xbe>
+			PORTD_DIR&=~(DIO_info->pins);
+ 2be:	91 b3       	in	r25, 0x11	; 17
+ 2c0:	81 81       	ldd	r24, Z+1	; 0x01
+ 2c2:	80 95       	com	r24
+ 2c4:	89 23       	and	r24, r25
+ 2c6:	81 bb       	out	0x11, r24	; 17
+/*Return:Error status*/
+/*Description: This function can set the direction of a full port, a nibble or even one pin.*/
+/******************************************************************************************/
+ERROR_STATUS DIO_init (DIO_Cfg_s *DIO_info)
+{/*ERROR RET VARIBALE*/
+	ERROR_STATUS  EROR=E_OK;
+ 2c8:	81 e0       	ldi	r24, 0x01	; 1
+ 2ca:	08 95       	ret
+			
+		}
+	}
+	else
+	{
+		EROR=E_NOK;
+ 2cc:	80 e0       	ldi	r24, 0x00	; 0
+ 2ce:	08 95       	ret
+			PORTD_DIR&=~(DIO_info->pins);
+			else
+			EROR=E_NOK;
+			break;
+			default:
+			EROR=E_NOK;
+ 2d0:	80 e0       	ldi	r24, 0x00	; 0
+ 2d2:	08 95       	ret
+			if(DIO_info->dir==OUTPUT)
+			PORTA_DIR|=(DIO_info->pins);
+			else if(DIO_info->dir==INPUT)
+			PORTA_DIR&=~(DIO_info->pins);
+			else
+			EROR=E_NOK;
+ 2d4:	80 e0       	ldi	r24, 0x00	; 0
+ 2d6:	08 95       	ret
+			if(DIO_info->dir==OUTPUT)
+			PORTB_DIR|=(DIO_info->pins);
+			else if(DIO_info->dir==INPUT)
+			PORTB_DIR&=~(DIO_info->pins);
+			else
+			EROR=E_NOK;
+ 2d8:	80 e0       	ldi	r24, 0x00	; 0
+ 2da:	08 95       	ret
+			if(DIO_info->dir==OUTPUT)
+			PORTC_DIR|=(DIO_info->pins);
+			else if(DIO_info->dir==INPUT)
+			PORTC_DIR&=~(DIO_info->pins);
+			else
+			EROR=E_NOK;
+ 2dc:	80 e0       	ldi	r24, 0x00	; 0
+ 2de:	08 95       	ret
+			if(DIO_info->dir==OUTPUT)
+			PORTD_DIR|=(DIO_info->pins);
+			else if(DIO_info->dir==INPUT)
+			PORTD_DIR&=~(DIO_info->pins);
+			else
+			EROR=E_NOK;
+ 2e0:	80 e0       	ldi	r24, 0x00	; 0
+		EROR=E_NOK;
+	}
+	
+	
+	return EROR;
+}
+ 2e2:	08 95       	ret
+
+000002e4 <DIO_Write>:
+ERROR_STATUS DIO_Write (uint8_t GPIO, uint8_t pins, uint8_t value)
+{
+	/*ERROR RET VARIBALE*/
+	ERROR_STATUS EROR=E_OK;
+	/*choose any PORT*/
+	switch (GPIO)
+ 2e4:	81 30       	cpi	r24, 0x01	; 1
+ 2e6:	a9 f0       	breq	.+42     	; 0x312 <DIO_Write+0x2e>
+ 2e8:	28 f0       	brcs	.+10     	; 0x2f4 <DIO_Write+0x10>
+ 2ea:	82 30       	cpi	r24, 0x02	; 2
+ 2ec:	09 f1       	breq	.+66     	; 0x330 <DIO_Write+0x4c>
+ 2ee:	83 30       	cpi	r24, 0x03	; 3
+ 2f0:	71 f1       	breq	.+92     	; 0x34e <DIO_Write+0x6a>
+ 2f2:	3c c0       	rjmp	.+120    	; 0x36c <DIO_Write+0x88>
+	{
+		case GPIOA:
+		if(value==HIGH)
+ 2f4:	4f 3f       	cpi	r20, 0xFF	; 255
+ 2f6:	29 f4       	brne	.+10     	; 0x302 <DIO_Write+0x1e>
+		PORTA_DATA|=pins;
+ 2f8:	8b b3       	in	r24, 0x1b	; 27
+ 2fa:	68 2b       	or	r22, r24
+ 2fc:	6b bb       	out	0x1b, r22	; 27
+* 			  or even one pin.
+*/
+ERROR_STATUS DIO_Write (uint8_t GPIO, uint8_t pins, uint8_t value)
+{
+	/*ERROR RET VARIBALE*/
+	ERROR_STATUS EROR=E_OK;
+ 2fe:	81 e0       	ldi	r24, 0x01	; 1
+ 300:	08 95       	ret
+	switch (GPIO)
+	{
+		case GPIOA:
+		if(value==HIGH)
+		PORTA_DATA|=pins;
+		else if(value==LOW)
+ 302:	41 11       	cpse	r20, r1
+ 304:	35 c0       	rjmp	.+106    	; 0x370 <DIO_Write+0x8c>
+		PORTA_DATA&=~(pins);
+ 306:	8b b3       	in	r24, 0x1b	; 27
+ 308:	60 95       	com	r22
+ 30a:	68 23       	and	r22, r24
+ 30c:	6b bb       	out	0x1b, r22	; 27
+* 			  or even one pin.
+*/
+ERROR_STATUS DIO_Write (uint8_t GPIO, uint8_t pins, uint8_t value)
+{
+	/*ERROR RET VARIBALE*/
+	ERROR_STATUS EROR=E_OK;
+ 30e:	81 e0       	ldi	r24, 0x01	; 1
+ 310:	08 95       	ret
+		PORTA_DATA&=~(pins);
+		else
+		EROR=E_NOK;
+		break;
+		case GPIOB:
+		if(value==HIGH)
+ 312:	4f 3f       	cpi	r20, 0xFF	; 255
+ 314:	29 f4       	brne	.+10     	; 0x320 <DIO_Write+0x3c>
+		PORTB_DATA|=pins;
+ 316:	88 b3       	in	r24, 0x18	; 24
+ 318:	68 2b       	or	r22, r24
+ 31a:	68 bb       	out	0x18, r22	; 24
+* 			  or even one pin.
+*/
+ERROR_STATUS DIO_Write (uint8_t GPIO, uint8_t pins, uint8_t value)
+{
+	/*ERROR RET VARIBALE*/
+	ERROR_STATUS EROR=E_OK;
+ 31c:	81 e0       	ldi	r24, 0x01	; 1
+ 31e:	08 95       	ret
+		EROR=E_NOK;
+		break;
+		case GPIOB:
+		if(value==HIGH)
+		PORTB_DATA|=pins;
+		else if(value==LOW)
+ 320:	41 11       	cpse	r20, r1
+ 322:	28 c0       	rjmp	.+80     	; 0x374 <DIO_Write+0x90>
+		PORTB_DATA&=~(pins);
+ 324:	88 b3       	in	r24, 0x18	; 24
+ 326:	60 95       	com	r22
+ 328:	68 23       	and	r22, r24
+ 32a:	68 bb       	out	0x18, r22	; 24
+* 			  or even one pin.
+*/
+ERROR_STATUS DIO_Write (uint8_t GPIO, uint8_t pins, uint8_t value)
+{
+	/*ERROR RET VARIBALE*/
+	ERROR_STATUS EROR=E_OK;
+ 32c:	81 e0       	ldi	r24, 0x01	; 1
+ 32e:	08 95       	ret
+		PORTB_DATA&=~(pins);
+		else
+		EROR=E_NOK;
+		break;
+		case GPIOC:
+		if(value==HIGH)
+ 330:	4f 3f       	cpi	r20, 0xFF	; 255
+ 332:	29 f4       	brne	.+10     	; 0x33e <DIO_Write+0x5a>
+		PORTC_DATA|=pins;
+ 334:	85 b3       	in	r24, 0x15	; 21
+ 336:	68 2b       	or	r22, r24
+ 338:	65 bb       	out	0x15, r22	; 21
+* 			  or even one pin.
+*/
+ERROR_STATUS DIO_Write (uint8_t GPIO, uint8_t pins, uint8_t value)
+{
+	/*ERROR RET VARIBALE*/
+	ERROR_STATUS EROR=E_OK;
+ 33a:	81 e0       	ldi	r24, 0x01	; 1
+ 33c:	08 95       	ret
+		EROR=E_NOK;
+		break;
+		case GPIOC:
+		if(value==HIGH)
+		PORTC_DATA|=pins;
+		else if(value==LOW)
+ 33e:	41 11       	cpse	r20, r1
+ 340:	1b c0       	rjmp	.+54     	; 0x378 <DIO_Write+0x94>
+		PORTC_DATA&=~(pins);
+ 342:	85 b3       	in	r24, 0x15	; 21
+ 344:	60 95       	com	r22
+ 346:	68 23       	and	r22, r24
+ 348:	65 bb       	out	0x15, r22	; 21
+* 			  or even one pin.
+*/
+ERROR_STATUS DIO_Write (uint8_t GPIO, uint8_t pins, uint8_t value)
+{
+	/*ERROR RET VARIBALE*/
+	ERROR_STATUS EROR=E_OK;
+ 34a:	81 e0       	ldi	r24, 0x01	; 1
+ 34c:	08 95       	ret
+		PORTC_DATA&=~(pins);
+		else
+		EROR=E_NOK;
+		break;
+		case GPIOD:
+		if(value==HIGH)
+ 34e:	4f 3f       	cpi	r20, 0xFF	; 255
+ 350:	29 f4       	brne	.+10     	; 0x35c <DIO_Write+0x78>
+		PORTD_DATA|=pins;
+ 352:	82 b3       	in	r24, 0x12	; 18
+ 354:	68 2b       	or	r22, r24
+ 356:	62 bb       	out	0x12, r22	; 18
+* 			  or even one pin.
+*/
+ERROR_STATUS DIO_Write (uint8_t GPIO, uint8_t pins, uint8_t value)
+{
+	/*ERROR RET VARIBALE*/
+	ERROR_STATUS EROR=E_OK;
+ 358:	81 e0       	ldi	r24, 0x01	; 1
+ 35a:	08 95       	ret
+		EROR=E_NOK;
+		break;
+		case GPIOD:
+		if(value==HIGH)
+		PORTD_DATA|=pins;
+		else if(value==LOW)
+ 35c:	41 11       	cpse	r20, r1
+ 35e:	0e c0       	rjmp	.+28     	; 0x37c <DIO_Write+0x98>
+		PORTD_DATA&=~(pins);
+ 360:	82 b3       	in	r24, 0x12	; 18
+ 362:	60 95       	com	r22
+ 364:	68 23       	and	r22, r24
+ 366:	62 bb       	out	0x12, r22	; 18
+* 			  or even one pin.
+*/
+ERROR_STATUS DIO_Write (uint8_t GPIO, uint8_t pins, uint8_t value)
+{
+	/*ERROR RET VARIBALE*/
+	ERROR_STATUS EROR=E_OK;
+ 368:	81 e0       	ldi	r24, 0x01	; 1
+ 36a:	08 95       	ret
+		else
+		EROR=E_NOK;
+		break;
+		/*if the channel is wrong */
+		default:
+		EROR=E_NOK;
+ 36c:	80 e0       	ldi	r24, 0x00	; 0
+ 36e:	08 95       	ret
+		if(value==HIGH)
+		PORTA_DATA|=pins;
+		else if(value==LOW)
+		PORTA_DATA&=~(pins);
+		else
+		EROR=E_NOK;
+ 370:	80 e0       	ldi	r24, 0x00	; 0
+ 372:	08 95       	ret
+		if(value==HIGH)
+		PORTB_DATA|=pins;
+		else if(value==LOW)
+		PORTB_DATA&=~(pins);
+		else
+		EROR=E_NOK;
+ 374:	80 e0       	ldi	r24, 0x00	; 0
+ 376:	08 95       	ret
+		if(value==HIGH)
+		PORTC_DATA|=pins;
+		else if(value==LOW)
+		PORTC_DATA&=~(pins);
+		else
+		EROR=E_NOK;
+ 378:	80 e0       	ldi	r24, 0x00	; 0
+ 37a:	08 95       	ret
+		if(value==HIGH)
+		PORTD_DATA|=pins;
+		else if(value==LOW)
+		PORTD_DATA&=~(pins);
+		else
+		EROR=E_NOK;
+ 37c:	80 e0       	ldi	r24, 0x00	; 0
+		break;
+	}
+
+
+	return EROR;
+}
+ 37e:	08 95       	ret
+
+00000380 <__vector_11>:
+	return au8_timererror;
+}
+
+
+ISR(TIMER0_OVF_vect)
+{
+ 380:	1f 92       	push	r1
+ 382:	0f 92       	push	r0
+ 384:	0f b6       	in	r0, 0x3f	; 63
+ 386:	0f 92       	push	r0
+ 388:	11 24       	eor	r1, r1
+ 38a:	2f 93       	push	r18
+ 38c:	3f 93       	push	r19
+ 38e:	4f 93       	push	r20
+ 390:	5f 93       	push	r21
+ 392:	6f 93       	push	r22
+ 394:	7f 93       	push	r23
+ 396:	8f 93       	push	r24
+ 398:	9f 93       	push	r25
+ 39a:	af 93       	push	r26
+ 39c:	bf 93       	push	r27
+ 39e:	ef 93       	push	r30
+ 3a0:	ff 93       	push	r31
+	
+gpf_timercbk();
+ 3a2:	e0 91 7a 00 	lds	r30, 0x007A	; 0x80007a <__data_end>
+ 3a6:	f0 91 7b 00 	lds	r31, 0x007B	; 0x80007b <__data_end+0x1>
+ 3aa:	09 95       	icall
+
+ 3ac:	ff 91       	pop	r31
+ 3ae:	ef 91       	pop	r30
+ 3b0:	bf 91       	pop	r27
+ 3b2:	af 91       	pop	r26
+ 3b4:	9f 91       	pop	r25
+ 3b6:	8f 91       	pop	r24
+ 3b8:	7f 91       	pop	r23
+ 3ba:	6f 91       	pop	r22
+ 3bc:	5f 91       	pop	r21
+ 3be:	4f 91       	pop	r20
+ 3c0:	3f 91       	pop	r19
+ 3c2:	2f 91       	pop	r18
+ 3c4:	0f 90       	pop	r0
+ 3c6:	0f be       	out	0x3f, r0	; 63
+ 3c8:	0f 90       	pop	r0
+ 3ca:	1f 90       	pop	r1
+ 3cc:	18 95       	reti
+
+000003ce <main>:
+void FUN_CALL(void);
+void FUN_CALL2(void);
+void FUN_CALL3(void);
+
+int main (void)
+{
+ 3ce:	cf 93       	push	r28
+ 3d0:	df 93       	push	r29
+ 3d2:	cd b7       	in	r28, 0x3d	; 61
+ 3d4:	de b7       	in	r29, 0x3e	; 62
+ 3d6:	2c 97       	sbiw	r28, 0x0c	; 12
+ 3d8:	0f b6       	in	r0, 0x3f	; 63
+ 3da:	f8 94       	cli
+ 3dc:	de bf       	out	0x3e, r29	; 62
+ 3de:	0f be       	out	0x3f, r0	; 63
+ 3e0:	cd bf       	out	0x3d, r28	; 61
+	LCD_init();
+ 3e2:	cb de       	rcall	.-618    	; 0x17a <LCD_init>
+	
+
+	/*SOS_Start_Timer(1000,FUN_CALL,PERIODIC,8);
+	SOS_Start_Timer(1000,FUN_CALL2,PERIODIC,9);
+	SOS_Start_Timer(1000,FUN_CALL3,PERIODIC,10);*/
+	softwareDelayMs(10);
+ 3e4:	6a e0       	ldi	r22, 0x0A	; 10
+ 3e6:	70 e0       	ldi	r23, 0x00	; 0
+ 3e8:	80 e0       	ldi	r24, 0x00	; 0
+ 3ea:	90 e0       	ldi	r25, 0x00	; 0
+ 3ec:	4f de       	rcall	.-866    	; 0x8c <softwareDelayMs>
+	 char x[12]="hazemebrahim";
+ 3ee:	8c e0       	ldi	r24, 0x0C	; 12
+ 3f0:	ed e6       	ldi	r30, 0x6D	; 109
+ 3f2:	f0 e0       	ldi	r31, 0x00	; 0
+ 3f4:	de 01       	movw	r26, r28
+ 3f6:	11 96       	adiw	r26, 0x01	; 1
+ 3f8:	01 90       	ld	r0, Z+
+ 3fa:	0d 92       	st	X+, r0
+ 3fc:	8a 95       	dec	r24
+ 3fe:	e1 f7       	brne	.-8      	; 0x3f8 <main+0x2a>
+	LCD_displayString(x);
+ 400:	ce 01       	movw	r24, r28
+ 402:	01 96       	adiw	r24, 0x01	; 1
+ 404:	f4 de       	rcall	.-536    	; 0x1ee <LCD_displayString>
+ 406:	ff cf       	rjmp	.-2      	; 0x406 <__LOCK_REGION_LENGTH__+0x6>
+
+00000408 <_exit>:
+ 408:	f8 94       	cli
+
+0000040a <__stop_program>:
+ 40a:	ff cf       	rjmp	.-2      	; 0x40a <__stop_program>
