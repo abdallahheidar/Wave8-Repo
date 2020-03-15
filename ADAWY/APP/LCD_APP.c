@@ -9,6 +9,8 @@
 #include "LCD_APP.h"
 #include "../MCAL/DIO/DIO.h"
 
+
+/*app state machine cases*/
  #define CLEAR                           30
  #define PRINT_FIRST_LINE                CLEAR +1
  #define PRINT_SECOND_LINE               PRINT_FIRST_LINE +1 
@@ -20,7 +22,7 @@
  #define WRONG_ANSWER                    RIGHT_ANSWER +1
 
 
-
+ /*que numbers*/
  #define QUE1                            WRONG_ANSWER +1
  #define QUE2                            QUE1 +1
  #define QUE3                            QUE2 +1
@@ -36,12 +38,7 @@
  #define INTERNAL_STATUS_4  4
  #define INTERNAL_STATUS_5  5
 
- uint8_t Q[11]="DO YOU KNOW";
- uint8_t q1[12]="CORONA VIRS?";
- uint8_t S[9] ="IS NORMAL";
- uint8_t q2[14]="MASK EFFICTIVE?";
-
-
+ #define TOGGLE_FACTOR      4
 
  void LCD_APP (void)
  {
@@ -58,6 +55,8 @@
 	 uint8_t au8_ButtonStatus = NOT_INITIALIZED;
 	 static uint8_t au8_Score = ZERO;
 	 static uint8_t au8_WaitCounter = ZERO;
+	  
+	  /*init the buzzer and leds*/
 	  DIO_Cfg_s str_DIO_Info;
 	  str_DIO_Info.dir = OUTPUT;
 	  str_DIO_Info.GPIO = GPIOB;
@@ -66,13 +65,15 @@
 
 	 switch (au8_AppStatus)
 	 {
-	    case NOT_INITIALIZED:
+	    /*initial status*/
+		 case NOT_INITIALIZED:
 		 if (INITIALIZED == gu8_LCD_InitFlag)
 		 {
 		    au8_AppStatus = PRINT_FIRST_LINE;
 		 }
 		 break;
 		 /*******************************************************************************************************/
+		 /*Clear LCD status*/
 		 case CLEAR:
 		 LCD_Clear();
 		 LCD_Clear();
@@ -80,7 +81,8 @@
 	
 		 break;
 		 /*******************************************************************************************************/
-       case PRINT_FIRST_LINE:
+       /*print  welcome string first line*/
+		 case PRINT_FIRST_LINE:
 		 if (INITIALIZED != gu8_LCD_DisplayStringRowColumnFlag)
 		 {
 		    LCD_DisplayStringRowColumn("HELLO USER",10,0);
@@ -92,6 +94,7 @@
 		 }
 		 break;
 		 /*******************************************************************************************************/
+		 /*print  welcome string second line*/
 		 case PRINT_SECOND_LINE:
 		 if (INITIALIZED != gu8_LCD_DisplayStringRowColumnFlag)
 		 {
@@ -109,8 +112,8 @@
 
 		 
 			 /****************************************************************************************************************/
+			 /*get answer from the user using push buttons*/
 			 case GET_ANSWER:
-			 
 			 pushButtonGetStatus(BTN_0,&au8_ButtonStatus);
 			 if (Pressed == au8_ButtonStatus)
 			 {
@@ -122,15 +125,13 @@
 			 pushButtonGetStatus(BTN_1,&au8_ButtonStatus);
 			 if (Pressed == au8_ButtonStatus)
 			 {
-				 
 				 au8_Answer =  FALSE;
 				 au8_AppStatus = CLEAR;
 				 au8_AppStatusNext = CHECK_ANSWER;
 			 }
-
-			 
 			 break;
 			 /****************************************************************************************************************/
+			 /*check user answer if it right or wrong*/
 			 case CHECK_ANSWER:
 
 			 if (QUE1 == au8_CheckCounter)
@@ -167,12 +168,12 @@
 			 {
 				  if (TRUE == au8_Answer)
 				  {
-					  au8_AppStatus = RIGHT_ANSWER;
+					  au8_AppStatus = WRONG_ANSWER;
 					  au8_AppStatusNext = GET_QUE;
 				  }
 				  else
 				  {
-					  au8_AppStatus = WRONG_ANSWER;
+					  au8_AppStatus = RIGHT_ANSWER;
 					  au8_AppStatusNext = GET_QUE;
 				  }
 
@@ -207,18 +208,20 @@
 
 			 }
 		/*****************************************************************************************************************/
+		/*if the user answer is right*/
 		case RIGHT_ANSWER:
 		if (INITIALIZED != gu8_LCD_DisplayStringRowColumnFlag)
 		{
+			/*display right answer*/
 			LCD_DisplayStringRowColumn("RIGHT ANSWER",12,0);
-			
 		}
 		else
 		{
 			if (ANSWER_WAIT > au8_WaitCounter)
 			{
 				au8_WaitCounter++;
-				if (ZERO == (au8_WaitCounter%4))
+				/*toggle led*/
+				if (ZERO == (au8_WaitCounter%TOGGLE_FACTOR))
 				{
 				   DIO_Toggle(GPIOB,UPPER_NIBBLE);
 				}
@@ -234,9 +237,11 @@
 		}
     	break;
 		/*****************************************************************************************************************/
+		/*if the user answer is wrong*/
 		case WRONG_ANSWER:
 		if (INITIALIZED != gu8_LCD_DisplayStringRowColumnFlag)
 		{
+			/*display wrong answer*/
 			LCD_DisplayStringRowColumn("WRONG ANSWER",12,0);
 			
 		}
@@ -245,6 +250,7 @@
 			if (ANSWER_WAIT > au8_WaitCounter)
 			{
 			   au8_WaitCounter++;
+				/*turn buzzer on*/
 				DIO_Write(GPIOB,BIT3,HIGH);
 			} 
 			else
@@ -258,10 +264,11 @@
 		}
 		break;
 		 /***************************************************************************************************************/
-
+		 /*get the question*/
 		 case GET_QUE:
 		 switch (au8_QueNumber)
 		 {
+			 /*question 1*/
 			 case 1:
 			 PTR1 = "DO YOU KNOW";
 			 au8_QueSize1 = 11;
@@ -270,6 +277,7 @@
 			 au8_CheckCounter = QUE1;
 			 break;
 			
+			/*question 2*/
 			case 2:
 			PTR1 = "IS NORMAL";
 			au8_QueSize1 = 9;
@@ -278,6 +286,7 @@
 			au8_CheckCounter = QUE2;
 			break;
 
+			/*question 3*/
 			case 3:
 			PTR1 = "Is the death";
 			au8_QueSize1 = 12;
@@ -286,6 +295,7 @@
 			au8_CheckCounter = QUE3;
 			break;
 
+			/*question 4*/
 			case 4:
 			PTR1 = "Is incubation";
 			au8_QueSize1 = 13;
@@ -294,11 +304,12 @@
 			au8_CheckCounter = QUE4;
 			break;
 
+			/*question 5*/
 			case 5:
-			PTR1 = "Does it lasts" ;
-			au8_QueSize1 = 13;
-			PTR2 = "for 5hr on skin?";
-			au8_QueSize2 = 16;
+			PTR1 = "Corona infects" ;
+			au8_QueSize1 = 14;
+			PTR2 = "more than once?";
+			au8_QueSize2 = 15;
 			au8_CheckCounter = QUE5;
 			break;
 
@@ -307,8 +318,10 @@
 			au8_AppStatus = SCOR;
 			break;
 		  }
+		  /*Display the question and got to next status*/
 		  if (au8_InetrnalStatus == NOT_INITIALIZED)
-		  { if (INITIALIZED != gu8_LCD_DisplayStringRowColumnFlag)
+		  { 
+		  if (INITIALIZED != gu8_LCD_DisplayStringRowColumnFlag)
 			  {
 				  LCD_DisplayStringRowColumn(PTR1,au8_QueSize1,0);
 				  
@@ -319,9 +332,10 @@
 				  gu8_LCD_DisplayStringRowColumnFlag = NOT_INITIALIZED;
 			  }
 		  }
-		  /*********************************************************/
+	
 		  else if (au8_InetrnalStatus == INTERNAL_STATUS_1)
-		  {if (INITIALIZED != gu8_LCD_DisplayStringRowColumnFlag)
+		  {
+		  if (INITIALIZED != gu8_LCD_DisplayStringRowColumnFlag)
 			  {
 				  LCD_DisplayStringRowColumn(PTR2,au8_QueSize2,16);
 			  }
@@ -329,7 +343,6 @@
 			  {
 				  gu8_LCD_DisplayStringRowColumnFlag = NOT_INITIALIZED;
 				  au8_InetrnalStatus = NOT_INITIALIZED;
-				  
 				  au8_AppStatus = GET_ANSWER;
 				  au8_QueNumber ++;
 				  
@@ -337,6 +350,7 @@
 		  }
 		  break;
 		 /****************************************************************************************************************/
+		 /*display user score*/
 		 case SCOR:
 		 if (INITIALIZED != gu8_LCD_DisplayStringRowColumnFlag)
 		 {
