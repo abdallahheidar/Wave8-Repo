@@ -9,17 +9,13 @@
 #ifndef LCD_H_
 #define LCD_H_
 
-
-
-
-
-
 /*************************************************************/
 /************************* INCLUDES *************************/
 /***********************************************************/
 
 #include "../../MCAL/DIO/DIO.h"
 #include "../../SERVICE/ERROR/ERROR-STORE.h"
+ #include "LCD_Cfg.h"
 
 /*************************************************************/
 /*********************** GLOBAL MACROS **********************/
@@ -38,7 +34,7 @@ extern uint8_t gu8_LCD_InitFlag;
 extern uint8_t gu8_LCD_SencCommandFlag;
 extern uint8_t gu8_LCD_DisplayCharFlag;
 extern uint8_t gu8_LCD_DisplayStringFlag;
-extern uint8_t gu8_LCD_LCD_DisplayStringRowColumnFlag;
+extern uint8_t gu8_LCD_DisplayStringRowColumnFlag;
 extern  uint8_t gu8_LCD_GoToRowColumFlag;
 
 
@@ -67,7 +63,7 @@ extern ERROR_STATUS LCD_init (void);
 extern ERROR_STATUS LCD_SendCommand (uint8_t Command);
 
 /**
-* Input: address of needed char in the LCD CGROM.
+* Input: address of needed char in the LCD CGROM (ASCI).
 * Output:
 * In/Out:
 * Return: The error status of the function.
@@ -94,7 +90,7 @@ extern ERROR_STATUS LCD_DisplayString (uint8_t * LCD_String, uint8_t String_Size
 * Description: Display a string on LCD on specific position.
 *
 */
-extern ERROR_STATUS LCD_DisplayStringRowColumn (uint8_t * LCD_String, uint8_t String_Size, uint8_t Pos);
+extern ERROR_STATUS LCD_DisplayStringRowColumn (const uint8_t * LCD_String, uint8_t String_Size, uint8_t Pos);
 
 /**
 * Input:

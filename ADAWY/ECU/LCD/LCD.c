@@ -8,60 +8,69 @@
 
 
  #include "LCD.h"
- #include "LCD_Cfg.h"
+
 
 
 
  /*************************************************************/
  /*********************** LOCAL MACROS ***********************/
  /***********************************************************/
+ 
+ #define LCD_DATA_PINS LCD_D4|LCD_D5|LCD_D6|LCD_D7
+
+ /*Init Function State machine Cases*/
  #define WAIT 1
  #define SET_PINS 2
  #define SET_4_BIT_MODE 3
  #define SET_INIT_MODE 4
 
+ /*Set init mode cases in init function*/
+ #define INIT_COMMAND_INITAIL_VALUE 0
+ #define INIT_COMMAND_FIRST 1
+ #define INIT_COMMAND_SECOND 2
+ #define INIT_COMMAND_THIRD 3
 
+ /*Display String function state machine cases*/
  #define SENDING_CHAR 1
  #define CHAR_SEND 2
 
+ /*Display String Row Column function state machine cases*/
  #define GO_TO 1
  #define DISPLAY_STRING 2
 
- #define LCD_DATA_PINS LCD_D4|LCD_D5|LCD_D6|LCD_D7
-
+ /*enable LCD to perform the command*/
  #define LCD_SEND_ENABLE DIO_Write(LCD_PORT,LCD_EN,HIGH);\
                          DIO_Write(LCD_PORT,LCD_EN,LOW)
          
-#define DELAY Delay_ms(Timer_0,1)
-
+/*Initial function macros*/
 #define INITIAL_WAIT 40
-#define INIT_COMMAND_INITAIL_VALUE 0
-#define INIT_COMMAND_FIRST 1
-#define INIT_COMMAND_SECOND 2
-#define INIT_COMMAND_THIRD 3
 #define LCD_4_BIT_MODE_VALUE 0x20
 #define WAIT_COUNTER_INITAIL_VALUE 0
 #define LCD_4BIT_MODE_2LINE_DISPLAY_5_8_FONT 0x28
 #define LCD_DISPLAY_OFF 0x08
 #define LCD_DISPLAY_ON_BLINK_CURSOR 0x0F
 #define LCD_ENTERY_MODE_RIGHT_INCREASED 0x06
+
+
 #define SEND_CHAR_CFG_VALUE 0x02
 #define LCD_CLEAR_COMMAND 0x01
-#define LCD_COLOUM_SIZE 16
 #define FIRST_ROW_FIRST_COLUME 0x80
 #define SECOND_ROW_FIRST_COLUME 0xB0
+
 #define WAIT_FOR_1_MS  au8_Wait = 1
+
 
  /*************************************************************/
  /********************* GLOBAL VARIABLES *********************/
  /***********************************************************/
-
  uint8_t gu8_LCD_InitFlag;
  uint8_t gu8_LCD_SencCommandFlag;
  uint8_t gu8_LCD_DisplayCharFlag;
  uint8_t gu8_LCD_DisplayStringFlag;
- uint8_t gu8_LCD_LCD_DisplayStringRowColumnFlag;
+ uint8_t gu8_LCD_DisplayStringRowColumnFlag;
  uint8_t gu8_LCD_GoToRowColumFlag;
+
+
  /*************************************************************/
  /***************** LOCAL FUNCTION PROTOTYPE *****************/
  /***********************************************************/
@@ -86,14 +95,14 @@ ERROR_STATUS LCD_Send (uint8_t Data)
 	uint8_t au8_Error = E_OK;
 
 	/*read port B value to get pin0 value*/
-	au8_Error = DIO_Read(GPIOB,PIN0,&au8_Data);
+	au8_Error |= DIO_Read(GPIOB,PIN0,&au8_Data);
 
 	/*mask pin0 value*/
 	au8_Data &= 0x01;
 
 	au8_Data = au8_Data | Data;
 
-	au8_Error = DIO_Write_Port(LCD_PORT, au8_Data);
+	au8_Error |= DIO_Write_Port(LCD_PORT, au8_Data);
 
 	Error_Push(DIO_MODULE, UNKNOWN_ERROR);
 
@@ -258,7 +267,7 @@ ERROR_STATUS LCD_Send (uint8_t Data)
  }
 
  /**
- * Input: address of needed char in the LCD CGROM.
+ * Input: address of needed char in the LCD CGROM (ASCI).
  * Output:
  * In/Out:
  * Return: The error status of the function.
@@ -371,7 +380,7 @@ ERROR_STATUS LCD_Send (uint8_t Data)
 * Description: Display a string on LCD on specific position.
 *
 */
- ERROR_STATUS LCD_DisplayStringRowColumn (uint8_t * LCD_String, uint8_t String_Size, uint8_t Pos)
+ ERROR_STATUS LCD_DisplayStringRowColumn (const uint8_t * LCD_String, uint8_t String_Size, uint8_t Pos)
  {
     uint8_t au8_Error = E_OK;
 	 static uint8_t LCD_DisplayStringRowColumState = GO_TO;
@@ -405,7 +414,7 @@ ERROR_STATUS LCD_Send (uint8_t Data)
 		    else
 		    {
 			    gu8_LCD_DisplayStringFlag = NOT_INITIALIZED;
-			    gu8_LCD_LCD_DisplayStringRowColumnFlag = INITIALIZED;
+			    gu8_LCD_DisplayStringRowColumnFlag = INITIALIZED;
 			    LCD_DisplayStringRowColumState = GO_TO;
 		    }
 		    break;

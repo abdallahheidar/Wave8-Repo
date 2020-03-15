@@ -9,7 +9,7 @@
 #ifndef LCD_CFG_H_
 #define LCD_CFG_H_
 
-
+#define LCD_COLOUM_SIZE 16
 
 #define LCD_PORT GPIOA
 #define LCD_RS   BIT1
