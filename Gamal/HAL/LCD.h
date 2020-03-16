@@ -47,9 +47,9 @@
 /*******************************************************************************
  *                      Gloabal Variables                                  *
  *******************************************************************************/
+extern uint8_t gu8_LCDInit_CompleteFlag;
+extern uint8_t gu8_SendCommand_CompleteFlag;
 extern uint8_t gu8_String_CompleteFlag;
-
-
 
 /*******************************************************************************
  *                      Functions Prototypes                                   *
