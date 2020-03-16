@@ -15,8 +15,9 @@
 #define QUESTION3      3
 #define QUESTION4      4
 #define QUESTION5      5
-#define AGAIN          6
-#define EXIT           7
+#define REWARD         6
+#define AGAIN          7
+#define EXIT           8
 
 #define LEDS_STATE1    8
 #define LEDS_STATE2    9
@@ -26,6 +27,7 @@
 #define LEDS_STOP      12
 
 static uint8_t gu8_appSM;
+static uint8_t gu8_questionfinished;
 static uint8_t gu8_RewardSM;
 static strSOS_TASK_Cfg_t RewardTask;
 static uint8_t YesFlag;
@@ -138,6 +140,7 @@ void App(void)
 	switch(gu8_appSM)
 	{
 		case QUESTION1:
+			gu8_questionfinished = FALSE;
 			if(au8WriteFlag == 0)
 			{
 				ERR = DisplayData("Do write nicely?");//yes
@@ -247,7 +250,6 @@ void App(void)
 		}
 		break;
 		case QUESTION5:
-		
 		if(au8WriteFlag == 0)
 		{
 			ERR = DisplayData("Do you have Instaagram?");//no
@@ -255,10 +257,10 @@ void App(void)
 		if (ERR == E_OK)
 		{
 			au8WriteFlag=1;
-			
 			if (YesFlag == TRUE)
 			{
 				YesFlag =FALSE;
+				gu8_appSM = REWARD;
 				au8WriteFlag=0;
 				ERR = E_NOK;
 			}
@@ -266,48 +268,105 @@ void App(void)
 			{
 				NoFlag =FALSE;
 				au8RightAnswerCounter++;
-				/*gu8_appSM = AGAIN;*/
+				gu8_appSM = REWARD;
 				au8WriteFlag=0;
 				ERR = E_NOK;
 			}
-			if(ERR == E_NOK)
+		}
+		/*
+		if (gu8_questionfinished == TRUE)
+		{
+			if(au8_RewardFlag == 0)
 			{
-				if (au8_RewardFlag == 0)
+				if(au8RightAnswerCounter == 5)
 				{
-				
-					if (au8RightAnswerCounter == 5)
+					ERR = DisplayData("Congrats !");
+					if (ERR == E_OK)
 					{
-						ERR = DisplayData("Congrats !");
-						if (ERR == E_OK)
-						{
-							au8_RewardFlag=1;
-							gu8_RewardSM = LEDS_STATE1;
-							gu8RewardFlag =TRUE;
-							au8RightAnswerCounter=0;
-						}
-					
-					}
-					else
-					{
-						ERR = DisplayData("Hard Luck !");
-						if (ERR == E_OK)
-						{
-							au8_RewardFlag=1;
-							gu8_RewardSM = LEDS_STOP;
-							gu8RewardFlag =FALSE;
-							au8RightAnswerCounter=0;
-						}
-					
+						au8_RewardFlag=1;
+						gu8_RewardSM = LEDS_STATE1;
+						gu8RewardFlag =TRUE;
+						au8RightAnswerCounter=0;
 					}
 				}
-				if(gu8RewardFlag == FALSE)
+				else
 				{
+					ERR = DisplayData("Hard Luck !");
+					if (ERR == E_OK)
+					{
+						au8_RewardFlag=1;
+						gu8_RewardSM = LEDS_STOP;
+						gu8RewardFlag =FALSE;
+						au8RightAnswerCounter=0;
+						//	gu8_appSM = AGAIN;
+						
+					}
+				}
+			}
+			if(gu8RewardFlag == FALSE)
+			{
+				gu8_appSM = AGAIN;
+				au8WriteFlag=0;
+				ERR = E_NOK;
+				au8_RewardFlag=0;
+				gu8_questionfinished =FALSE;
+			}
+			
+		}*/
+		break;
+		case REWARD:
+			if(au8RightAnswerCounter == 5)
+			{
+				if(au8WriteFlag == 0)
+				{
+					ERR = DisplayData("Congrats !");
+				}
+				
+				if (ERR == E_OK)
+				{
+					gu8_RewardSM = LEDS_STATE1;
+					gu8RewardFlag =TRUE;
+					au8WriteFlag=1;
+					au8_RewardFlag=1;
+					
+					
+					au8RightAnswerCounter=0;
+					
+				}
+			}
+			else
+			{
+				
+				if(au8WriteFlag == 0)
+				{
+					ERR = DisplayData("Hard Luck !");
+				}
+				if (ERR == E_OK)
+				{
+					au8WriteFlag=1;
+					au8_RewardFlag=1;
+					gu8_RewardSM = LEDS_STOP;
+					gu8RewardFlag =FALSE;
+					au8RightAnswerCounter=0;
+					
+					//	gu8_appSM = AGAIN;
+					
+				}
+			}
+			
+			if(gu8RewardFlag == FALSE)
+			{
+				if (YesFlag == TRUE || NoFlag ==TRUE)
+				{
+					YesFlag =FALSE;
+					NoFlag =FALSE;
+					au8RightAnswerCounter=0;
 					gu8_appSM = AGAIN;
 					au8WriteFlag=0;
 					ERR = E_NOK;
 				}
+				
 			}
-		}
 		break;
 		case AGAIN:
 		if(au8WriteFlag == 0)
@@ -351,7 +410,6 @@ void Reward(void)
 {
 	if(gu8RewardFlag == TRUE)
 	{
-		TCNT1L =gu8_RewardSM;
 		switch(gu8_RewardSM)
 		{
 			case LEDS_STATE1:
