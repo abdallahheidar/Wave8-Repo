@@ -19,6 +19,6 @@
 
 #define BTN_1_GPIO	GPIOB
 #define BTN_1_BIT	BIT2
-
+#define PB_MODULE_ERR	-500
 
 #endif /* PUSHBUTTONCONFIG_H_ */
