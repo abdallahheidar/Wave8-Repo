@@ -40,9 +40,10 @@
 
  #define TOGGLE_FACTOR      4
 
- void LCD_APP (void)
+ ERROR_STATUS LCD_APP (void)
  {
-    static uint8_t au8_AppStatus = NOT_INITIALIZED;
+    ERROR_STATUS au8_Error = E_OK;
+	 static uint8_t au8_AppStatus = NOT_INITIALIZED;
 	 static uint8_t au8_AppStatusNext = NOT_INITIALIZED;
 	 static uint8_t au8_InetrnalStatus = NOT_INITIALIZED;
 	 static uint8_t au8_CheckCounter = GET_QUE;
@@ -61,7 +62,7 @@
 	  str_DIO_Info.dir = OUTPUT;
 	  str_DIO_Info.GPIO = GPIOB;
 	  str_DIO_Info.pins = BIT3|BIT4|BIT5|BIT6|BIT7;
-	  DIO_init(&str_DIO_Info);
+	  au8_Error |= DIO_init(&str_DIO_Info);
 
 	 switch (au8_AppStatus)
 	 {
@@ -75,8 +76,8 @@
 		 /*******************************************************************************************************/
 		 /*Clear LCD status*/
 		 case CLEAR:
-		 LCD_Clear();
-		 LCD_Clear();
+		 au8_Error |= LCD_Clear();
+		 au8_Error |= LCD_Clear();
 		 au8_AppStatus = au8_AppStatusNext;
 	
 		 break;
@@ -85,7 +86,7 @@
 		 case PRINT_FIRST_LINE:
 		 if (INITIALIZED != gu8_LCD_DisplayStringRowColumnFlag)
 		 {
-		    LCD_DisplayStringRowColumn("HELLO USER",10,0);
+		    au8_Error |= LCD_DisplayStringRowColumn("HELLO USER",10,0);
 		 } 
 		 else
 		 {
@@ -98,7 +99,7 @@
 		 case PRINT_SECOND_LINE:
 		 if (INITIALIZED != gu8_LCD_DisplayStringRowColumnFlag)
 		 {
-			 LCD_DisplayStringRowColumn("R U READY",9,16);
+			 au8_Error |= LCD_DisplayStringRowColumn("R U READY",9,16);
 			 
 		 }
 		 else
@@ -114,7 +115,7 @@
 			 /****************************************************************************************************************/
 			 /*get answer from the user using push buttons*/
 			 case GET_ANSWER:
-			 pushButtonGetStatus(BTN_0,&au8_ButtonStatus);
+			 au8_Error |= pushButtonGetStatus(BTN_0,&au8_ButtonStatus);
 			 if (Pressed == au8_ButtonStatus)
 			 {
 			    au8_Answer =  TRUE;
@@ -122,7 +123,7 @@
 				 au8_AppStatusNext = CHECK_ANSWER;
 			 }
 			
-			 pushButtonGetStatus(BTN_1,&au8_ButtonStatus);
+			 au8_Error |= pushButtonGetStatus(BTN_1,&au8_ButtonStatus);
 			 if (Pressed == au8_ButtonStatus)
 			 {
 				 au8_Answer =  FALSE;
@@ -213,7 +214,7 @@
 		if (INITIALIZED != gu8_LCD_DisplayStringRowColumnFlag)
 		{
 			/*display right answer*/
-			LCD_DisplayStringRowColumn("RIGHT ANSWER",12,0);
+			au8_Error |= LCD_DisplayStringRowColumn("RIGHT ANSWER",12,0);
 		}
 		else
 		{
@@ -223,7 +224,7 @@
 				/*toggle led*/
 				if (ZERO == (au8_WaitCounter%TOGGLE_FACTOR))
 				{
-				   DIO_Toggle(GPIOB,UPPER_NIBBLE);
+				   au8_Error |= DIO_Toggle(GPIOB,UPPER_NIBBLE);
 				}
 			}
 			else
@@ -232,7 +233,7 @@
 				au8_AppStatus = CLEAR;
 				au8_WaitCounter = ZERO;
 				au8_Score ++;
-				DIO_Write(GPIOB,UPPER_NIBBLE,LOW);
+				au8_Error |= DIO_Write(GPIOB,UPPER_NIBBLE,LOW);
 			}
 		}
     	break;
@@ -242,7 +243,7 @@
 		if (INITIALIZED != gu8_LCD_DisplayStringRowColumnFlag)
 		{
 			/*display wrong answer*/
-			LCD_DisplayStringRowColumn("WRONG ANSWER",12,0);
+			au8_Error |= LCD_DisplayStringRowColumn("WRONG ANSWER",12,0);
 			
 		}
 		else
@@ -251,14 +252,14 @@
 			{
 			   au8_WaitCounter++;
 				/*turn buzzer on*/
-				DIO_Write(GPIOB,BIT3,HIGH);
+				au8_Error |= DIO_Write(GPIOB,BIT3,HIGH);
 			} 
 			else
 			{
 			   gu8_LCD_DisplayStringRowColumnFlag = NOT_INITIALIZED;
 			   au8_AppStatus = CLEAR;
 				au8_WaitCounter = ZERO;
-				DIO_Write(GPIOB,BIT3,LOW);
+				au8_Error |= DIO_Write(GPIOB,BIT3,LOW);
 			}
 			
 		}
@@ -323,7 +324,7 @@
 		  { 
 		  if (INITIALIZED != gu8_LCD_DisplayStringRowColumnFlag)
 			  {
-				  LCD_DisplayStringRowColumn(PTR1,au8_QueSize1,0);
+				  au8_Error |= LCD_DisplayStringRowColumn(PTR1,au8_QueSize1,0);
 				  
 			  }
 			  else
@@ -337,7 +338,7 @@
 		  {
 		  if (INITIALIZED != gu8_LCD_DisplayStringRowColumnFlag)
 			  {
-				  LCD_DisplayStringRowColumn(PTR2,au8_QueSize2,16);
+				  au8_Error |= LCD_DisplayStringRowColumn(PTR2,au8_QueSize2,16);
 			  }
 			  else
 			  {
@@ -354,7 +355,7 @@
 		 case SCOR:
 		 if (INITIALIZED != gu8_LCD_DisplayStringRowColumnFlag)
 		 {
-			 LCD_DisplayStringRowColumn("YOUR SCORE IS ",14,0);
+			 au8_Error |= LCD_DisplayStringRowColumn("YOUR SCORE IS ",14,0);
 			 
 		 }
 		 else
@@ -362,7 +363,7 @@
 			 if (INITIALIZED != gu8_LCD_DisplayStringFlag)
 			 {
 			    au8_Score += 48;
-				 LCD_DisplayString(&au8_Score,1);
+				 au8_Error |= LCD_DisplayString(&au8_Score,1);
 			 } 
 			 else
 			 {
@@ -377,4 +378,6 @@
 		 default:
 		 break;
 	 }
+
+	 return au8_Error;
  }

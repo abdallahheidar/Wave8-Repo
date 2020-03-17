@@ -12,6 +12,6 @@
  #include "../ECU/LCD/LCD.h"
  #include "../ECU/PUSH_BUTTON/pushButton.h"
 
-  void LCD_APP (void);
+  ERROR_STATUS LCD_APP (void);
 
 #endif /* LCD_APP_H_ */

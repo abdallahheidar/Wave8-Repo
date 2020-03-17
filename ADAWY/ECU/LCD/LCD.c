@@ -242,14 +242,14 @@ ERROR_STATUS LCD_Send (uint8_t Data)
 	    /*SEND THE UPPER NIBBLE OF THE COMMAND*/
 		 au8_SendCommand = Command & UPPER_NIBBLE;
 
-	    au8_Error = LCD_Send(au8_SendCommand);
+	    au8_Error |= LCD_Send(au8_SendCommand);
 
 	    LCD_SEND_ENABLE ;
 
 		 /*SEND THE LOWER NIBBLE OF THE COMMAND*/
 	    au8_SendCommand = Command SHIFT_4_BIT_LEFT;
 	    
-	    au8_Error = LCD_Send(au8_SendCommand);
+	    au8_Error |= LCD_Send(au8_SendCommand);
 
 	    LCD_SEND_ENABLE ;
 
@@ -290,7 +290,7 @@ ERROR_STATUS LCD_Send (uint8_t Data)
 		 /*add send char confg*/
 	    au8_SendChar = au8_SendChar | SEND_CHAR_CFG_VALUE;
 
-	    au8_Error = LCD_Send(au8_SendChar);
+	    au8_Error |= LCD_Send(au8_SendChar);
 
 	    LCD_SEND_ENABLE ;
 
@@ -300,7 +300,7 @@ ERROR_STATUS LCD_Send (uint8_t Data)
 		 /*add send char confg*/
 	    au8_SendChar |= SEND_CHAR_CFG_VALUE;
 	    
-	    au8_Error = LCD_Send(au8_SendChar);
+	    au8_Error |= LCD_Send(au8_SendChar);
 	    
 	    LCD_SEND_ENABLE ;
 
@@ -346,12 +346,12 @@ ERROR_STATUS LCD_Send (uint8_t Data)
 		    {
 			    /*send char*/
 				 case SENDING_CHAR:
-			    au8_Error = LCD_DisplayChar(LCD_String[au8_StringCounter]);
+			    au8_Error |= LCD_DisplayChar(LCD_String[au8_StringCounter]);
 			    LCD_DisplayStringState = CHAR_SEND;
 			    break;
 				 /*display the char*/
 			    case CHAR_SEND:
-			    au8_Error = LCD_DisplayChar(LCD_String[au8_StringCounter]);
+			    au8_Error |= LCD_DisplayChar(LCD_String[au8_StringCounter]);
 			    au8_StringCounter++ ;
 			    LCD_DisplayStringState = SENDING_CHAR;
 			    break;
@@ -398,7 +398,7 @@ ERROR_STATUS LCD_Send (uint8_t Data)
 			 case GO_TO:
 		    if (gu8_LCD_GoToRowColumFlag != INITIALIZED)
 		    {
-			    au8_Error = LCD_GoToRowColumn(Pos);
+			    au8_Error |= LCD_GoToRowColumn(Pos);
 		    }
 		    else
 		    {
@@ -410,7 +410,7 @@ ERROR_STATUS LCD_Send (uint8_t Data)
 		    /*display the given string*/
 			 case DISPLAY_STRING:
 		    if (INITIALIZED != gu8_LCD_DisplayStringFlag)
-		    au8_Error = LCD_DisplayString(LCD_String,String_Size);
+		    au8_Error |= LCD_DisplayString(LCD_String,String_Size);
 		    else
 		    {
 			    gu8_LCD_DisplayStringFlag = NOT_INITIALIZED;
@@ -440,7 +440,7 @@ ERROR_STATUS LCD_Send (uint8_t Data)
  {
     uint8_t au8_Error = E_OK;
 	 
-	 au8_Error = LCD_SendCommand(LCD_CLEAR_COMMAND);
+	 au8_Error |= LCD_SendCommand(LCD_CLEAR_COMMAND);
 
 	 return au8_Error;
  }
@@ -462,7 +462,7 @@ ERROR_STATUS LCD_Send (uint8_t Data)
     {
 	    if (INITIALIZED != gu8_LCD_SencCommandFlag)
 		 /*second the commend of go to first line with desired position*/
-		    au8_Error = LCD_SendCommand(FIRST_ROW_FIRST_COLUME + Pos);
+		    au8_Error |= LCD_SendCommand(FIRST_ROW_FIRST_COLUME + Pos);
 		 else
 		 {
 		    gu8_LCD_SencCommandFlag = NOT_INITIALIZED;
@@ -474,7 +474,7 @@ ERROR_STATUS LCD_Send (uint8_t Data)
 	    if (INITIALIZED != gu8_LCD_SencCommandFlag)
 	    {
 		   /*second the commend of go to second line with desired position*/
-			au8_Error = LCD_SendCommand(SECOND_ROW_FIRST_COLUME + Pos);
+			au8_Error |= LCD_SendCommand(SECOND_ROW_FIRST_COLUME + Pos);
 	    }
 		 else
 	    {
