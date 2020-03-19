@@ -2,29 +2,29 @@
 
 
 /* SPSR */
-#define SPIF    7
-#define WCOL    6
+#define SPIF    0x80
+#define WCOL    0x40
 /* bits 5-1 reserved */
 #define SPI2X   0
 
 /* SPCR */
-#define SPIE    7
-#define SPE     6
-#define DORD    5
-#define MSTR    4
-#define CPOL    3
-#define CPHA    2
-#define SPR1    1
-#define SPR0    0
+#define SPIE    0x80
+#define SPE     0x40
+#define DORD    0x20
+#define MSTR    0x10
+#define CPOL    0x08
+#define CPHA    0x04
+#define SPR1    0x02
+#define SPR0    0x01
 static SPI_CBF  spi_cbf;
 
-ISR(SPI_STC_vect)
+MY_ISR(SPI_STC_vect)
 {
 	spi_cbf();
 }
 
-ERROR_STATUS SPI_init(gstrSPI_spi_satus_t * spi_cfg){
-	ERROR_STATUS u8_fun_status = OK;
+u8_ERROR_STATUS_t SPI_init(gstrSPI_spi_satus_t * spi_cfg){
+	u8_ERROR_STATUS_t u8_fun_status = E_OK;
 	/************************************************************************
 	*                     SPI INITIATION STEPS                            
 	*	1-SET PINS DIRECTION DEPENDING ON MASTER OR SLAVE
@@ -81,23 +81,27 @@ ERROR_STATUS SPI_init(gstrSPI_spi_satus_t * spi_cfg){
 }
 
 
-ERROR_STATUS SPI_sendData(const uint8_t data) 
+u8_ERROR_STATUS_t SPI_sendData(const uint8_t data) 
 {
-	ERROR_STATUS u8_fun_status = OK;
+	u8_ERROR_STATUS_t u8_fun_status = E_OK;
 	SPDR = data; //send data by SPI  
    	return u8_fun_status;
 }
 
-ERROR_STATUS SPI_getData(uint8_t * value)
+u8_ERROR_STATUS_t SPI_getData(uint8_t * value)
 {
-	ERROR_STATUS u8_fun_status = OK;
+	u8_ERROR_STATUS_t u8_fun_status = E_OK;
 	
 	//return the received byte from SPI data register
 	*value =  SPDR; 
 	return u8_fun_status;
 }
 
-ERROR_STATUS spi_enable()
+u8_ERROR_STATUS_t spi_enable()
 {
 	SET_BIT(SPCR,SPE);
+}
+
+u8_ERROR_STATUS_t spi_disable(){
+	CLEAR_BIT(SPCR,SPE);
 }

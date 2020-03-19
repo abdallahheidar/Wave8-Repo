@@ -14,9 +14,9 @@
 // sleep mode //
 #define IDLE    (0x00)
 
-u8_ERROR_STATUS_t  Sleep_Mode(uint8_t u8_SleepMode);
-u8_ERROR_STATUS_t  EN_Sleep(void);
-u8_ERROR_STATUS_t  DIS_EN_Sleep(void);
+u8_ERROR_STATUS_t Sleep_Mode(uint8_t u8_SleepMode);
+u8_ERROR_STATUS_t EN_Sleep(void);
+u8_ERROR_STATUS_t DIS_EN_Sleep(void);
 
 
 

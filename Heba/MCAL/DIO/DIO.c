@@ -1,210 +1,183 @@
-/*
+﻿/*
  * DIO.c
  *
- * Created: 2/17/2020 2:16:34 PM
- *  Author: mahmo
+ * Created: 17/02/2020 11:33:51 ص
+ *  Author: TOSHIBA
  */ 
-
-
-/*- INCLUDES ----------------------------------------------*/
 #include "DIO.h"
-/*- LOCAL MACROS ------------------------------------------*/
-/*- LOCAL Datatypes ---------------------------------------*/
-/*- LOCAL FUNCTIONS PROTOTYPES ----------------------------*/
-/*- GLOBAL STATIC VARIABLES -------------------------------*/
-/*- GLOBAL EXTERN VARIABLES -------------------------------*/
-/*- LOCAL FUNCTIONS IMPLEMENTATION ------------------------*/
-/*- APIs IMPLEMENTATION -----------------------------------*/
 
-ERROR_STATUS DIO_init (DIO_Cfg_s *DIO_info)
-{
-	uint8_t u8_fun_status = OK;
-    /*check for errors*/
-	if((DIO_info->dir != OUTPUT && DIO_info->dir != INPUT) || 
-		DIO_info->GPIO > GPIOD)
-	{
-		u8_fun_status = NOK;
-	}
-	/*if input is ok proceed with fun process*/
-	else
-	{
-			switch(DIO_info->GPIO)
-			{
-				case GPIOA:
-					switch(DIO_info->dir)
-					{
-						case INPUT:
-							CLEAR_MASK(PORTA_DIR,DIO_info->pins);
-						break;
-						case OUTPUT:
-							SET_MASK(PORTA_DIR,DIO_info->pins);
-						break;
-					}
-				break;
-				case GPIOB:
-					switch(DIO_info->dir)
-					{
-						case INPUT:
-						CLEAR_MASK(PORTB_DIR,DIO_info->pins);
-						break;
-						case OUTPUT:
-						SET_MASK(PORTB_DIR,DIO_info->pins);
-						break;
-					}
-				break;
-				case GPIOC:
-					switch(DIO_info->dir)
-					{
-						case INPUT:
-						CLEAR_MASK(PORTC_DIR,DIO_info->pins);
-						break;
-						case OUTPUT:
-						SET_MASK(PORTC_DIR,DIO_info->pins);
-						break;
-					}
-				break;
-				case GPIOD:
-					switch(DIO_info->dir)
-					{
-						case INPUT:
-						CLEAR_MASK(PORTD_DIR,DIO_info->pins);
-						break;
-						case OUTPUT:
-						SET_MASK(PORTD_DIR,DIO_info->pins);
-						break;
-					}
-				break;
-				default:
-					u8_fun_status = NOK;
-				break;
-			}
-	}
-	return u8_fun_status;
-}
-
-
-ERROR_STATUS DIO_Write (uint8_t GPIO, uint8_t pins, uint8_t value)
-{
-	uint8_t u8_fun_status = OK;
-	/*check for errors*/
-	if(GPIO > GPIOD || (value != HIGH && value !=LOW))
-	{
-		u8_fun_status = NOK;
-	}
-	/*if input is ok proceed with fun process*/
-	else
-	{
-		switch(GPIO)
-		{
-			case GPIOA:
-			switch(value)
-			{
-				case LOW:
-				CLEAR_MASK(PORTA_DATA,pins);
-				break;
-				case HIGH:
-				SET_MASK(PORTA_DATA,pins);
-				break;
-			}
+extern u8_ERROR_STATUS_t DIO_init (gstr_DIO_Cfg_t *pstr_DIOCfg){
+	if (pstr_DIOCfg!=NULL){
+	switch (pstr_DIOCfg->u8_GPIO){
+		
+		case GPIOA :
+		switch (pstr_DIOCfg->u8_dir){
+			case INPUT:
+			PORTA_DIR&=~(pstr_DIOCfg->u8_pins);
 			break;
-			case GPIOB:
-			switch(value)
-			{
-				case LOW:
-				CLEAR_MASK(PORTB_DATA,pins);
-				break;
-				case HIGH:
-				SET_MASK(PORTB_DATA,pins);
-				break;
-			}
-			break;
-			case GPIOC:
-			switch(value)
-			{
-				case INPUT:
-				CLEAR_MASK(PORTC_DATA,pins);
-				break;
-				case OUTPUT:
-				SET_MASK(PORTC_DATA,pins);
-				break;
-			}
-			break;
-			case GPIOD:
-			switch(value)
-			{
-				case INPUT:
-				CLEAR_MASK(PORTD_DATA,pins);
-				break;
-				case OUTPUT:
-				SET_MASK(PORTD_DATA,pins);
-				break;
-			}
-			break;
-			default:
-			u8_fun_status = NOK;
+			case OUTPUT:
+			PORTA_DIR|=	pstr_DIOCfg->u8_pins;
 			break;
 		}
+		break;
+		
+		case GPIOB :
+		switch (pstr_DIOCfg->u8_dir){
+			case INPUT:
+			PORTB_DIR&=~(pstr_DIOCfg->u8_pins);
+			break;
+			case OUTPUT:
+			PORTB_DIR|=	(pstr_DIOCfg->u8_pins);
+			break;
+		}
+		
+		break;
+		
+		case GPIOC :
+		switch (pstr_DIOCfg->u8_dir)
+		{
+			case INPUT:
+			PORTC_DIR&=~(pstr_DIOCfg->u8_pins);
+			break;
+			case OUTPUT:
+			PORTC_DIR|=	(pstr_DIOCfg->u8_pins);
+			break;
+		}
+		
+		break;
+		
+		case GPIOD :
+		switch (pstr_DIOCfg->u8_dir){
+			case INPUT:
+			PORTD_DIR&=~(pstr_DIOCfg->u8_pins);
+			break;
+			case OUTPUT:
+			PORTD_DIR|=(pstr_DIOCfg->u8_pins);
+			break;
+		}
+		break;
+			default:
+			return E_NOK;
 	}
-	return u8_fun_status;
+	return  E_OK;
+}
+else 
+return E_NOK;
+
+}
+extern u8_ERROR_STATUS_t DIO_Write (uint8_t u8_GPIO, uint8_t u8_pins, uint8_t u8_value){
+	switch (u8_GPIO){
+		case GPIOA :
+		
+		PORTA_DATA=((PORTA_DATA)&~(u8_pins))|((u8_value)& (u8_pins));
+		/*PORTA_DATA=u8_value;*/
+		
+		/*switch(u8_value){
+			
+			case HIGH:
+			PORTA_DATA|=u8_pins;
+			break;
+			case LOW :
+			PORTA_DATA&=(~u8_pins);
+			break;
+		}*/
+		break;
+		
+		case GPIOB :
+		PORTB_DATA=((PORTB_DATA)&~(u8_pins))|((u8_value)& (u8_pins));
+		/*switch(u8_value){
+			
+			case HIGH:
+			PORTB_DATA|=u8_pins;
+			break;
+			case LOW :
+			PORTB_DATA&=(~u8_pins);
+			break;
+		}*/
+		break;
+		
+		case GPIOC :
+		PORTC_DATA=((PORTC_DATA)&~(u8_pins))|((u8_value)& (u8_pins));
+		/*switch(u8_value){
+			
+			case HIGH:
+			PORTC_DATA|=u8_pins;
+			break;
+			case LOW :
+			PORTC_DATA&=(~u8_pins);
+			break;
+		}*/
+		break;
+		
+		case GPIOD :
+		PORTD_DATA=((PORTD_DATA)&~(u8_pins))|((u8_value)&(u8_pins));
+		/*switch(u8_value){
+			
+			case HIGH:
+			PORTD_DATA|=u8_pins;
+			break;
+			case LOW :
+			PORTD_DATA&=(~u8_pins);
+			break;
+		}
+		break;*/
+			default:
+			return E_NOK;
+	}
+	return E_OK;
 }
 
-
-ERROR_STATUS DIO_Read (uint8_t GPIO,uint8_t pins, uint8_t *data)
-{
-	uint8_t u8_fun_status = OK;
-	/*check for errors*/
-	if(GPIO > GPIOD )
-	{
-		u8_fun_status = NOK;
+extern u8_ERROR_STATUS_t DIO_Read (uint8_t u8_GPIO,uint8_t u8_pins, uint8_t *pu8_data){
+	switch (u8_GPIO){
+		
+		case GPIOA :
+		*pu8_data=u8_pins & PORTA_PIN;
+		break;
+		
+		case GPIOB :
+		*pu8_data=u8_pins&PORTB_PIN;
+		break;
+		
+		case GPIOC :
+		*pu8_data=(u8_pins &PORTC_PIN);
+		break;
+		
+		case GPIOD :
+		*pu8_data=u8_pins &PORTD_PIN;
+		break;
+			default:
+			return E_NOK;
 	}
-	/*if input is ok proceed with fun process*/
-	switch(GPIO)
-	{
-		case GPIOA:
-			*data = MASK_IS_SET(PORTA_DATA,pins);
+	
+	return E_NOK;
+
+}
+
+extern u8_ERROR_STATUS_t DIO_Toggle (uint8_t u8_GPIO, uint8_t u8_pins){
+	
+	switch (u8_GPIO){
+		
+		case GPIOA :
+		PORTA_DATA^=u8_pins;
 		break;
-		case GPIOB:
-			*data = MASK_IS_SET(PORTB_DATA,pins);
+		
+		case GPIOB :
+		PORTB_DATA^=u8_pins;
+		
+		case GPIOC :
+		PORTC_DATA^=u8_pins;
+
 		break;
-		case GPIOC:
-			*data = MASK_IS_SET(PORTC_DATA,pins);
-		break;
-		case GPIOD:
-			*data = MASK_IS_SET(PORTD_DATA,pins);
+		
+		case GPIOD :
+		PORTD_DATA^=u8_pins;
+
 		break;
 		default:
-			u8_fun_status = NOK;
-		break;
+       return E_NOK;
 	}
-	return u8_fun_status;
+	return E_OK;
 }
+	
 
-ERROR_STATUS DIO_Toggle (uint8_t GPIO, uint8_t pins)
-{
-	uint8_t u8_fun_status = OK;
-	/*check for errors*/
-	if(GPIO > GPIOD )
-	{
-		u8_fun_status = NOK;
-	}
-	/*if input is ok proceed with fun process*/
-	switch(GPIO)
-	{
-		case GPIOA:
-			TOGGLE_MASK(PORTA_DATA,pins);
-		break;
-		case GPIOB:
-			TOGGLE_MASK(PORTB_DATA,pins);
-		break;
-		case GPIOC:
-			TOGGLE_MASK(PORTC_DATA,pins);
-		break;
-		case GPIOD:
-			TOGGLE_MASK(PORTD_DATA,pins);
-		break;
-		default:
-			u8_fun_status = NOK;
-		break;
-	}
-	return u8_fun_status;
-}
+

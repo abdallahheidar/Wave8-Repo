@@ -9,7 +9,7 @@
 #ifndef TMU_CFG_H_
 #define TMU_CFG_H_
 
-#define TMU_DUFFER_MAX_SIZE (5)
+#define TMU_DUFFER_MAX_SIZE (2)
 
 
 

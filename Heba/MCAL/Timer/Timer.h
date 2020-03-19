@@ -67,7 +67,7 @@ typedef struct{
  * @Return : Error status 
  * Description :  Initializes the Timer   
  */
-extern u8_ERROR_STATUS_t  Timer_Init(gstrTimerConfig_t* pstrTimerConf);
+extern u8_ERROR_STATUS_t Timer_Init(gstrTimerConfig_t* pstrTimerConf);
 
 /*
  * @param: input: u8_TimerCh  :Timer Channel 
@@ -77,7 +77,7 @@ extern u8_ERROR_STATUS_t  Timer_Init(gstrTimerConfig_t* pstrTimerConf);
  * @Return : Error status 
  * Description :  Sets timer prescaler  and initials value     
  */
-extern u8_ERROR_STATUS_t  Timer_Start (uint8_t u8_TimerCh,uint16_t u16_CountNO);
+extern u8_ERROR_STATUS_t Timer_Start (uint8_t u8_TimerCh,uint16_t u16_CountNO);
 /*
  * @param: input: u8_TimerCh  :Timer Channel  
  * @param: output: NONE
@@ -85,7 +85,7 @@ extern u8_ERROR_STATUS_t  Timer_Start (uint8_t u8_TimerCh,uint16_t u16_CountNO);
  * @Return : Error status 
  * Description :  Stops the timer      
  */
-extern u8_ERROR_STATUS_t  Timer_Stop(uint8_t u8_TimerCh);
+extern u8_ERROR_STATUS_t Timer_Stop(uint8_t u8_TimerCh);
 /*
  * @param: input: u8_TimerCh  :Timer Channel  
  * @param: output: Timer count value 
@@ -93,7 +93,7 @@ extern u8_ERROR_STATUS_t  Timer_Stop(uint8_t u8_TimerCh);
  * @Return : Error status 
  * Description : Gets timer value      
  */
-extern u8_ERROR_STATUS_t  Timer_GetValue(uint8_t u8_TimerCh,uint16_t *pu16_TimerValue);
+extern u8_ERROR_STATUS_t Timer_GetValue(uint8_t u8_TimerCh,uint16_t *pu16_TimerValue);
 /*
  * @param: input: u8_TimerCh  :Timer Channel  
  * @param: input: u16_TimerValue :Timer value 
@@ -103,7 +103,7 @@ extern u8_ERROR_STATUS_t  Timer_GetValue(uint8_t u8_TimerCh,uint16_t *pu16_Timer
  * Description : Sets timer value      
  */
 
-extern u8_ERROR_STATUS_t  Timer_SetValue(uint8_t TimerCh,uint16_t u16_TimerValue);
+extern u8_ERROR_STATUS_t Timer_SetValue(uint8_t TimerCh,uint16_t u16_TimerValue);
 /*
  * @param: input: u8_TimerCh  :Timer Channel  
  * @param: output: *pu8_TimerStatus :Timer overflow Interrupt status 
@@ -111,5 +111,5 @@ extern u8_ERROR_STATUS_t  Timer_SetValue(uint8_t TimerCh,uint16_t u16_TimerValue
  * @Return : Error status 
  * Description : Timer overflow Interrupt status      
  */
-extern u8_ERROR_STATUS_t  Timer_GetStatus(uint8_t u8_TimerCh,uint8_t *pu8_TimerStatus);
+extern u8_ERROR_STATUS_t Timer_GetStatus(uint8_t u8_TimerCh,uint8_t *pu8_TimerStatus);
 #endif /* __TIMER_H__ */

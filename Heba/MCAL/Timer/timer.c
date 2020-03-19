@@ -85,9 +85,9 @@ static void (* p_TOV_2_INT) (void) =NULL;
  * Description :  Initializes the Timer   
  */
 
-extern u8_ERROR_STATUS_t  Timer_Init( gstrTimerConfig_t* pstrTimerConf)
+extern u8_ERROR_STATUS_t Timer_Init( gstrTimerConfig_t* pstrTimerConf)
 {
-	u8_ERROR_STATUS_t  TimerErrorStatus=E_OK ;
+	u8_ERROR_STATUS_t TimerErrorStatus=E_OK ;
 	if(pstrTimerConf!=NULL)
 	{
 		switch(pstrTimerConf->u8_TimerCh)
@@ -299,9 +299,9 @@ extern u8_ERROR_STATUS_t  Timer_Init( gstrTimerConfig_t* pstrTimerConf)
  * @Return : Error status 
  * Description :  Sets timer prescaler  and initials value     
  */
-extern u8_ERROR_STATUS_t  Timer_Start (uint8_t u8_TimerCh,uint16_t u16_CountNO)
+extern u8_ERROR_STATUS_t Timer_Start (uint8_t u8_TimerCh,uint16_t u16_CountNO)
 {
-	u8_ERROR_STATUS_t  TimerErrorStatus = E_OK ;
+	u8_ERROR_STATUS_t TimerErrorStatus = E_OK ;
 	uint8_t u8_register_status = 0;
 	switch(u8_TimerCh){
 		case  TIMER_CH_0 :
@@ -353,9 +353,9 @@ return TimerErrorStatus;
  * Description :  Stops the timer      
  */
 
-extern u8_ERROR_STATUS_t  Timer_Stop(uint8_t u8_TimerCh)
+extern u8_ERROR_STATUS_t Timer_Stop(uint8_t u8_TimerCh)
 {
-		u8_ERROR_STATUS_t  TimerErrorStatus = E_OK ;
+		u8_ERROR_STATUS_t TimerErrorStatus = E_OK ;
 		switch(u8_TimerCh)
 		{
 			case TIMER_CH_0:
@@ -384,8 +384,8 @@ extern u8_ERROR_STATUS_t  Timer_Stop(uint8_t u8_TimerCh)
  * Description : Gets timer value      
  */
 
-extern u8_ERROR_STATUS_t  Timer_GetValue(uint8_t u8_TimerCh,uint16_t *pu16_TimerValue){
-		u8_ERROR_STATUS_t  TimerErrorStatus = E_OK ;
+extern u8_ERROR_STATUS_t Timer_GetValue(uint8_t u8_TimerCh,uint16_t *pu16_TimerValue){
+		u8_ERROR_STATUS_t TimerErrorStatus = E_OK ;
 	
 	uint8_t u8_TIMSK_StatusRegister = 0;
 		switch(u8_TimerCh){
@@ -421,8 +421,8 @@ extern u8_ERROR_STATUS_t  Timer_GetValue(uint8_t u8_TimerCh,uint16_t *pu16_Timer
  * Description : Sets timer value      
  */
 
-extern u8_ERROR_STATUS_t  Timer_SetValue(uint8_t TimerCh,uint16_t u16_TimerValue){
-	u8_ERROR_STATUS_t  TimerErrorStatus = E_OK ;
+extern u8_ERROR_STATUS_t Timer_SetValue(uint8_t TimerCh,uint16_t u16_TimerValue){
+	u8_ERROR_STATUS_t TimerErrorStatus = E_OK ;
    
    uint8_t u8_TIMSK_StatusRegister = 0;
    switch(TimerCh){
@@ -466,9 +466,9 @@ extern u8_ERROR_STATUS_t  Timer_SetValue(uint8_t TimerCh,uint16_t u16_TimerValue
  * Description : Timer overflow Interrupt status      
  */
 
-extern u8_ERROR_STATUS_t  Timer_GetStatus(uint8_t u8_TimerCh,uint8_t *pu8_TimerStatus)
+extern u8_ERROR_STATUS_t Timer_GetStatus(uint8_t u8_TimerCh,uint8_t *pu8_TimerStatus)
 {
-	u8_ERROR_STATUS_t  TimerErrorStatus	 = E_OK ;
+	u8_ERROR_STATUS_t TimerErrorStatus	 = E_OK ;
 		switch(u8_TimerCh)
 		{
 			

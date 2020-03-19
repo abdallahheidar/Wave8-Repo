@@ -627,7 +627,7 @@ u8_ERROR_STATUS_t BCM_TX_dispatcher()
 										break; 
 										case STATE_FRAM_SEND_COMLETE:
 										//*pstr_currentTask->bcmTask->size=ZERO;
-										pstr_currentTask->bcmTask->lock = UNLOCK;
+										*pstr_currentTask->bcmTask->lock = UNLOCK;
 										TCNT2=gas8_init_chanals_stauts[BCM_SPI_CHANAL][BCM_SENDER];
 										gas8_init_chanals_stauts[BCM_SPI_CHANAL][BCM_SENDER] --;
 										TCNT2=gas8_init_chanals_stauts[BCM_SPI_CHANAL][BCM_SENDER];

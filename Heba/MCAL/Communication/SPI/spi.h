@@ -1,17 +1,17 @@
 #ifndef SPI_H_
 #define SPI_H_
 
-#include "..\..\..\std_types.h"
-#include "..\..\..\MCAL\registers.h"
-#include "..\..\..\common_macros.h"
+#include "..\..\..\Infrastructure\std_types.h"
+#include "..\..\..\Infrastructure\registers.h"
+#include "..\..\..\Infrastructure\common_macros.h"
 #include "..\..\..\MCAL\DIO\DIO.h"
-#include "..\..\..\interrupt.h"
+#include "..\..\..\MCAL\Interrupt\interrupt.h"
 #define SPI_DIR_PORT		PORTB_DIR
 #define SPI_DATA_PORT		PORTB_DATA
-#define SPI_SS				4
-#define SPI_MOSI			5
-#define SPI_MISO			6
-#define SPI_SCK				7
+#define SPI_SS				0x10
+#define SPI_MOSI			0x20
+#define SPI_MISO			0x40
+#define SPI_SCK				0x80
 
 
 typedef enum En_spi_mod{
@@ -61,9 +61,10 @@ SPI_CBF						spi_cbf;
 }gstrSPI_spi_satus_t;	
 
 
-ERROR_STATUS SPI_init(gstrSPI_spi_satus_t * spi_status);
-ERROR_STATUS spi_enable();
-ERROR_STATUS SPI_sendData(const uint8_t data);
-ERROR_STATUS SPI_getData(uint8_t* value);
+u8_ERROR_STATUS_t SPI_init(gstrSPI_spi_satus_t * spi_status);
+u8_ERROR_STATUS_t  spi_enable();
+u8_ERROR_STATUS_t  SPI_sendData(const uint8_t data);
+u8_ERROR_STATUS_t  SPI_getData(uint8_t* value);
+u8_ERROR_STATUS_t  spi_disable();
 
 #endif
