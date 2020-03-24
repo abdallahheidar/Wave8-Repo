@@ -6,6 +6,7 @@
  */
 
 #include "DIO_Test.h"
+#include "PWM_Test.h"
 
 int main (void)
 {
@@ -15,6 +16,7 @@ int main (void)
 		setvbuf(stdout,NULL,_IONBF,0);
 
 			printf("1-DIO MODULE \n");
+			printf("2-PWM MODULE \n");
 			printf("choose number of function: ");
 			scanf("%d",&au8_Module);
 
@@ -26,7 +28,7 @@ int main (void)
 				break;
 
 			case 2:
-
+				PWM_Test();
 				break;
 
 			case 3:
@@ -42,6 +44,7 @@ int main (void)
 			}
 
 			printf("Press any key to exit");
+			scanf("%C",&au8_Exit);
 			scanf("%C",&au8_Exit);
 
 
