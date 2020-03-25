@@ -5,8 +5,8 @@
 
 		-----------------SPI_Init_TEST-------------
 testCase   0:	expected_return :   0	 fun_return:   0	Passed.
-h testCase   1:	expected_return : -601	 fun_return: -603	Failed.
-h testCase   2:	expected_return :   0	 fun_return: -603	Failed.
+testCase   1:	expected_return : -601	 fun_return: -601	Passed.
+testCase   2:	expected_return :   0	 fun_return:   0	Passed.
 testCase   3:	expected_return :   0	 fun_return:   0	Passed.
 testCase   4:	expected_return : -605	 fun_return: -605	Passed.
 testCase   5:	expected_return : -605	 fun_return: -605	Passed.

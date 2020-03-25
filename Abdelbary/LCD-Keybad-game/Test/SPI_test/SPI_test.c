@@ -112,9 +112,9 @@ ERROR_STATUS spi_structPointerParamterTest(sint16_t s16_paramter)
 	str_sp_cfg.spi_speed_mod		 = SPI_NORMAL_SPEED;
 	str_sp_cfg.spi_sampling_mod	 = SPI_SAMPLING_MOD_0;
 	str_sp_cfg.spi_data_order	 = SPI_DATA_ORDER_LSB;
-	
 	gstrSPI_spi_satus_t* pstr_sp_cfg[POINTER_STATE_TEST] = {&str_sp_cfg,NULL};
 	s16_fun_status = SPI_init(pstr_sp_cfg[s16_paramter] );
+	spi_Deinit();
 	return s16_fun_status;
 }
 
@@ -225,6 +225,7 @@ void SPI_getData_test(void)
 	checkTestCase(s16_expected_return , s16_fun_return,&gu8_testCaseNumber);
 	spi_Deinit();
 }
+
 
 void SPI_Deinit_test(void)
 {
