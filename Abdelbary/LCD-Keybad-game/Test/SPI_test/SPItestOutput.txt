@@ -1,0 +1,68 @@
+
+
+	=========================SPI_Module_TEST=======================
+
+
+		-----------------SPI_Init_TEST-------------
+testCase   0:	expected_return :   0	 fun_return:   0	Passed.
+testCase   1:	expected_return :   0	 fun_return:   0	Passed.
+testCase   2:	expected_return : -605	 fun_return:   0	Failed.
+testCase   3:	expected_return : -605	 fun_return:   0	Failed.
+testCase   4:	expected_return : -605	 fun_return:   0	Failed.
+testCase   5:	expected_return : -605	 fun_return:   0	Failed.
+testCase   6:	expected_return : -605	 fun_return:   0	Failed.
+testCase   7:	expected_return : -605	 fun_return:   0	Failed.
+testCase   8:	expected_return : -605	 fun_return:   0	Failed.
+testCase   9:	expected_return : -605	 fun_return:   0	Failed.
+testCase  10:	expected_return :   0	 fun_return:   0	Passed.
+testCase  11:	expected_return :   0	 fun_return:   0	Passed.
+testCase  12:	expected_return : -605	 fun_return:   0	Failed.
+testCase  13:	expected_return : -605	 fun_return:   0	Failed.
+testCase  14:	expected_return : -605	 fun_return:   0	Failed.
+testCase  15:	expected_return : -605	 fun_return:   0	Failed.
+testCase  16:	expected_return : -605	 fun_return:   0	Failed.
+testCase  17:	expected_return :   0	 fun_return:   0	Passed.
+testCase  18:	expected_return :   0	 fun_return:   0	Passed.
+testCase  19:	expected_return : -605	 fun_return:   0	Failed.
+testCase  20:	expected_return : -605	 fun_return:   0	Failed.
+testCase  21:	expected_return : -605	 fun_return:   0	Failed.
+testCase  22:	expected_return : -605	 fun_return:   0	Failed.
+testCase  23:	expected_return :   0	 fun_return:   0	Passed.
+testCase  24:	expected_return :   0	 fun_return:   0	Passed.
+testCase  25:	expected_return : -605	 fun_return:   0	Failed.
+testCase  26:	expected_return : -605	 fun_return:   0	Failed.
+testCase  27:	expected_return : -605	 fun_return:   0	Failed.
+testCase  28:	expected_return : -605	 fun_return:   0	Failed.
+testCase  29:	expected_return : -605	 fun_return:   0	Failed.
+testCase  30:	expected_return : -605	 fun_return:   0	Failed.
+testCase  31:	expected_return : -605	 fun_return:   0	Failed.
+testCase  32:	expected_return : -605	 fun_return:   0	Failed.
+testCase  33:	expected_return :   0	 fun_return:   0	Passed.
+testCase  34:	expected_return :   0	 fun_return:   0	Passed.
+testCase  35:	expected_return : -605	 fun_return:   0	Failed.
+testCase  36:	expected_return : -605	 fun_return:   0	Failed.
+testCase  37:	expected_return : -605	 fun_return:   0	Failed.
+testCase  38:	expected_return : -605	 fun_return:   0	Failed.
+testCase  39:	expected_return : -605	 fun_return:   0	Failed.
+
+		-----------------SPI_DeInit_TEST-----------
+testCase  40:	expected_return :   0	 fun_return:  15	Failed.
+testCase  41:	expected_return : -602	 fun_return:  15	Failed.
+
+		-----------------SPI_Enable_TEST-----------
+testCase  42:	expected_return :   0	 fun_return:   0	Passed.
+testCase  43:	expected_return : -602	 fun_return:   0	Failed.
+
+		-----------------SPI_sendData_TEST---------
+testCase  44:	expected_return :   0	 fun_return:   0	Passed.
+testCase  45:	expected_return : -602	 fun_return:   0	Failed.
+testCase  46:	expected_return : -610	 fun_return:   0	Failed.
+
+		-----------------SPI_getData_TEST----------
+testCase  47:	expected_return :   0	 fun_return:   0	Passed.
+testCase  48:	expected_return : -602	 fun_return:   0	Failed.
+testCase  49:	expected_return : -610	 fun_return:   0	Failed.
+
+
+	=========================ENDED================================
+
