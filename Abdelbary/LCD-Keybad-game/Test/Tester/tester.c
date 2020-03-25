@@ -19,6 +19,15 @@ void checkTestCase(sint16_t s16_expected_return , sint16_t s16_fun_return,uint8_
 	printf("Failed.\n");
 	(*u8_testCaseNumber)++;
 }
+void compareValue(sint16_t s16_expected_value , sint16_t s16_return_value,uint8_t * u8_testCaseNumber)
+{
+	printf("	    %3:   expected_return : %3d	 fun_return: %3d	",s16_expected_value,s16_return_value);
+	/*check on test case*/
+	if (s16_return_value == s16_expected_value)
+	printf("Passed.\n");
+	else
+	printf("Failed.\n");
+}
 
 void parameter_test(uint8_t* u8_testParamterValues,uint8_t u8_size ,ERROR_STATUS (*callB_fun)(uint8_t), sint16_t ERROR_VALUE,uint8_t * u8_testCaseNumber)
 {

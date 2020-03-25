@@ -24,6 +24,7 @@
 
 
 void checkTestCase(sint16_t s16_expected_return , sint16_t s16_fun_return,uint8_t * u8_testCaseNumber);
+void compareValue(sint16_t s16_expected_value , sint16_t s16_return_value,uint8_t * u8_testCaseNumber);
 
 void parameter_test2(sint16_t as16_testParamter[][TEST_PARAMTER_AND_RET_VALUE],uint8_t u8_size ,ERROR_STATUS (*callB_fun)(sint16_t),sint16_t s16_startValue,
 sint16_t s16_endValue,sint16_t s16_SamplesNum, sint16_t ERROR_VALUE ,uint8_t u8_useSamplesFlag,uint8_t * u8_testCaseNumber);
