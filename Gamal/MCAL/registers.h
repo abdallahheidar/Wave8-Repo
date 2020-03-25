@@ -1,6 +1,6 @@
 #ifndef REGISTERS_H_
 #define REGISTERS_H_
-#include "../std_types.h"
+#include "../Common/std_types.h"
 
 /********************************************************
  * General Registers
