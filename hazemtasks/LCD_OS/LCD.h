@@ -28,7 +28,7 @@ ENMULCDERROR  LCD_displayString(string8_t au8_char);
 
 ENMULCDERROR  LCD_sendCommand(uint8_t u8_command);
 
-ENMULCDERROR  LCD_displayStringRowcolum(uint8_t au8_char[]);
+ENMULCDERROR  LCD_displayStringRowcolum(string8_t au8_char,uint8_t u8_posx,uint8_t u8_posy);
 
 ENMULCDERROR  LCD_gotorowcolumn(uint8_t u8_posx,uint8_t u8_posy);
 

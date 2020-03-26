@@ -12,10 +12,10 @@
 #include "..\mcal\DIO.h"
 #include "..\common\softwareDelay.h"
 
-extern DIO_Cfg_s  str_lcddataconfig;
-extern DIO_Cfg_s  str_lcdRSconfig;
-extern DIO_Cfg_s  str_lcdRWconfig;
-extern DIO_Cfg_s  str_lcdEnconfig;
+extern DIO_Cfg_s  gstr_lcddataconfig;
+extern DIO_Cfg_s  gstr_lcdRSconfig;
+extern DIO_Cfg_s  gstr_lcdRWconfig;
+extern DIO_Cfg_s  gstr_lcdEnconfig;
 extern uint8_t   gu8_lcdmode;
 /*define MCU pin connected to LCD RS*/
 #define LCD_RS_PIN	BIT1 	
@@ -55,5 +55,8 @@ extern uint8_t   gu8_lcdmode;
 #define LCD_ST                   0x32
 #define LCD_CURSOR_OFF           0x0C
 #define LCD_CURSOR_ON            0x0E
+#define LCD_LINE0		         0x00
+#define LCD_LINE1	             0x40
+#define LCD_DDRAM                  7
 
 #endif /* LCDCONFIG_H_ */
