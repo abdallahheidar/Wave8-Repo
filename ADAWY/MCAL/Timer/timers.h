@@ -12,6 +12,7 @@
 #include "../../SERVICE/std_types.h"
 #include "../../SERVICE/Common_Macros.h"
 #include "../../HAL/interrupt.h"
+#include "../../SERVICE/ERROR/ERROR-STORE.h"
 
 #define  Timer_0      0
 #define  Timer_1      1

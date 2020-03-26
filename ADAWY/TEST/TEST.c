@@ -8,6 +8,9 @@
 #include "DIO_Test.h"
 #include "PWM_Test.h"
 
+
+
+
 int main (void)
 {
 	uint8_t au8_Module=0;
@@ -17,6 +20,7 @@ int main (void)
 
 			printf("1-DIO MODULE \n");
 			printf("2-PWM MODULE \n");
+			printf("3-TIMERS MODULE \n");
 			printf("choose number of function: ");
 			scanf("%d",&au8_Module);
 
@@ -32,7 +36,7 @@ int main (void)
 				break;
 
 			case 3:
-
+				TIMERS_Test();
 				break;
 
 			case 4:
