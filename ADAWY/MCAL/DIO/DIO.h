@@ -12,6 +12,7 @@
 #include "../../SERVICE/std_types.h"
 #include "../../HAL/registers.h"
 #include "../../SERVICE/Common_Macros.h"
+#include "../../SERVICE//ERROR/ERROR-STORE.h"
 /************************************************************************/
 /*						PINS/BITS defines                               */
 /************************************************************************/
