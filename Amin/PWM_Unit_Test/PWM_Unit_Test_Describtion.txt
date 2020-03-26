@@ -199,7 +199,7 @@ TEST CASE PASSED
 ****************************This is Unit Test for PWM MODULE***************************************
 *******************************************_API_NO#_4_**************************************************
 *****************************************TEST_CASE_NO#_4***********************************************
--FUNCTION NAME:PWM_Update
+-FUNCTION NAME:PWM_Stop
 -INPUT:255--
 Expected Output:E_NOK
 Actual Output:E_NOK
@@ -208,7 +208,7 @@ TEST CASE PASSED
 ****************************This is Unit Test for PWM MODULE***************************************
 *******************************************_API_NO#_4_**************************************************
 *****************************************TEST_CASE_NO#_5***********************************************
--FUNCTION NAME:PWM_Update
+-FUNCTION NAME:PWM_Stop
 -INPUT:10--
 Expected Output:E_NOK
 Actual Output:E_NOK
@@ -217,7 +217,7 @@ TEST CASE PASSED
 ****************************This is Unit Test for PWM MODULE***************************************
 *******************************************_API_NO#_4_**************************************************
 *****************************************TEST_CASE_NO#_6***********************************************
--FUNCTION NAME:PWM_Update
+-FUNCTION NAME:PWM_Stop
 -INPUT:20--
 Expected Output:E_NOK
 Actual Output:E_NOK
