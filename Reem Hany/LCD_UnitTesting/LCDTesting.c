@@ -1,4 +1,4 @@
-#include "Testing.h"
+#include "LCDTesting.h"
 #include "LCD.h"
 
 void LCD_InitTesting(void)
@@ -82,7 +82,7 @@ void LCD_ExecuteCommandTesting(void)
      * Expected Output is E_OK
     */
     /***********************************/
-
+    LCD_Init();
     ERR = LCD_ExecuteCommand(0x00);
 
     if(ERR == E_OK)
@@ -98,6 +98,27 @@ void LCD_ExecuteCommandTesting(void)
         printf("Your Output: %d\n",ERR);
         printf("Test case: failed\n");
 
+    }
+     /*
+     * Invalid Command
+     * Expected Output is E_INVALID_PARAMETER
+    */
+    /***********************************/
+
+    ERR = LCD_ExecuteCommand(0xFF);
+
+    if(ERR == E_INVALID_PARAMETER)
+    {
+        printf("Expected Output: %d\n",E_INVALID_PARAMETER);
+        printf("Your Output: %d\n",ERR);
+        printf("Test case: Passed\n");
+
+    }
+    else
+    {
+        printf("Expected Output: %d\n",E_INVALID_PARAMETER);
+        printf("Your Output: %d\n",ERR);
+        printf("Test case: failed\n");
     }
 }
 
