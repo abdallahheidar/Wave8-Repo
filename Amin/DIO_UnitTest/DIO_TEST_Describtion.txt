@@ -64,7 +64,7 @@ Tese case PASSED
 ****************************This is Unit Test for DIO MODULE***************************************
 *******************************************_API_NO#_2_**************************************************
 *****************************************TEST_CASE_NO#_1***********************************************
--FUNCTION NAME:DIO_Init
+-FUNCTION NAME:DIO_Write
 -INPUT:0-- 1-- 255
 Expected Output:EOK
 Actual Output:E_OK
@@ -73,7 +73,7 @@ TEST CASE PASSED
 ****************************This is Unit Test for DIO MODULE***************************************
 *******************************************_API_NO#_2_**************************************************
 *****************************************TEST_CASE_NO#_2***********************************************
--FUNCTION NAME:DIO_Init
+-FUNCTION NAME:DIO_Write
 -INPUT:1-- 128-- 0
 Expected Output:EOK
 Actual Output:E_OK
@@ -82,7 +82,7 @@ TEST CASE PASSED
 ****************************This is Unit Test for DIO MODULE***************************************
 *******************************************_API_NO#_2_**************************************************
 *****************************************TEST_CASE_NO#_3***********************************************
--FUNCTION NAME:DIO_Init
+-FUNCTION NAME:DIO_Write
 -INPUT:3-- 32-- 255
 Expected Output:EOK
 Actual Output:E_OK
@@ -91,7 +91,7 @@ TEST CASE PASSED
 ****************************This is Unit Test for DIO MODULE***************************************
 *******************************************_API_NO#_2_**************************************************
 *****************************************TEST_CASE_NO#_4***********************************************
--FUNCTION NAME:DIO_Init
+-FUNCTION NAME:DIO_Write
 -INPUT:7-- 1-- 255
 Expected Output:E_NOK
 Actual Output:E_NOK
@@ -100,7 +100,7 @@ TEST CASE PASSED
 ****************************This is Unit Test for DIO MODULE***************************************
 *******************************************_API_NO#_2_**************************************************
 *****************************************TEST_CASE_NO#_5***********************************************
--FUNCTION NAME:DIO_Init
+-FUNCTION NAME:DIO_Write
 -INPUT:248-- 255-- 0
 Expected Output:E_NOK
 Actual Output:E_NOK
@@ -109,7 +109,7 @@ TEST CASE PASSED
 ****************************This is Unit Test for DIO MODULE***************************************
 *******************************************_API_NO#_2_**************************************************
 *****************************************TEST_CASE_NO#_6***********************************************
--FUNCTION NAME:DIO_Init
+-FUNCTION NAME:DIO_Write
 -INPUT:9-- 12-- 255
 Expected Output:E_NOK
 Actual Output:E_NOK
@@ -208,7 +208,7 @@ TEST CASE PASSED
 ****************************This is Unit Test for DIO MODULE***************************************
 *******************************************_API_NO#_4_**************************************************
 *****************************************TEST_CASE_NO#_4***********************************************
--FUNCTION NAME:DIO_read
+-FUNCTION NAME:DIO_Toggle
 -INPUT:7-- 1-- 0
 Expected Output:E_NOK
 Actual Output:E_NOK
@@ -217,7 +217,7 @@ TEST CASE PASSED
 ****************************This is Unit Test for DIO MODULE***************************************
 *******************************************_API_NO#_4_**************************************************
 *****************************************TEST_CASE_NO#_5***********************************************
--FUNCTION NAME:DIO_read
+-FUNCTION NAME:DIO_Toggle
 -INPUT:248-- 255-- 0
 Expected Output:E_NOK
 Actual Output:E_NOK
@@ -226,7 +226,7 @@ TEST CASE PASSED
 ****************************This is Unit Test for DIO MODULE***************************************
 *******************************************_API_NO#_4_**************************************************
 *****************************************TEST_CASE_NO#_6***********************************************
--FUNCTION NAME:DIO_read
+-FUNCTION NAME:DIO_Toggle
 -INPUT:9-- 12-- 0
 Expected Output:E_NOK
 Actual Output:E_NOK
