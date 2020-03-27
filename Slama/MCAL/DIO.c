@@ -8,10 +8,22 @@
 /************************************************************************/
 /*						INCLUDES                                        */
 /************************************************************************/
+#include "Error_table.h"
+#include <stdio.h>
 #include "DIO.h"
-#include "/carApp/carApp/carApp/SERVICES/std_types.h" 
- 
- 
+#include "std_types.h"
+
+#define DIO_STATE_INIT (1)
+#define DIO_STATE_NOT_INIT	(0)
+#define PORTS_NUMBER	(4)
+  
+ /************************************************************************/
+ /*						GLOBAL                                           */
+ /************************************************************************/
+static uint8_t arr_pin_state[PORTS_NUMBER][FULL_PORT] = {0};
+
+
+
  /************************************************************************/
  /*						APIS                                             */
  /************************************************************************/
@@ -22,7 +34,7 @@
  *Description: This function can set the direction of a full port, a nibble
  * 			  or even one pin.
  */
-ERROR_STATUS DIO_init (DIO_Cfg_s *DIO_info){
+ERROR_STATUS DIO_init (st_DIO_Cfg_t *DIO_info){
 	
 	/*create error FLAG*/
 	ERROR_STATUS error_flag = E_OK;
@@ -31,17 +43,25 @@ ERROR_STATUS DIO_init (DIO_Cfg_s *DIO_info){
 	if(DIO_info == NULL){
 		
 		/*return FAILED*/
-		error_flag = E_NOK;
+		error_flag = ERROR_DIO_BASE + ERROR_NULL_PTR_INIT;
 	}
 	
-	/*switch ports*/
+	else{
+		
+		if(DIO_info->GPIO <= GPIOD)
+		{
+			/*save init state*/
+		arr_pin_state[DIO_info->GPIO][DIO_info->pins] = DIO_STATE_INIT;
+		}
+
+		/*switch ports*/
 	switch(DIO_info->GPIO){
 		
 		case GPIOA:
-		
+
 		   /*check the direction then write it*/
-		   if(DIO_info->dir == INPUT){
-			   
+		   if(DIO_info->dir == INPUT){ 
+
 			   /*clear the desired pins*/
 			   PORTA_DIR &= ~(DIO_info->pins);
 		   }
@@ -53,8 +73,11 @@ ERROR_STATUS DIO_init (DIO_Cfg_s *DIO_info){
 		   }
 		   
 		   else{
+			   /*reset init state*/
+				arr_pin_state[DIO_info->GPIO][DIO_info->pins] = DIO_STATE_NOT_INIT;
+
 			   /*wrong mode chosen*/
-			   error_flag = E_NOK;
+			   error_flag = ERROR_DIO_BASE + ERROR_INVALID_DIRECTION;
 		   }
 		   
 		break;
@@ -75,8 +98,12 @@ ERROR_STATUS DIO_init (DIO_Cfg_s *DIO_info){
 		   }
 		   
 		   else{
+
+			   /*reset init state*/
+				arr_pin_state[DIO_info->GPIO][DIO_info->pins] = DIO_STATE_NOT_INIT;
+
 			   /*wrong mode chosen*/
-			   error_flag = E_NOK;
+			   error_flag = ERROR_DIO_BASE + ERROR_INVALID_DIRECTION;
 		   }
 		   
 		break;
@@ -97,8 +124,11 @@ ERROR_STATUS DIO_init (DIO_Cfg_s *DIO_info){
 		   }
 		   
 		   else{
+			   /*reset init state*/
+				arr_pin_state[DIO_info->GPIO][DIO_info->pins] = DIO_STATE_NOT_INIT;
+
 			   /*wrong mode chosen*/
-			   error_flag = E_NOK;
+			   error_flag = ERROR_DIO_BASE + ERROR_INVALID_DIRECTION;
 		   }
 		   
 		break;
@@ -119,17 +149,20 @@ ERROR_STATUS DIO_init (DIO_Cfg_s *DIO_info){
 		   
 		   else{
 			   /*wrong mode chosen*/
-			   error_flag = E_NOK;
+			   error_flag = ERROR_DIO_BASE + ERROR_INVALID_DIRECTION;
 		   }
 		   
 		break;
 		
 		/*wrong GPIO entered then it's not ok*/
 		default:
-		   
-		   error_flag = E_NOK;
+
+		   /*not valid port chosen*/
+		   error_flag = ERROR_DIO_BASE + ERROR_INVALID_PORT;
 		break;
 	}
+	}
+	
 	
 	/*return OK*/
 	return error_flag;
@@ -166,113 +199,67 @@ ERROR_STATUS DIO_Write (uint8_t GPIO, uint8_t pins, uint8_t value){
 	/*create error flag*/
 	ERROR_STATUS error_flag = E_OK;
 	
-	/*check the entered channel*/
+	/*check for the value entered*/
+	if((value != HIGH) && (value != LOW))
+	{
+		/*save wrong value error*/
+		error_flag = ERROR_DIO_BASE + ERROR_INVLAID_VALUE;
+	}
+
+	else
+	{
+
+	if(arr_pin_state[GPIO][pins] == DIO_STATE_INIT)
+	{
+		/* start entering values */
+		/*check the entered channel*/
 	switch(GPIO){
 		
 		/*check if it's GPIOA*/
 		case GPIOA:
-		   
-		   /*set the pins at PORTA DATA REG*/
-		   if(value == HIGH){
-			   
-			   /*set the pin at PORT DATA REG*/
-			   PORTA_DATA = (pins);
-		   }
-		   
-		   /*if low then reset it*/
-		   else if(value == LOW){
-			   
-			   /*reset the pin at port data reg*/
-			   PORTA_DATA &= ~(pins);
-		   }
-		   
-		   else{
-				/*wrong mode chosen*/
-				   error_flag = E_NOK;
-		   }
-		   
+
+			PORTA_DATA &= ~pins;
+			PORTA_DATA |= (value & pins);
+
 		break;
 		
 		/*check if it's GPIOB*/
 		case GPIOB:
-		
-		   /*set the pins at PORTB DATA REG*/
-		   if(value == HIGH){
-			
-			   /*set the pin at PORT DATA REG*/
-			   PORTB_DATA = (pins);
-		   }
-		
-		   /*if low then reset it*/
-		   else if(value == LOW){
-			
-			   /*reset the pin at port data reg*/
-			   PORTB_DATA &= ~(pins);
-		   }
-		
-		   else{
-			   /*wrong mode chosen*/
-			   error_flag = E_NOK;
-		   }
+			PORTB_DATA &= ~pins;	
+			PORTB_DATA |= (value & pins);
 		
 		break;
 		
 		/*check if it's GPIOC*/
 		case GPIOC:
 		
-		   /*set the pins at PORTC DATA REG*/
-		   if(value == HIGH){
-			
-			   /*set the pin at PORT DATA REG*/
-			   PORTC_DATA = (pins);
-		   }
-		
-		   /*if low then reset it*/
-		   else if(value == LOW){
-			
-			   /*reset the pin at port data reg*/
-			   PORTC_DATA &= ~(pins);
-		   }
-		
-		   else{
-			   /*wrong mode chosen*/
-			   error_flag = E_NOK;
-		   }
+		   PORTB_DATA &= ~pins;
+		   PORTB_DATA |= (value & pins);
 		
 		   break;
 		 
 		 /*check if GPIOD*/  
 		 case GPIOD:
 		   		
-		   	/*set the pins at PORTD DATA REG*/
-		   	if(value == HIGH){
-			   		
-			   	/*set the pin at PORT DATA REG*/
-			   	PORTD_DATA = (pins);
-		   	}
-		   		
-		   	/*if low then reset it*/
-		   	else if(value == LOW){
-			   		
-			   	/*reset the pin at port data reg*/
-			   	PORTD_DATA &= ~(pins);
-		   	}
-		   		
-		   	else{
-				   
-			   	/*wrong mode chosen*/
-			   	error_flag = E_NOK;
-		   	}
+		   	PORTB_DATA &= ~pins;
+		   	PORTB_DATA |= (value & pins);
 		   		
 		 break;
 		 
 		 default:
 		    
 			/*wrong gpio chosen then return not ok*/
-			error_flag = E_NOK;
+			error_flag =ERROR_DIO_BASE + ERROR_INVALID_PORT;
 		 break;
+		}
+		}
+	else
+	{
+		/* save error state */
+		error_flag = ERROR_DIO_BASE + ERROR_DIO_NOT_INIT;
 	}
-	
+	}
+		
 	
 	/*things worked fine then return E_OK*/
 	return error_flag;
@@ -315,14 +302,21 @@ ERROR_STATUS DIO_Read (uint8_t GPIO,uint8_t pins, uint8_t *data){
 		return E_NOK;
 	}
 	
-	/*check which gpio you working on then configure it*/
-	switch(GPIO){
+	else
+	{
+		/* check gpio init or not*/
+		if(arr_pin_state[GPIO][pins] == DIO_STATE_INIT)
+		{
+
+		/*check which gpio you working on then configure it*/
+		switch(GPIO){
 		
 		/*first case is GPIOA*/
 		case GPIOA:
 		   
 		   /*return desired values*/
 		   *data = (PORTA_PIN & pins);
+
 		break;
 		
 		/*second case is GPIOB*/
@@ -330,6 +324,7 @@ ERROR_STATUS DIO_Read (uint8_t GPIO,uint8_t pins, uint8_t *data){
 				
 			/*return desired values*/
 			*data = (PORTB_PIN & pins);
+
 		break;
 			
 		/*3rd case is GPIOC*/
@@ -337,6 +332,7 @@ ERROR_STATUS DIO_Read (uint8_t GPIO,uint8_t pins, uint8_t *data){
 			
 			/*return desired values*/
 			*data = (PORTC_PIN & pins);
+
 		break;
 		
 		/*4th case is GPIOD*/
@@ -351,9 +347,18 @@ ERROR_STATUS DIO_Read (uint8_t GPIO,uint8_t pins, uint8_t *data){
 		default:
 		   
 		   error_flag = E_NOK;
+
 		break;
+		}
+	}
+	else
+		{
+		/* Save error module not init */
+		error_flag = ERROR_DIO_BASE + ERROR_DIO_NOT_INIT;
+		}
 	}
 	
+
 	/*things worked fine then return E_OK*/
 	return error_flag;
 }
