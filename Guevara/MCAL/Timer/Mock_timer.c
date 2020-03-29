@@ -6,8 +6,8 @@
  *  Author: mo
  */
 /*INCLUDES*/
-#include "Timer.h"
-#include "Timer_Config.h"
+#include "Mock_Timer.h"
+#include "Mock_Timer_Config.h"
 #include "../../Infrastructure/Error.h"
 /************************************************************************/
 /*		         TIMER FUNCTIONS' IMPLEMENTATION		        */

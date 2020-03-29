@@ -5,7 +5,7 @@
  *  Author: mo
  */
 /*INCLUDES**/
-#include "Timer_Config.h"
+#include "Mock_Timer_Config.h"
 
 Timer_cfg_s Timer_Configuration2 =
 {
