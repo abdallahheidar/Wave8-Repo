@@ -16,6 +16,12 @@ sint16_t gu8_testCaseNumber;
 sint16_t gu8_SPI_returnStatus;
 sint16_t gu8_UART_returnStatus;
 
+uint8_t gu8_steeringInitState;
+uint8_t gu8_steeringSteerCarState;
+uint8_t gu8_usInitState;
+uint8_t gu8_UsTriggerState;
+uint8_t gu8_usGetDistanceState;
+
 ERROR_STATUS    Timer_Init(Timer_cfg_s* Timer_cfg)
 {
 	return gu8_Timer_Init_fun_status;
@@ -55,7 +61,34 @@ void Uart_Init(gstr_uart_cfg_t* uart_cfg)
 {
 	//return gu8_UART_returnStatus;
 }
+/*-------------------------------STEERING--------------------------------------*/
 
 
 
+
+ERROR_STATUS Steering_Init(void)
+{
+	return gu8_steeringInitState;
+	
+}
+
+ERROR_STATUS Steering_SteerCar(uint8_t Steering_CarCmd, uint8_t speed)
+{
+	return gu8_steeringSteerCarState;
+}
+
+/*-------------------------------ULTRAsONIC--------------------------------------*/
+ERROR_STATUS Us_Init(void)
+{
+	return gu8_usInitState;	
+}
+
+ERROR_STATUS Us_Trigger(void)
+{
+	return gu8_UsTriggerState;
+}
+ERROR_STATUS Us_GetDistance(uint64_t *Distance)
+{
+	return gu8_usGetDistanceState;
+}
 #endif

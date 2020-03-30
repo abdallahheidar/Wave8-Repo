@@ -9,19 +9,38 @@
 #ifndef TESTER_H_
 #define TESTER_H_
 #include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 #include "../../common_macros.h"
 #include "../../std_types.h"
-#include "../../HAL/UltraSonic/ultraSonic.h"
 #include "stubFunction.h"
-#include "../TMU_test/TMU_test.h"
-#include "../SOS_test/SOS_test.h"
-#include "../Us_test/UltraSonic_test.h"
-#include "../BCM_test/BCM_test.h"
-#include "../SPI_test/SPI_test.h"
+#include "../../ServiceLayer/Error_Handler/SystemErrors.h"
+
 #define TEST_PARAMTER		0
 #define EXPECTED_RETURN		1
 #define TEST_PARAMTER_AND_RET_VALUE	2
 
+
+#define TEST_PANAR_HEADER	0
+#define TEST_PANAR_FOOTER	1
+#define TEST_PANAR_FUN_NAME	2
+#define MAX_LINE_SIZE       100
+#define MAX_TEST            100
+#define MAX_PARAMTER_SIZE   50
+#define TEST_CBF_NAME		0
+#define TEST_CBF_ADD		1
+#define TOTAL_PAD			30
+
+typedef ERROR_STATUS(*CBF)(sint16_t);
+typedef struct gstr_testFunPtr
+{
+	uint8_t* pu8_funName;
+	CBF		 testFunCallback_t; /* in milesec */
+}gstr_testFunPtr_t;
+
+
+int testModule(uint8_t * u8_filePath,gstr_testFunPtr_t gstr_testFunPtr[],uint8_t u8_CBF_arraySize,uint8_t* u8_testCaseCounter);
+void PrintHeader(uint8_t* u8_buffer,uint8_t u8_type);
 
 void checkTestCase(sint16_t s16_expected_return , sint16_t s16_fun_return,uint8_t * u8_testCaseNumber);
 void compareValue(sint16_t s16_expected_value , sint16_t s16_return_value,uint8_t * u8_testCaseNumber);
@@ -31,4 +50,5 @@ sint16_t s16_endValue,sint16_t s16_SamplesNum, sint16_t ERROR_VALUE ,uint8_t u8_
 
 void parameter_test(uint8_t* u8_testParamterValues,uint8_t u8_size ,ERROR_STATUS (*callB_fun)(uint8_t), sint16_t ERROR_VALUE,uint8_t * u8_testCaseNumber);
 void test();
+
 #endif /* TESTER_H_ */

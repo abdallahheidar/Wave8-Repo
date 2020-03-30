@@ -9,7 +9,10 @@
 #ifndef STUBFUNCTION_H_
 #define STUBFUNCTION_H_
 #include "tester.h"
- 
+#include "../../MCAL/Timers/Timer.h"
+#include "../../HAL/UltraSonic/ultraSonic.h"
+#include "../../MCAL/Communication/UART/uart.h"
+#include "../../MCAL/Communication/SPI/spi.h"
 extern  sint16_t gu8_Timer_Init_fun_status;
 extern  sint16_t gu8_Timer_Start_fun_status;
 extern  sint16_t gu8_Timer_DeInit_status;
