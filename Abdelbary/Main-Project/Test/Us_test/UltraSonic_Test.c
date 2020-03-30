@@ -4,16 +4,16 @@
  * Created: 2/20/2020 5:09:17 PM
  *  Author: mahmo
  */ 
-
+#ifdef GCC
 
 #include "ultraSonic_Test.h"
 #define FUN_STATUS_COUNT	2
 
-static uint8_t gu8_Icu_Init_fun_status;
-static uint8_t gu8_DIO_Init_fun_status;
-static uint8_t gu8_Icu_ReadTime_status;
-static uint8_t gu8_DIO_Write_status;
-static uint8_t sau16_fun_status [] = {OK,NOK}; 
+STATIC uint8_t gu8_Icu_Init_fun_status;
+STATIC uint8_t gu8_DIO_Init_fun_status;
+STATIC uint8_t gu8_Icu_ReadTime_status;
+STATIC uint8_t gu8_DIO_Write_status;
+STATIC uint8_t sau16_fun_status [] = {OK,NOK}; 
 
 #ifndef GCC   /*compiling with avr32-gcc compiler*/
 ERROR_STATUS DIO_Write (uint8_t GPIO, uint8_t pins, uint8_t value)__attribute__((weak));
@@ -145,3 +145,5 @@ void Us_GetDistance_Test(void)
 	
 	
 }
+
+#endif

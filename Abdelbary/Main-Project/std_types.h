@@ -15,7 +15,13 @@
 #ifndef GCC
 #define F_CPU 16000000UL
 #include <util/delay.h>
+#define STATIC static
 #endif
+
+#ifdef GCC
+#define STATIC
+#endif
+
 
 #define NULL	((void *)0)
 typedef unsigned char uint8_t;
