@@ -21,20 +21,30 @@
  *
  */
 static uint8_t prescaler_value=0;
+static uint8_t u8_sgv_TimerMode=0;
+static uint8_t u8_timer0_is_init=0;
+static uint8_t u8_timer1_is_init=0;
+static uint8_t u8_timer2_is_init=0;
 
 ERROR_STATUS Timer_Init(Timer_cfg_s* Timer_cfg)
 {uint8_t Ret=E_OK;
-prescaler_value=Timer_cfg->Timer_Prescaler;
-if (Timer_cfg==NULL)
+if (Timer_cfg == 0)
 {
 	Ret=TIMER_MODULE+NULL_PTR;
-}
+}else
+{
+	
+if(Timer_cfg->Timer_Mode==TIMER_MODE){u8_sgv_TimerMode=1;}else{u8_sgv_TimerMode=0;}
+
+prescaler_value=Timer_cfg->Timer_Prescaler;
 switch (Timer_cfg->Timer_CH_NO) {
 /*************************************************************************/
 /*                             TIMER 0                                   */
 /*************************************************************************/
 case TIMER_CH0:
 {
+	u8_timer0_is_init+=1;
+	
 	TCCR0 |=T0_NORMAL_MODE;
 
 	switch (Timer_cfg->Timer_Mode) {
@@ -57,7 +67,7 @@ case TIMER_CH0:
 			break;
 		}
 		default :
-			Ret+=E_NOK;
+			Ret=INVALID_VALUE+TIMER_MODULE;
 			break;
 		}
 
@@ -69,35 +79,41 @@ case TIMER_CH0:
 
 	case COUNTER_RISING_MODE:
 	{
+		Timer_Stop(TIMER_CH0);
 		TCCR0 |=T0_COUNTER_RISING_MODE_CONFIG;
-		switch (Timer_cfg->Timer_Polling_Or_Interrupt) {
+		switch (Timer_cfg->Timer_Polling_Or_Interrupt) 
+		{
+		
 		case TIMER_POLLING_MODE:
 		{
 			/*Disable interrupts for T0 without effecting any other timer*/
 			/*without Disabling Global interrupt*/
 			TIMSK &=T0_INTERRUPT_DISABLE;
 			break;
-
+		}
 		case TIMER_INTERRUPT_MODE:
-			/*Enable Global INTERRUPT
+		{	/*Enable Global INTERRUPT
                                               Enable Timer0 interrupt
 			 */
 			G_interrupt_Enable();
 			TIMSK |= T0_INTERRUPT_NORMAL;
 			break;
-
+		}
 		default :
-			Ret+=E_NOK;
+		Ret=INVALID_VALUE+TIMER_MODULE;
 			break;
 		}
-		break;
-		}
-		/*************************************************************************/
+	break;
+	}
+		
+	
+	/*************************************************************************/
 		/*                             TIMER 0 As a COUNTER_FALLING_MODE         */
 		/*************************************************************************/
-
+	
 		case COUNTER_FALLING_MODE:
 		{
+			Timer_Stop(TIMER_CH0);
 			TCCR0 |=T0_COUNTER_FALLING_MODE_CONFIG;
 			switch (Timer_cfg->Timer_Polling_Or_Interrupt) {
 			case TIMER_POLLING_MODE:
@@ -120,31 +136,31 @@ case TIMER_CH0:
 				break;
 			}
 			default:
-				Ret+=E_NOK;
+				Ret=INVALID_VALUE+TIMER_MODULE;
 				break;
 			}
 			break;
 		}
 		default:
-			Ret+=E_NOK;
+			Ret+=INVALID_TIMER_MODE+TIMER_MODULE;
 			break;
 	}
-	Ret+=E_OK;
+	Ret=E_OK;
 	break;
-	}
 }
+
 /*************************************************************************/
 /*                             TIMER 1                                   */
 /*************************************************************************/
 
 case TIMER_CH1:
 {
-
+u8_timer1_is_init+=1;
 	switch (Timer_cfg->Timer_Mode)
 	{
 	case TIMER_MODE:
 	{
-		TCCR1 = T1_NORMAL_MODE_CONFIG;
+		TCCR1 |= T1_NORMAL_MODE_CONFIG;
 		switch (Timer_cfg->Timer_Polling_Or_Interrupt) {
 		case TIMER_POLLING_MODE:
 		{
@@ -164,13 +180,14 @@ case TIMER_CH1:
 			break;
 		}
 		default :
-			Ret+=E_NOK;
+			Ret=INVALID_VALUE+TIMER_MODULE;
 			break;
 		}
 		break;
 	}
 	case COUNTER_RISING_MODE:
 	{
+		Timer_Stop(TIMER_CH1);
 		TCCR1|=T1_COUNTER_RISING_MODE_CONFIG;
 
 		switch (Timer_cfg->Timer_Polling_Or_Interrupt) {
@@ -192,13 +209,14 @@ case TIMER_CH1:
 			break;
 		}
 		default:
-			Ret+=E_NOK;
+			Ret=INVALID_VALUE+TIMER_MODULE;
 			break;
 		}
 		break;
 	}
 	case COUNTER_FALLING_MODE:
 	{
+		Timer_Stop(TIMER_CH1);
 		TCCR1|=T1_COUNTER_FALLING_MODE_CONFIG;
 		switch (Timer_cfg->Timer_Polling_Or_Interrupt) {
 		case TIMER_POLLING_MODE:
@@ -219,13 +237,13 @@ case TIMER_CH1:
 			break;
 		}
 		default :
-			Ret+=E_NOK;
+			Ret=INVALID_VALUE+TIMER_MODULE;
 			break;
 		}
 		break;
 	}
 	default :
-		Ret+=E_NOK;
+		Ret=INVALID_TIMER_MODE+TIMER_MODULE;
 		break;
 	}
 
@@ -237,9 +255,10 @@ case TIMER_CH1:
 /*************************************************************************/
 
 case TIMER_CH2:
-{
+{u8_timer2_is_init+=1;
 	TCCR2 |=T2_NORMAL_MODE_CONFIG;
-	switch (Timer_cfg->Timer_Mode) {
+	switch (Timer_cfg->Timer_Mode) 
+	{
 	case TIMER_MODE:
 	{
 		switch (Timer_cfg->Timer_Polling_Or_Interrupt) {
@@ -256,7 +275,7 @@ case TIMER_CH2:
 			break;
 		}
 		default :
-			Ret+=E_NOK;
+			Ret=INVALID_VALUE+TIMER_MODULE;
 			break;
 		}
 		break;
@@ -278,7 +297,15 @@ case TIMER_CH2:
 			TIMSK|=T2_INTERRUPT_NORMAL;
 			break;
 		}
-		case COUNTER_FALLING_MODE:
+		
+		default:
+			Ret=INVALID_VALUE+TIMER_MODULE;
+			break;
+		
+		}
+	}
+
+	case COUNTER_FALLING_MODE:
 		{
 			ASSR |=0x08;
 			switch (Timer_cfg->Timer_Polling_Or_Interrupt)
@@ -297,24 +324,23 @@ case TIMER_CH2:
 			}
 
 			default :
-				Ret+=E_NOK;
+				Ret=INVALID_VALUE+TIMER_MODULE;
 				break;
 			}
 			break;
-		}
-		}
-		default:
-			Ret+=E_NOK;
+
+
+	}
+	
+	default :
+		Ret=INVALID_TIMER_CHANNEL+TIMER_MODULE;
 			break;
 	}
-
-
-
-	}
 }
-
+}
 }
 return Ret;
+
 }
 /*
  * Input:
@@ -330,11 +356,17 @@ ERROR_STATUS Timer_Start(uint8_t Timer_CH_NO, uint16_t Timer_Count){
 	uint8_t Ret;
 	switch (Timer_CH_NO) {
 	case TIMER_CH0:{
+		if(u8_timer0_is_init == 1)
 		/***********************************************************************************************************************/
+			{
 		switch(prescaler_value){
 		case TIMER_PRESCALER_NO :{
 			if(Timer_Count < MAX0){
+				if(u8_sgv_TimerMode==1)
+				{
+				Timer_Stop(TIMER_CH0);	
 				TCCR0 |=TIMER_PRESCALER_NO;
+				}
 				TCNT0 =	MAX0 - Timer_Count;
 			}else
 			{
@@ -344,7 +376,11 @@ ERROR_STATUS Timer_Start(uint8_t Timer_CH_NO, uint16_t Timer_Count){
 		}
 		case TIMER_PRESCALER_8 :{
 			if(Timer_Count < MAX0){
+				if(u8_sgv_TimerMode==1)
+				{
+				Timer_Stop(TIMER_CH0);	
 				TCCR0 |=TIMER0_PRESCALER_8_CONFIG;
+				}
 				TCNT0 =MAX0 - Timer_Count;
 			}else
 			{
@@ -354,7 +390,11 @@ ERROR_STATUS Timer_Start(uint8_t Timer_CH_NO, uint16_t Timer_Count){
 		}
 		case TIMER_PRESCALER_64 :{
 			if(Timer_Count < MAX0){
+				if(u8_sgv_TimerMode==1)
+				{
+				Timer_Stop(TIMER_CH0);
 				TCCR0 |=TIMER0_PRESCALER_64_CONFIG;
+				}
 				TCNT0 = MAX0 - Timer_Count;
 			}else
 			{
@@ -364,7 +404,11 @@ ERROR_STATUS Timer_Start(uint8_t Timer_CH_NO, uint16_t Timer_Count){
 		}
 		case TIMER_PRESCALER_256 :{
 			if(Timer_Count < MAX0){
+				if(u8_sgv_TimerMode==1)
+				{
+				Timer_Stop(TIMER_CH0);
 				TCCR0 |=TIMER0_PRESCALER_256_CONFIG;
+				}
 				TCNT0 =MAX0 - Timer_Count;
 			}else
 			{
@@ -374,7 +418,11 @@ ERROR_STATUS Timer_Start(uint8_t Timer_CH_NO, uint16_t Timer_Count){
 		}
 		case TIMER_PRESCALER_1024 :{
 			if(Timer_Count < MAX0){
+				if(u8_sgv_TimerMode==1)
+				{	
+				Timer_Stop(TIMER_CH0);
 				TCCR0 |=TIMER0_PRESCALER_1024_CONFIG;
+				}
 				TCNT0 =MAX0 - Timer_Count;
 			}else
 			{
@@ -384,19 +432,32 @@ ERROR_STATUS Timer_Start(uint8_t Timer_CH_NO, uint16_t Timer_Count){
 
 		}
 		default :
-			Ret=E_NOK;
+			Ret= INVALID_PRESCALER+TIMER_MODULE;
 			break;
 		}
-
+		
 		Ret=E_OK;
 		break;
+		}
+		else if(u8_timer0_is_init > 1){
+			Ret=MULTIPLE_INIT+TIMER_MODULE;
+			break;
+		}
+		else{
+			Ret=NOT_INIT+TIMER_MODULE;
+			break;
+			}
 	}
 	case TIMER_CH1:{
-
+			if(u8_timer1_is_init == 1){
 		switch(prescaler_value){
 		case TIMER_PRESCALER_NO :{
 			if(Timer_Count < MAX1){
+				if(u8_sgv_TimerMode==1)
+				{
+				Timer_Stop(TIMER_CH1);
 				TCCR1 |=TIMER_PRESCALER_NO;
+				}
 				TCNT1 =MAX1 - Timer_Count;
 			}else
 			{
@@ -406,8 +467,13 @@ ERROR_STATUS Timer_Start(uint8_t Timer_CH_NO, uint16_t Timer_Count){
 		}
 		case TIMER_PRESCALER_8 :{
 			if(Timer_Count < MAX1){
+				if(u8_sgv_TimerMode==1)
+							{
+				Timer_Stop(TIMER_CH1);
 				TCCR1 |=TIMER1_PRESCALER_8_CONFIG;
-				TCNT1 =MAX1 - Timer_Count;
+							}
+							
+			TCNT1 =MAX1 - Timer_Count;
 			}else
 			{
 				Ret= E_NOK;
@@ -416,8 +482,12 @@ ERROR_STATUS Timer_Start(uint8_t Timer_CH_NO, uint16_t Timer_Count){
 		}
 		case TIMER_PRESCALER_64 :{
 			if(Timer_Count < MAX1){
+				if(u8_sgv_TimerMode==1)
+			{
+				Timer_Stop(TIMER_CH1);
 				TCCR1 |=TIMER1_PRESCALER_64_CONFIG;
-				TCNT1 =MAX1 - Timer_Count;
+			}
+			TCNT1 =MAX1 - Timer_Count;
 			}else
 			{
 				Ret= E_NOK;
@@ -426,7 +496,11 @@ ERROR_STATUS Timer_Start(uint8_t Timer_CH_NO, uint16_t Timer_Count){
 		}
 		case TIMER_PRESCALER_256 :{
 			if(Timer_Count < MAX1){
+				if(u8_sgv_TimerMode==1)
+						{
+				Timer_Stop(TIMER_CH1);
 				TCCR1 |=TIMER1_PRESCALER_256_CONFIG;
+						}
 				TCNT1 =MAX1 - Timer_Count;
 			}else
 			{
@@ -437,7 +511,11 @@ ERROR_STATUS Timer_Start(uint8_t Timer_CH_NO, uint16_t Timer_Count){
 		}
 		case TIMER_PRESCALER_1024 :{
 			if(Timer_Count < MAX1){
+				if(u8_sgv_TimerMode==1)
+				{
+			Timer_Stop(TIMER_CH1);
 				TCCR1 |=TIMER1_PRESCALER_1024_CONFIG;
+				}
 				TCNT1 =MAX1 - Timer_Count;
 			}else
 			{
@@ -448,26 +526,28 @@ ERROR_STATUS Timer_Start(uint8_t Timer_CH_NO, uint16_t Timer_Count){
 
 		}
 		default :
-			Ret= E_NOK;
+			Ret= INVALID_PRESCALER+TIMER_MODULE;
 			break;
 		}
-
-
 		Ret= E_OK;
 		break;
+			}else if(u8_timer1_is_init > 1){Ret=MULTIPLE_INIT+TIMER_MODULE;
+			break;
+			}else{Ret=NOT_INIT+TIMER_MODULE;
+			break;}
+			
 	}
 	case TIMER_CH2:
 	{
-
+		if(u8_timer2_is_init==1){
 		switch(prescaler_value){
 
 		case TIMER_PRESCALER_NO :
 		{
 
 			if(Timer_Count < MAX0){
-
+				Timer_Stop(TIMER_CH2);
 				TCCR2 |= TIMER_PRESCALER_NO;
-
 				TCNT2 = MAX2 - Timer_Count;
 			}
 			else
@@ -480,7 +560,8 @@ ERROR_STATUS Timer_Start(uint8_t Timer_CH_NO, uint16_t Timer_Count){
 		case TIMER_PRESCALER_8 :
 		{
 			if(Timer_Count < MAX0)
-			{
+			{ 
+				Timer_Stop(TIMER_CH2);
 				TCCR2 |=TIMER_PRESCALER_8;
 				TCNT2 =MAX2 - Timer_Count;
 			}
@@ -494,6 +575,7 @@ ERROR_STATUS Timer_Start(uint8_t Timer_CH_NO, uint16_t Timer_Count){
 		{
 			if(Timer_Count < MAX1)
 			{
+				Timer_Stop(TIMER_CH2);
 				TCCR2 |=TIMER_PRESCALER_32;
 				TCNT2 =MAX2 - Timer_Count;
 			}
@@ -508,6 +590,7 @@ ERROR_STATUS Timer_Start(uint8_t Timer_CH_NO, uint16_t Timer_Count){
 		{
 			if(Timer_Count < MAX2)
 			{
+				Timer_Stop(TIMER_CH2);
 				TCCR2 |=TIMER_PRESCALER_64;
 				TCNT2 =MAX2 - Timer_Count;
 			}
@@ -519,18 +602,23 @@ ERROR_STATUS Timer_Start(uint8_t Timer_CH_NO, uint16_t Timer_Count){
 		}
 		case TIMER_PRESCALER_128 :{
 			if(Timer_Count < MAX2){
+				Timer_Stop(TIMER_CH2);
 				TCCR2 |= TIMER_PRESCALER_128;
 				TCNT2 =MAX2 - Timer_Count;
-			}else
+			}
+			else
 			{
 				Ret= E_NOK;
 			}
 			break;
 		}
-		case TIMER_PRESCALER_256 :{
+		case TIMER_PRESCALER_256 :
+		{
 			if(Timer_Count < MAX2){
+				Timer_Stop(TIMER_CH2);
 				TCCR2 |= TIMER_PRESCALER_256;
 				TCNT2 =MAX2 - Timer_Count;
+			
 			}else
 			{
 				Ret= E_NOK;
@@ -538,8 +626,10 @@ ERROR_STATUS Timer_Start(uint8_t Timer_CH_NO, uint16_t Timer_Count){
 			}
 			break;
 		}
-		case TIMER_PRESCALER_1024 :{
+		case TIMER_PRESCALER_1024 :
+		{
 			if(Timer_Count < MAX2){
+				Timer_Stop(TIMER_CH2);
 				TCCR2 |=TIMER_PRESCALER_1024;
 				TCNT2 =MAX2 - Timer_Count;
 			}else
@@ -550,14 +640,18 @@ ERROR_STATUS Timer_Start(uint8_t Timer_CH_NO, uint16_t Timer_Count){
 			break;
 		}
 		default :
-			Ret= E_NOK;
-
+			Ret= INVALID_PRESCALER+TIMER_MODULE;
+			break;
 		}
 		Ret=E_OK;
 		break;
+		}else if(u8_timer2_is_init > 1){Ret=MULTIPLE_INIT+TIMER_MODULE;
+			break;
+			}else{Ret=NOT_INIT+TIMER_MODULE;
+			break;}
 	}
 	default:
-		Ret= E_NOK;
+		Ret=INVALID_TIMER_CHANNEL+TIMER_MODULE;
 		break;
 	}
 	return Ret;
@@ -573,28 +667,29 @@ ERROR_STATUS Timer_Start(uint8_t Timer_CH_NO, uint16_t Timer_Count){
  *
  */
 ERROR_STATUS Timer_Stop(uint8_t Timer_CH_NO)
-{uint8_t Ret;
+{uint8_t Ret=E_OK;
 switch (Timer_CH_NO) {
 case TIMER_CH0:
 {
 	TCCR0 &=0xF8;
-	Ret=E_OK;
 	break;
 }
 case TIMER_CH1:
 {
 	TCCR1 &=0xFFF8;
-	Ret=E_OK;
+	
+	
 	break;
 }
 case TIMER_CH2:
 {
 	TCCR2 &= 0xF8;
-	Ret=E_OK;
+	
+	
 	break;
 }
 default :
-	Ret=E_NOK;
+	Ret=INVALID_TIMER_CHANNEL+TIMER_MODULE;
 	break;
 }
 
@@ -612,26 +707,29 @@ return Ret;
  *
  */
 ERROR_STATUS Timer_GetStatus(uint8_t Timer_CH_NO,uint8_t* Data)
-{
+{uint8_t ret=0;
+	if(Data){
 	switch (Timer_CH_NO) {
 	case TIMER_CH0:
 	{
 		*Data =((TIFR>>TOV0)&1);
-		return E_OK;
+	break;
 	}
 	case TIMER_CH1:
 	{
 		*Data =((TIFR>>TOV1)&1);
-		return E_OK;
+		break;
 	}
 	case TIMER_CH2:
 	{
 		*Data =((TIFR>>TOV2)&1);
-		return E_OK;
+		break;
 	}
 	default :
-		return E_NOK;
+		ret=INVALID_TIMER_CHANNEL+TIMER_MODULE;
 	}
+	}else{ret=NULL_PTR+TIMER_MODULE;}
+	return ret;
 }
 /**
  * Input:
@@ -646,29 +744,31 @@ ERROR_STATUS Timer_GetStatus(uint8_t Timer_CH_NO,uint8_t* Data)
 ERROR_STATUS Timer_GetValue(uint8_t Timer_CH_NO, uint16_t* Data)
 {
 	uint8_t Ret=0;
+	if(Data){
 	switch (Timer_CH_NO) {
 	case TIMER_CH0:
 	{
 		*Data =TCNT0;
-		Ret= E_OK;
 		break;
 	}
 	case TIMER_CH1:
 	{
 		*Data =TCNT1;
-		Ret= E_OK;
 		break;
 	}
 	case TIMER_CH2:
 	{
 		*Data =TCNT2;
-		Ret = E_OK;
 		break;
 	}
 	default :
-		Ret= E_NOK;
+		Ret= INVALID_TIMER_CHANNEL+TIMER_MODULE;
 		break;
 	}
+	}
+	else{
+		Ret=NULL_PTR+TIMER_MODULE;
+		}
 	return Ret;
 
 }

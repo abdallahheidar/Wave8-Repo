@@ -14,7 +14,7 @@
 /*		         TIMER FUNCTIONS' PROTOTYPES		        */
 /************************************************************************/
 
-
+void G_interrupt_Enable(void);
 
 /**
  * Input: Pointer to a structure contains the information needed to initialize the timer.
