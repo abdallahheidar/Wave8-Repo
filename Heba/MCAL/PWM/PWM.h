@@ -2,7 +2,7 @@
 /* Layer: MCAL                                     */
 /* Module: PWM                                     */
 /* File: PWM.h                                     */
-/* Author: Abdelbary                               */
+/* Author: Team A                                  */
 /* Description: PWM header file                    */
 /***************************************************/
 #ifndef PWM_H_
@@ -12,17 +12,16 @@
 /*            MACROS             */
 /*********************************/
 
-#include "../../common_macros.h"
-#include "../../std_types.h"
-#include "../registers.h"
-#include "../../ServiceLayer/Error_Handler/SystemErrors.h"
+
+#include "../../Infrastructure/std_types.h"
+#include "../../Infrastructure/registers.h"
+#include "../../Infrastructure/common_macros.h"
 
 
-#define PWM_CH0    (0)
-#define PWM_CH1A   (1)
-#define PWM_CH1B   (2)
-#define PWM_CH1A_B (3)
-#define PWM_CH2    (4)
+#define PWM_CH0  (0)
+#define PWM_CH1A (1)
+#define PWM_CH1B (2)
+#define PWM_CH2  (3)
 
 #define		PWM_PRESCALER_NO				(0)
 #define		PWM_PRESCALER_8					(1)
@@ -32,14 +31,27 @@
 #define		PWM_PRESCALER_256				(5)
 #define		PWM_PRESCALER_1024				(6)
 
-typedef struct Pwm_Cfg_s
+#define FREQ_100_    (100)
+
+typedef struct
 {
-	uint8_t Channel;
-	uint8_t Prescaler;
-}Pwm_Cfg_s;
+	uint8_t u8_Channel;
+	uint8_t u8_Prescaler;
+}gstr_Pwm_Cfg_t;
 
 
 
+
+/*				ERROR CODE					*/
+
+
+#define PWM_MODULE_ERROR_NUMBER        (30)
+#define  ERROR_NULL_PTR            (1)
+#define  ERROR_UNILTILZED_PWM	   (2)
+#define  ERROR_MULTIPLE_INIT       (3)
+#define  ERROR_INVALIDE_Prescaler  (4)
+#define  ERROR_INVALIDE_PWM_CHANNEL	(5)
+#define	 ERROR_INVALIDE_PARAMETAR	(6)
 /*********************************/
 /*    FUNCTIONS DECLARATION      */
 /*********************************/
@@ -52,7 +64,7 @@ typedef struct Pwm_Cfg_s
 /*                                                                               */
 /* Description: initialize the PWM configuration                                 */
 /*********************************************************************************/
-extern ERROR_STATUS Pwm_Init(Pwm_Cfg_s *Pwm_Cfg);
+extern u8_ERROR_STATUS_t Pwm_Init(gstr_Pwm_Cfg_t*Pwm_Cfg);
 
 /*********************************************************************************/
 /* Function: Error_State Pwm_Start(uint8_t channel,uint8_t Duty);                */
@@ -63,7 +75,7 @@ extern ERROR_STATUS Pwm_Init(Pwm_Cfg_s *Pwm_Cfg);
 /* Description: starts the PWM on the dedicated channel with the required duty   */
 /*				cycle and frequency                                              */
 /*-------------------------------------------------------                        */
-/*(IN timer 0,1) there are only 5 available Frequencies:                           */
+/*(IN timer 0) there are only 5 available Frequencies:                           */
 /*-------------------------------------------------------                        */
 /*Frequency (NO-Prescaler) --> 31,372HZ                                          */
 /*Frequency (Prescaler 8) --> 3,921HZ                                            */
@@ -84,7 +96,7 @@ extern ERROR_STATUS Pwm_Init(Pwm_Cfg_s *Pwm_Cfg);
 /*((all this calculations are for phase correct mode))                           */
 /*all this calculation for F_CPU 16MHz                                           */
 /*********************************************************************************/
-extern ERROR_STATUS Pwm_Start(uint8_t Channel,uint8_t Duty,uint32_t Frequncy);
+extern u8_ERROR_STATUS_t Pwm_Start(uint8_t Channel,uint8_t Duty,uint32_t Frequncy);
 
 /*********************************************************************************/
 /* Function: Error_State Pwm_Start(uint8_t channel,uint8_t Duty);                */
@@ -94,7 +106,7 @@ extern ERROR_STATUS Pwm_Start(uint8_t Channel,uint8_t Duty,uint32_t Frequncy);
 /*                                                                               */
 /* Description: updates the duty cycle and frequency of the dedicated channel    */
 /*********************************************************************************/
-extern ERROR_STATUS Pwm_Update(uint8_t Channel,uint8_t Duty,uint32_t Frequncy);
+extern u8_ERROR_STATUS_t Pwm_Update(uint8_t Channel,uint8_t Duty,uint32_t Frequncy);
 
 /*********************************************************************************/
 /* Function: Error_State Pwm_Stop(uint8_t channel);                              */
@@ -105,6 +117,6 @@ extern ERROR_STATUS Pwm_Update(uint8_t Channel,uint8_t Duty,uint32_t Frequncy);
 /* Description: responsible of Stopping the PWM by clearing the prescaler		 */
 /*				of the corresponding channel                                     */
 /*********************************************************************************/
-extern ERROR_STATUS Pwm_Stop(uint8_t Channel);
+extern u8_ERROR_STATUS_t Pwm_Stop(uint8_t Channel);
 
 #endif /* PWM_H_ */

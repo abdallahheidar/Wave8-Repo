@@ -1,210 +1,497 @@
-/*
+﻿/*
  * DIO.c
  *
- * Created: 2/17/2020 2:16:34 PM
- *  Author: mahmo
+ * Created: 17/02/2020 11:33:51 ص
+ *  Author: TOSHIBA
  */ 
-
-
-/*- INCLUDES ----------------------------------------------*/
 #include "DIO.h"
-/*- LOCAL MACROS ------------------------------------------*/
-/*- LOCAL Datatypes ---------------------------------------*/
-/*- LOCAL FUNCTIONS PROTOTYPES ----------------------------*/
-/*- GLOBAL STATIC VARIABLES -------------------------------*/
-/*- GLOBAL EXTERN VARIABLES -------------------------------*/
-/*- LOCAL FUNCTIONS IMPLEMENTATION ------------------------*/
-/*- APIs IMPLEMENTATION -----------------------------------*/
+#define DEBBUGE 1
+#ifdef  DEBBUGE
+#define STATIC 
+#else
+#define STATIC static 
+#endif
+#define INIT_MODULE			1
+#define UNINIT_MODULE		0
+#define PORTA_INIT_MASK		0x01	
+#define PORTB_INIT_MASK		0x02	
+#define PORTC_INIT_MASK		0x04	
+#define PORTD_INIT_MASK		0x08	
 
-ERROR_STATUS DIO_init (DIO_Cfg_s *DIO_info)
+STATIC uint8_t u8_DIO_PortInitFLag = UNINIT_MODULE;
+
+extern u8_ERROR_STATUS_t DIO_init (gstr_DIO_Cfg_t *pstr_DIOCfg)
 {
-	uint8_t u8_fun_status = OK;
-    /*check for errors*/
-	if((DIO_info->dir != OUTPUT && DIO_info->dir != INPUT) || 
-		DIO_info->GPIO > GPIOD)
-	{
-		u8_fun_status = NOK;
-	}
-	/*if input is ok proceed with fun process*/
-	else
-	{
-			switch(DIO_info->GPIO)
-			{
-				case GPIOA:
-					switch(DIO_info->dir)
-					{
-						case INPUT:
-							CLEAR_MASK(PORTA_DIR,DIO_info->pins);
-						break;
-						case OUTPUT:
-							SET_MASK(PORTA_DIR,DIO_info->pins);
-						break;
-					}
-				break;
-				case GPIOB:
-					switch(DIO_info->dir)
-					{
-						case INPUT:
-						CLEAR_MASK(PORTB_DIR,DIO_info->pins);
-						break;
-						case OUTPUT:
-						SET_MASK(PORTB_DIR,DIO_info->pins);
-						break;
-					}
-				break;
-				case GPIOC:
-					switch(DIO_info->dir)
-					{
-						case INPUT:
-						CLEAR_MASK(PORTC_DIR,DIO_info->pins);
-						break;
-						case OUTPUT:
-						SET_MASK(PORTC_DIR,DIO_info->pins);
-						break;
-					}
-				break;
-				case GPIOD:
-					switch(DIO_info->dir)
-					{
-						case INPUT:
-						CLEAR_MASK(PORTD_DIR,DIO_info->pins);
-						break;
-						case OUTPUT:
-						SET_MASK(PORTD_DIR,DIO_info->pins);
-						break;
-					}
-				break;
-				default:
-					u8_fun_status = NOK;
-				break;
-			}
-	}
-	return u8_fun_status;
-}
-
-
-ERROR_STATUS DIO_Write (uint8_t GPIO, uint8_t pins, uint8_t value)
-{
-	uint8_t u8_fun_status = OK;
-	/*check for errors*/
-	if(GPIO > GPIOD || (value != HIGH && value !=LOW))
-	{
-		u8_fun_status = NOK;
-	}
-	/*if input is ok proceed with fun process*/
-	else
-	{
-		switch(GPIO)
+	u8_ERROR_STATUS_t u8_DIO_ErrorStatus= E_OK;
+	if (pstr_DIOCfg!=NULL){
+	switch (pstr_DIOCfg->u8_GPIO)
+	{	
+		case GPIOA :
+		if((u8_DIO_PortInitFLag & PORTA_INIT_MASK)==UNINIT_MODULE)
 		{
-			case GPIOA:
-			switch(value)
-			{
-				case LOW:
-				CLEAR_MASK(PORTA_DATA,pins);
-				break;
-				case HIGH:
-				SET_MASK(PORTA_DATA,pins);
-				break;
-			}
-			break;
-			case GPIOB:
-			switch(value)
-			{
-				case LOW:
-				CLEAR_MASK(PORTB_DATA,pins);
-				break;
-				case HIGH:
-				SET_MASK(PORTB_DATA,pins);
-				break;
-			}
-			break;
-			case GPIOC:
-			switch(value)
-			{
+			switch (pstr_DIOCfg->u8_dir){
+				
 				case INPUT:
-				CLEAR_MASK(PORTC_DATA,pins);
+				
+					PORTA_DIR&=~(pstr_DIOCfg->u8_pins);
+					u8_DIO_PortInitFLag |= PORTA_INIT_MASK;
+					
+				break;
+				
+				case OUTPUT:
+				
+					PORTA_DIR|=	pstr_DIOCfg->u8_pins;
+					
+					u8_DIO_PortInitFLag |= PORTA_INIT_MASK;
+					
+				break;
+				
+				default:
+					u8_DIO_ErrorStatus= DIO_MODULE_ERROR_NUMBER+ERROR_INVALIDE_VALUE;
+				break;
+			}
+			
+		}
+		else
+	    {
+			u8_DIO_ErrorStatus= DIO_MODULE_ERROR_NUMBER+ERROR_MULTIPLE_INIT;
+		}
+		
+		
+		break;
+		
+		case GPIOB :
+		if((u8_DIO_PortInitFLag & PORTB_INIT_MASK)==UNINIT_MODULE)
+		{
+			switch (pstr_DIOCfg->u8_dir){
+				case INPUT:
+				
+					PORTB_DIR&=~(pstr_DIOCfg->u8_pins);
+					
+					u8_DIO_PortInitFLag |= PORTB_INIT_MASK;
+
 				break;
 				case OUTPUT:
-				SET_MASK(PORTC_DATA,pins);
+				
+					PORTB_DIR|=	(pstr_DIOCfg->u8_pins);
+					
+					u8_DIO_PortInitFLag |= PORTB_INIT_MASK;
+
+				break;
+				
+				default:
+					u8_DIO_ErrorStatus= DIO_MODULE_ERROR_NUMBER+ERROR_INVALIDE_VALUE;
 				break;
 			}
-			break;
-			case GPIOD:
-			switch(value)
+		}
+		else
+		{
+			u8_DIO_ErrorStatus= DIO_MODULE_ERROR_NUMBER+ERROR_MULTIPLE_INIT;
+		}
+		
+		break;
+		
+		case GPIOC :
+		if((u8_DIO_PortInitFLag & PORTC_INIT_MASK)==UNINIT_MODULE)
+		{
+			switch (pstr_DIOCfg->u8_dir)
 			{
 				case INPUT:
-				CLEAR_MASK(PORTD_DATA,pins);
+					PORTC_DIR&=~(pstr_DIOCfg->u8_pins);
+					u8_DIO_PortInitFLag |= PORTC_INIT_MASK;
 				break;
+				
 				case OUTPUT:
-				SET_MASK(PORTD_DATA,pins);
+				
+					PORTC_DIR|=	(pstr_DIOCfg->u8_pins);
+					u8_DIO_PortInitFLag |= PORTC_INIT_MASK;
+					
+				break;
+				
+				default:
+					u8_DIO_ErrorStatus= DIO_MODULE_ERROR_NUMBER+ERROR_INVALIDE_VALUE;
 				break;
 			}
-			break;
-			default:
-			u8_fun_status = NOK;
-			break;
+			
+		}
+		else
+		{
+			u8_DIO_ErrorStatus= DIO_MODULE_ERROR_NUMBER+ERROR_MULTIPLE_INIT;
+		}
+		
+		break;
+		
+		case GPIOD :
+		if((u8_DIO_PortInitFLag & PORTD_INIT_MASK)==UNINIT_MODULE)
+		{
+			switch (pstr_DIOCfg->u8_dir){
+				case INPUT:
+					PORTD_DIR&=~(pstr_DIOCfg->u8_pins);
+					u8_DIO_PortInitFLag |= PORTD_INIT_MASK;
+				break;
+				
+				case OUTPUT:
+					PORTD_DIR|=(pstr_DIOCfg->u8_pins);
+					u8_DIO_PortInitFLag |= PORTD_INIT_MASK;
+				break;
+				
+				default:
+					u8_DIO_ErrorStatus= DIO_MODULE_ERROR_NUMBER+ERROR_INVALIDE_VALUE;
+				break;
+			}
+			
+		}
+		else
+		{
+			u8_DIO_ErrorStatus= DIO_MODULE_ERROR_NUMBER+ERROR_MULTIPLE_INIT;
+		}
+		
+		break;
+		
+		
+		default:
+			u8_DIO_ErrorStatus= DIO_MODULE_ERROR_NUMBER+ERROR_INVALIDE_PORT;
+		break;
 		}
 	}
-	return u8_fun_status;
-}
-
-
-ERROR_STATUS DIO_Read (uint8_t GPIO,uint8_t pins, uint8_t *data)
-{
-	uint8_t u8_fun_status = OK;
-	/*check for errors*/
-	if(GPIO > GPIOD )
+	else
 	{
-		u8_fun_status = NOK;
+		u8_DIO_ErrorStatus= DIO_MODULE_ERROR_NUMBER+ERROR_NULL_PTR;
 	}
-	/*if input is ok proceed with fun process*/
-	switch(GPIO)
+return  u8_DIO_ErrorStatus;
+
+}
+extern u8_ERROR_STATUS_t DIO_Write (uint8_t u8_GPIO, uint8_t u8_pins, uint8_t u8_value){
+	u8_ERROR_STATUS_t u8_DIO_ErrorStatus = E_OK;
+	switch (u8_GPIO)
 	{
-		case GPIOA:
-			*data = MASK_IS_SET(PORTA_DATA,pins);
+		
+		case GPIOA :
+		if((u8_DIO_PortInitFLag & PORTA_INIT_MASK) == PORTA_INIT_MASK)
+		{
+			if((PORTA_DIR&u8_pins)==u8_pins)
+			{
+				switch(u8_value){
+					
+					case HIGH:
+						PORTA_DATA|=u8_pins;
+					break;
+					
+					case LOW :
+						PORTA_DATA&=(~u8_pins);
+					break;
+					
+					default:
+						u8_DIO_ErrorStatus= DIO_MODULE_ERROR_NUMBER+ERROR_INVALIDE_VALUE;
+					break;
+				}
+			}
+			else 
+			{
+				u8_DIO_ErrorStatus = DIO_MODULE_ERROR_NUMBER + ERROR_INVALIDE_CFG;
+			}
+			
+		}
+		else
+		{
+			u8_DIO_ErrorStatus = DIO_MODULE_ERROR_NUMBER + ERROR_UNILTILZED_PORT;
+		}
+		
 		break;
-		case GPIOB:
-			*data = MASK_IS_SET(PORTB_DATA,pins);
+		
+		case GPIOB :
+		
+		if((u8_DIO_PortInitFLag & PORTB_INIT_MASK) == PORTB_INIT_MASK)
+		{
+			if((PORTB_DIR&u8_pins)==u8_pins)
+			{
+				switch(u8_value){
+					
+					case HIGH:
+						PORTB_DATA |=u8_pins;
+					break;
+					case LOW :
+						PORTB_DATA &=(~u8_pins);
+					break;
+					
+					default:
+						u8_DIO_ErrorStatus= DIO_MODULE_ERROR_NUMBER+ERROR_INVALIDE_VALUE;
+					break;
+				}
+			}
+			
+			else
+			{
+				u8_DIO_ErrorStatus = DIO_MODULE_ERROR_NUMBER + ERROR_INVALIDE_CFG;
+			}
+		}
+		else
+		{
+			u8_DIO_ErrorStatus= DIO_MODULE_ERROR_NUMBER + ERROR_UNILTILZED_PORT;
+		}
+		
 		break;
-		case GPIOC:
-			*data = MASK_IS_SET(PORTC_DATA,pins);
+		
+		case GPIOC :
+		if((u8_DIO_PortInitFLag & PORTC_INIT_MASK )== PORTC_INIT_MASK)
+		{
+			if((PORTC_DIR&u8_pins)==u8_pins)
+			{
+				switch(u8_value){
+					
+					case HIGH:
+						PORTC_DATA|=u8_pins;
+					break;
+					case LOW :
+						PORTC_DATA&=(~u8_pins);
+					break;
+					
+					default:
+						u8_DIO_ErrorStatus= DIO_MODULE_ERROR_NUMBER+ERROR_INVALIDE_VALUE;
+					break;
+				}
+			}
+			
+			else
+			{
+				u8_DIO_ErrorStatus = DIO_MODULE_ERROR_NUMBER + ERROR_INVALIDE_CFG;
+			}
+		}
+		else 
+		{
+			u8_DIO_ErrorStatus= DIO_MODULE_ERROR_NUMBER + ERROR_UNILTILZED_PORT;
+		}
+		
 		break;
-		case GPIOD:
-			*data = MASK_IS_SET(PORTD_DATA,pins);
+		
+		case GPIOD :
+		if((u8_DIO_PortInitFLag & PORTD_INIT_MASK )== PORTD_INIT_MASK)
+		{
+			if((PORTD_DIR&u8_pins)==u8_pins)
+			{
+				switch(u8_value){
+					
+					case HIGH:
+						PORTD_DATA|=u8_pins;
+					break;
+					case LOW :
+						PORTD_DATA&=(~u8_pins);
+					break;
+					default:
+						u8_DIO_ErrorStatus= DIO_MODULE_ERROR_NUMBER+ERROR_INVALIDE_VALUE;
+					break;
+				}
+			}
+			
+			else
+			{
+				u8_DIO_ErrorStatus = DIO_MODULE_ERROR_NUMBER + ERROR_INVALIDE_CFG;
+			}
+		}
+		else
+		{
+			u8_DIO_ErrorStatus= DIO_MODULE_ERROR_NUMBER + ERROR_UNILTILZED_PORT;
+		}
+		
 		break;
+		
 		default:
-			u8_fun_status = NOK;
+			u8_DIO_ErrorStatus= DIO_MODULE_ERROR_NUMBER + ERROR_INVALIDE_PORT;
 		break;
 	}
-	return u8_fun_status;
+	return u8_DIO_ErrorStatus ;
 }
 
-ERROR_STATUS DIO_Toggle (uint8_t GPIO, uint8_t pins)
-{
-	uint8_t u8_fun_status = OK;
-	/*check for errors*/
-	if(GPIO > GPIOD )
+extern u8_ERROR_STATUS_t DIO_Read (uint8_t u8_GPIO,uint8_t u8_pins, uint8_t *pu8_data){
+	u8_ERROR_STATUS_t u8_DIO_ErrorStatus = E_OK ;
+	
+	if (pu8_data != NULL)
 	{
-		u8_fun_status = NOK;
+		switch (u8_GPIO){
+			
+			case GPIOA :
+				if((u8_DIO_PortInitFLag & PORTA_INIT_MASK )== PORTA_INIT_MASK)
+				{
+					if(((PORTA_DIR&u8_pins)^u8_pins)== u8_pins)// check if the port direction is input 
+					{
+						*pu8_data=u8_pins & PORTA_PIN;						
+					}
+					
+				else
+				{
+					u8_DIO_ErrorStatus = DIO_MODULE_ERROR_NUMBER + ERROR_INVALIDE_CFG;
+				}
+				}
+				else
+				{
+					u8_DIO_ErrorStatus = DIO_MODULE_ERROR_NUMBER + ERROR_UNILTILZED_PORT;
+				}
+			
+			break;
+			
+			case GPIOB :
+				if((u8_DIO_PortInitFLag & PORTB_INIT_MASK) == PORTB_INIT_MASK)
+				{
+					if(((PORTB_DIR&u8_pins)^u8_pins)==u8_pins)// check if the port direction is input
+					{
+						*pu8_data=u8_pins & PORTB_PIN;
+					}
+					
+					else
+					{
+						u8_DIO_ErrorStatus = DIO_MODULE_ERROR_NUMBER + ERROR_INVALIDE_CFG;
+					}
+				}
+				else
+				{
+					u8_DIO_ErrorStatus = DIO_MODULE_ERROR_NUMBER + ERROR_UNILTILZED_PORT;
+				}
+			break;
+			
+			case GPIOC :
+				if((u8_DIO_PortInitFLag & PORTC_INIT_MASK) == PORTC_INIT_MASK)
+				{
+					if(((PORTC_DIR&u8_pins)^u8_pins)==u8_pins)// check if the port direction is input
+					{
+						*pu8_data=u8_pins & PORTC_PIN;
+					}
+					
+					else
+					{
+						u8_DIO_ErrorStatus = DIO_MODULE_ERROR_NUMBER + ERROR_INVALIDE_CFG;
+					}
+				}
+				else
+				{
+					u8_DIO_ErrorStatus = DIO_MODULE_ERROR_NUMBER + ERROR_UNILTILZED_PORT;
+				}
+			break;
+			
+			case GPIOD :
+			
+				if((u8_DIO_PortInitFLag & PORTD_INIT_MASK )== PORTD_INIT_MASK)
+				{
+					if(((PORTD_DIR&u8_pins)^u8_pins)==u8_pins)// check if the port direction is input
+					{
+						*pu8_data=u8_pins & PORTD_PIN;
+					}
+					
+					else
+					{
+						u8_DIO_ErrorStatus = DIO_MODULE_ERROR_NUMBER + ERROR_INVALIDE_CFG;
+					}
+				}
+				else
+				{
+					u8_DIO_ErrorStatus = DIO_MODULE_ERROR_NUMBER + ERROR_UNILTILZED_PORT;
+				}
+			break;
+			
+			default:
+				u8_DIO_ErrorStatus= DIO_MODULE_ERROR_NUMBER + ERROR_INVALIDE_PORT;
+			break;
+		}
+		
 	}
-	/*if input is ok proceed with fun process*/
-	switch(GPIO)
+	else 
 	{
-		case GPIOA:
-			TOGGLE_MASK(PORTA_DATA,pins);
-		break;
-		case GPIOB:
-			TOGGLE_MASK(PORTB_DATA,pins);
-		break;
-		case GPIOC:
-			TOGGLE_MASK(PORTC_DATA,pins);
-		break;
-		case GPIOD:
-			TOGGLE_MASK(PORTD_DATA,pins);
-		break;
-		default:
-			u8_fun_status = NOK;
-		break;
+		u8_DIO_ErrorStatus= DIO_MODULE_ERROR_NUMBER+ERROR_NULL_PTR;
 	}
-	return u8_fun_status;
+	
+	return u8_DIO_ErrorStatus ;
+
 }
+
+extern u8_ERROR_STATUS_t DIO_Toggle (uint8_t u8_GPIO, uint8_t u8_pins){
+	u8_ERROR_STATUS_t u8_DIO_ErrorStatus = E_OK ;
+
+	switch (u8_GPIO){
+		
+		case GPIOA :
+			if((u8_DIO_PortInitFLag & PORTA_INIT_MASK) == PORTA_INIT_MASK)
+			{
+				if((PORTA_DIR&u8_pins)==u8_pins)
+				{
+					PORTA_DATA^=u8_pins;
+				}
+				
+				else
+				{
+					u8_DIO_ErrorStatus = DIO_MODULE_ERROR_NUMBER + ERROR_INVALIDE_CFG;
+				}
+			}
+			else
+			{
+				u8_DIO_ErrorStatus = DIO_MODULE_ERROR_NUMBER + ERROR_UNILTILZED_PORT;
+			}
+		break;
+		
+		case GPIOB :
+			if((u8_DIO_PortInitFLag & PORTB_INIT_MASK) == PORTB_INIT_MASK)
+			{
+				if((PORTB_DIR&u8_pins)==u8_pins)
+				{
+					PORTB_DATA^=u8_pins;
+				}
+				
+				else
+				{
+					u8_DIO_ErrorStatus = DIO_MODULE_ERROR_NUMBER + ERROR_INVALIDE_CFG;
+				}
+			}
+			else
+			{
+				u8_DIO_ErrorStatus = DIO_MODULE_ERROR_NUMBER + ERROR_UNILTILZED_PORT;
+			}
+		break;
+		case GPIOC :
+			if((u8_DIO_PortInitFLag & PORTC_INIT_MASK) == PORTC_INIT_MASK)
+			{
+				if((PORTC_DIR&u8_pins)==u8_pins)
+				{
+					PORTC_DATA ^=u8_pins;
+				}
+				
+				else
+				{
+					u8_DIO_ErrorStatus = DIO_MODULE_ERROR_NUMBER + ERROR_INVALIDE_CFG;
+				}
+			}
+			else
+			{
+				u8_DIO_ErrorStatus = DIO_MODULE_ERROR_NUMBER + ERROR_UNILTILZED_PORT;
+			}
+		break;
+		
+		case GPIOD :
+		
+		if((u8_DIO_PortInitFLag & PORTD_INIT_MASK) == PORTD_INIT_MASK)
+		{
+			if((PORTD_DIR&u8_pins)==u8_pins)
+			{
+				PORTD_DATA ^=u8_pins;
+			}
+			
+			else
+			{
+				u8_DIO_ErrorStatus = DIO_MODULE_ERROR_NUMBER + ERROR_INVALIDE_CFG;
+			}
+		}
+		else
+		{
+			u8_DIO_ErrorStatus = DIO_MODULE_ERROR_NUMBER + ERROR_UNILTILZED_PORT;
+		}
+
+		break;
+		
+	  default:
+	  
+	  		u8_DIO_ErrorStatus= DIO_MODULE_ERROR_NUMBER + ERROR_INVALIDE_PORT;
+			  
+       break;
+	}
+	return u8_DIO_ErrorStatus ; 
+}
+	
+
+

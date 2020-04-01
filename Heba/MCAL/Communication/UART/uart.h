@@ -9,10 +9,10 @@
 #define __UART_H__
 /*---------------------------------------- #includes ----------------------------------------*/
 #include "../../../MCAL/DIO/DIO.h"
-#include "../../registers.h"
+#include "../../../Infrastructure/registers.h"
 #include "uart_cfg.h"
-#include "../../../std_types.h"
-#include "../../../interrupt.h"
+#include "../../../Infrastructure/std_types.h"
+#include "../../../MCAL/Interrupt/interrupt.h"
 /*---------------------------------------- #defines -----------------------------------------*/
 #define BAUDE_RATE 103 /* this value generates baude rate of 9600 at Fosc = 16MHz */
 typedef uint8_t(*UartTX_CBF)(void);

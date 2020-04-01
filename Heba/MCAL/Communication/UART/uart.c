@@ -8,38 +8,39 @@
 #include "uart.h"
 
 #define BAUD        9600
+#define FCPU	  16000000UL
 #define UBBR_VALUE (((FCPU)/(BAUD*16UL))-1)
 
 
 /* UCSRA */
-#define RXC     7
-#define TXC     6
-#define UDRE    5
-#define FE      4
-#define DOR     3
-#define PE      2
-#define U2X     1
-#define MPCM    0
+#define RXC     0x80
+#define TXC     0x40
+#define UDRE    0x20
+#define FE      0x10
+#define DOR     0x08
+#define PE      0x04
+#define U2X     0x02
+#define MPCM    0x01
 
 /* UCSRB */
-#define RXCIE   7
-#define TXCIE   6
-#define UDRIE   5
-#define RXEN    4
-#define TXEN    3
-#define UCSZ2   2
-#define RXB8    1
-#define TXB8    0
+#define RXCIE   0x80
+#define TXCIE   0x40
+#define UDRIE   0x20
+#define RXEN    0x10
+#define TXEN    0x08
+#define UCSZ2   0x04
+#define RXB8    0x02
+#define TXB8    0x01
 
 /* UCSRC */
-#define URSEL   7
-#define UMSEL   6
-#define UPM1    5
-#define UPM0    4
-#define USBS    3
-#define UCSZ1   2
-#define UCSZ0   1
-#define UCPOL   0
+#define URSEL   0x80
+#define UMSEL   0x40
+#define UPM1    0x20
+#define UPM0    0x10
+#define USBS    0x08
+#define UCSZ1   0x04
+#define UCSZ0   0x02
+#define UCPOL   0x01
 
 static volatile uint8_t u8_UDREmptyFlag = TRUE;
 
@@ -47,13 +48,13 @@ volatile static UartTX_CBF TX_CBF;
 volatile static UartRX_CBF RX_CBF;
 
 
-ISR(USART_UDRE_vect)
+MY_ISR(USART_UDRE_vect)
 {
 	UDR  = TX_CBF();
-	CLEAR_MASK(UCSRB,DATA_REGISTER_EMPTY_INT);
+	CLEAR_BIT(UCSRB,DATA_REGISTER_EMPTY_INT);
 	u8_UDREmptyFlag = TRUE;
 }
-ISR(USART_RXC_vect)
+MY_ISR(USART_RXC_vect)
 {
 	RX_CBF(UDR);
 }	

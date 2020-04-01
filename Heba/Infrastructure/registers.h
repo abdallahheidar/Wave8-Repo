@@ -7,112 +7,98 @@
 
 #ifndef REGISTERS_H_
 #define REGISTERS_H_
+
 #include "std_types.h"
 
 /*
  * General Registers
  */
-#define MCUCR			*(reg_type8_t)(0X55)	
-#define MCUCSR			*(reg_type8_t)(0X54)
-#define GICR			*(reg_type8_t)(0X5B)
-#define GIFR			*(reg_type8_t)(0X5A)
-
-/*
+ uint8_t MCUCR;
+ uint8_t MCUCSR;
+ uint8_t GICR;
+ uint8_t GIFR;
+ 
+ /*
  * PORTx registers
  */
 
-#define PORTA_DATA 		*(reg_type8_t)(0X3B)
-#define PORTA_DIR  		*(reg_type8_t)(0X3A)
-#define PORTA_PIN		*(reg_type8_t)(0X39)
-
-#define PORTB_DATA 		*(reg_type8_t)(0X38)
-#define PORTB_DIR  		*(reg_type8_t)(0X37)
-#define PORTB_PIN		*(reg_type8_t)(0X36)
-
-#define PORTC_DATA 		*(reg_type8_t)(0X35)
-#define PORTC_DIR  		*(reg_type8_t)(0X34)
-#define PORTC_PIN		*(reg_type8_t)(0X33)
-	
-
-#define PORTD_DATA 		*(reg_type8_t)(0X32)
-#define PORTD_DIR  		*(reg_type8_t)(0X31)
-#define PORTD_PIN		*(reg_type8_t)(0X30)
-
-
+ uint8_t PORTA_DATA;
+ uint8_t PORTA_DIR ;
+ uint8_t PORTA_PIN;
+ 
+ uint8_t PORTB_DATA;
+ uint8_t PORTB_DIR ;
+ uint8_t PORTB_PIN;
+ 
+ uint8_t PORTC_DATA;
+ uint8_t PORTC_DIR ;
+ uint8_t PORTC_PIN;
+ 
+ uint8_t PORTD_DATA;
+ uint8_t PORTD_DIR ;
+ uint8_t PORTD_PIN;
+ 
 /*
  * General Timer registers
  */
-#define TIMSK			*(reg_type8_t)(0X59)
-#define TIFR			*(reg_type8_t)(0X58)
-
-
-/*
+ uint8_t TIMSK;
+ uint8_t TIFR;
+ /*
  * Timer 0 Registers
  */
-
-#define TCCR0			*(reg_type8_t)(0X53)
-#define TCNT0			*(reg_type8_t)(0X52)
-#define OCR0			*(reg_type8_t)(0X5C)
-
-
-/*
+ uint8_t TCCR0;
+ uint8_t TCNT0;
+ uint8_t OCR0;
+ /*
  * Timer 1 Registers
- */
-
-
-
-///REMEBER TO CHECK FOR A B AND NONE
-#define TCCR1A			*(reg_type8_t)(0X4F)
-#define TCCR1B			*(reg_type8_t)(0X4E)
-#define TCCR1			*(reg_type16_t)(0X4E)
-#define TCNT1H			*(reg_type8_t)(0X4D)
-#define TCNT1L			*(reg_type8_t)(0X4C)
-#define TCNT1			*(reg_type16_t)(0X4C)
-#define OCR1AH			*(reg_type8_t)(0X4B)
-#define OCR1AL			*(reg_type8_t)(0X4A)
-#define OCR1A			*(reg_type16_t)(0X4A)
-#define OCR1BH			*(reg_type8_t)(0X49)
-#define OCR1BL			*(reg_type8_t)(0X48)
-#define OCR1B			*(reg_type16_t)(0X48)
-#define ICR1H			*(reg_type8_t)(0X47)
-#define ICR1L			*(reg_type8_t)(0X46)
-#define ICR1			*(reg_type16_t)(0X46)
-	
-
-/*
+ */ 
+ uint8_t TCCR1A;
+ uint8_t TCCR1B;
+ uint16_t TCCR1;
+ uint8_t TCNT1H;
+ uint8_t TCNT1L;
+ uint16_t TCNT1;
+ uint8_t OCR1AH;
+ uint8_t OCR1AL;
+ uint16_t OCR1A;
+ uint8_t OCR1BH	;
+ uint8_t OCR1BL;
+ uint16_t OCR1B;
+ uint8_t ICR1H;
+ uint8_t ICR1L;
+ uint16_t ICR1;
+ 
+ /*
  * Timer 2 Registers
  */
-#define TCCR2			*(reg_type8_t)(0X45)	
-#define TCNT2			*(reg_type8_t)(0X44)
-#define OCR2			*(reg_type8_t)(0X43)
-#define ASSR			*(reg_type8_t)(0X42)
-
-
-/************************************************************************/
+ uint8_t TCCR2;
+ uint8_t TCNT2;	
+ uint8_t OCR2;
+ uint8_t ASSR;
+ 
+ /************************************************************************/
 /** USART REGISTERS                                                                     */
 /************************************************************************/
-#define UDR			   *(reg_type8_t)(0X2C)	
-#define UCSRA		   *(reg_type8_t)(0X2B)	
-#define UCSRB		   *(reg_type8_t)(0X2A)	
-#define UCSRC		   *(reg_type8_t)(0X40)
-#define UBRRL	   	*(reg_type8_t)(0X29)
-#define UBRRH			*(reg_type8_t)(0X40)
-#define UBRR			*(reg_type16_t)(0X29)
-
-
-
-
-/************************************************************************/
+ 
+ uint8_t UDR;
+ uint8_t UCSRA;
+ uint8_t UCSRB;
+ uint8_t UCSRC;
+ uint8_t UBRRL;
+ uint8_t UBRRH;
+ uint16_t UBRR;
+ 
+ 
+ /************************************************************************/
 /** SPI REGISTERS                                                                     */
 /************************************************************************/
 
-//#define SPIF	      7
-#define SPDR	      *(reg_type8_t)(0x2F)
-#define SPCR		   *(reg_type8_t)(0x2D)
-#define SPSR         *(reg_type8_t)(0x2E)
-
-/*********************/
-#define SREG	      *(reg_type8_t)(0x5F)
+ uint8_t SPDR;
+ uint8_t SPCR ;
+ uint8_t SPSR;
+ 
+ /*********************/
+ uint8_t SREG;
 
 
 #endif /* REGISTERS_H_ */
