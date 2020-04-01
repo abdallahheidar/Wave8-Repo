@@ -6,7 +6,7 @@ ERR_STATUS sum(int a , int b,int* sum)
 {
 ERR_STATUS u8_funStatus = E_OK;
 
-if(a-b > MAX_INIT)
+if(MAX_INIT-b > a)
 u8_funStatus = E_NOK;
 else
 {
