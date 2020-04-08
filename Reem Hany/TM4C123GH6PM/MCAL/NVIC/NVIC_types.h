@@ -1,17 +1,9 @@
-#ifndef __NVIC_LCFG_H__
-#define __NVIC_LCFG_H__
+#ifndef __NVIC_TYPES_H__
+#define __NVIC_TYPES_H__
 #include "../../Services/includes/std_types.h"
 
 /**************************************************/
-/*              Defines                           */
-/**************************************************/
-
-#define NUM_OF_ACTIVATED_INTERRUPTS        3
-#define APINT_VECTKEY                      0X05FA0000
-#define APINT_PRIGROUP                     0X00000500
-
-/**************************************************/
-/*              TypeDefs                           */
+/*              TypeDefs                          */
 /**************************************************/
 
 typedef uint8_t SubGroup_PriorityType;
@@ -64,7 +56,5 @@ typedef struct
 	Group_PriorityType Group_Priority;
 	SubGroup_PriorityType	SubGroup_Priority;
 }NVIC_CfgType;
-
-extern NVIC_CfgType NVIC_CfgArr[NUM_OF_ACTIVATED_INTERRUPTS];
 
 #endif

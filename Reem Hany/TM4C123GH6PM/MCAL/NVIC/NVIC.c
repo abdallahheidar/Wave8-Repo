@@ -33,13 +33,6 @@ void NVIC_Init(void)
 	
 	if(NUM_OF_ACTIVATED_INTERRUPTS>0)
 	{
-		/*Assign the priority*/
-		__asm("MOV R0,#0X00000000");
-		__asm("MSR BASEPRI,R0");
-		
-		/*Set the global interrupt*/
-		__asm("MOV R1,#0X00000000");
-		__asm("MSR PRIMASK,R1");
 		
 		/*Set the apint*/
 		NVIC_APINT_R |= APINT_VECTKEY | APINT_PRIGROUP;
