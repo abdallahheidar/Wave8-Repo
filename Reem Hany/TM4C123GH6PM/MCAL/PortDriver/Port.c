@@ -4,7 +4,7 @@
 #include "../../Services/includes/common_macros.h"
 
 #define NUM_OF_CHANNELS_IN_PORT							8
-#define GPIO_LOCK_MASK                      0x4cf434b
+#define GPIO_LOCK_MASK                      0x4C4F434B
 
 uint32_t BASEAddresses[]={
 	GPIOPort_A_APB_BASE,
@@ -19,6 +19,7 @@ uint32_t BASEAddresses[]={
 void Port_Init(void)
 {
 	uint8_t i =ZERO,PORT_NUM;
+
 	for(i=ZERO; i< NUM_OF_ACTIVATED_CHANNELS; i++)
 	{
 		PORT_NUM= PortDriver_CfgArr[i].Channel / NUM_OF_CHANNELS_IN_PORT;
@@ -61,8 +62,6 @@ void Port_Init(void)
 			CLR_BIT(GPIOREG(BASEAddresses[PORT_NUM],GPIODMACTL_OFFSET),PortDriver_CfgArr[i].Channel);
 			GPIOREG(BASEAddresses[PORT_NUM],GPIOPCTL_OFFSET) |= PortDriver_CfgArr[i].PortDriver_Channel_Function <<PortDriver_CfgArr[i].Channel*4;
 		}
-		// VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
-		//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>In case adc or dma<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 		
 		//current
 		switch(PortDriver_CfgArr[i].PortDriver_Channel_Current_mA)
