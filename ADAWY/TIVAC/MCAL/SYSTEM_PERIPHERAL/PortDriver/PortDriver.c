@@ -70,6 +70,8 @@ typedef struct
 #define EXT_INTERRUPT_LEVEL_DETECT                          2
 #define EXT_INTERRUPT_EDGE_DETECT                           1
 
+#define ANALOG_FUNCTION_VALUE                               20
+
 #define GPIO_UNLOCK_VALUE                                   0x4C4F434B
 #define GPIO_LOCK_VALUE                                     0X0125346D
 /**********************************************************/
@@ -107,36 +109,63 @@ void PortDriver_init (void)
 
         au8_ChannelOffset = PortDriver_CfgArr[au8_CfgStCounter].Channel % NUM_OF_CHANNELS; /*determine the channel pin*/
 
-        /*TODO: UNLOCK GPIO AND COMMITTED*/
-        (*U32ARR_BaseAddrArr[au8_PortNum]).GPIOLOCK = GPIO_UNLOCK_VALUE ;
+        /*** UNLOCK GPIO AND COMMITTED ***/
+        /*
+         * GPIOLOCK reg protect some other gpio register from undesired access so to access this register unlock this register first (0x4C4F434B: UNLOCK, other value: LOCK)
+         * GPIODIR reg bits 0:7, each bit represent pin commitment level  (0:UNCOMMITTED,  1:COMMITTED)
+         */
+        (*U32ARR_BaseAddrArr[au8_PortNum]).GPIOLOCK = GPIO_UNLOCK_VALUE ; /*unlock gpio registers*/
 
-        au32_TempValue = ( 1 << au8_ChannelOffset );
-        (*U32ARR_BaseAddrArr[au8_PortNum]).GPIOCR |= au32_TempValue;
-        
+        au32_TempValue = ( 1 << au8_ChannelOffset ); /*calculate commitment mask*/
+        (*U32ARR_BaseAddrArr[au8_PortNum]).GPIOCR |= au32_TempValue; /*enable commitment level to proper pin*/
+
+
+
+
+
+
         /*** CONFIGURE PIN DIRECTION ***/
         /*
          * GPIODIR reg bits 0:7, each bit represent pin direction in the port (0:INPUT,  1:OUTPUT)
          */
+
         au32_TempValue = ( (PortDriver_CfgArr[au8_CfgStCounter].PortDriver_Channel_Direction) << (au8_ChannelOffset));  /*calculate pin direction mask*/
         (*U32ARR_BaseAddrArr[au8_PortNum]).GPIODIR |= au32_TempValue;  /*store pin direction in the proper bit in proper register*/
-        
-        /*** SELECT PIN FUNCTION(DIO / ALTERTNATIVE FUNCTION) ***/
+
+
+
+
+
+
+        /*** SELECT PIN FUNCTION(DIO / DIGITAL ALTERTNATIVE FUNCTION / ANALOG FUNCTION) ***/
         /*
          * GPIOAFSEL reg bits 0:7, each bit represent pin ALTERNATIVE function enable in the port (0:DIO,  1:ALTERNATIVE)
          * GPIOPCTL reg bits 0:31, each half-byte (4-bits) represent Pin ALTERNATIVE function, each pin has different value for different function
+         * GPIODEN reg bits 0:7, each bit control pin digital configuration in the port (0:DISABLE. 1:ENABLE)
+         * GPIOAMSEL reg bits 0:7, each bit control pin analog configuration in the port (0:DISABLE. 1:ENABLE)
          */
+        /*check if the pin function is DIO*/
         if (PORTDRIVER_CHANNEL_FUNCTION_X_DIO == PortDriver_CfgArr[au8_CfgStCounter].PortDriver_Channel_Function)
         {
             /* clear proper bit in GPIOAFSEL register to select DIO function*/
             au32_TempValue = ~( 1 << au8_ChannelOffset );  /*calculate pin DIO function mask*/
             (*U32ARR_BaseAddrArr[au8_PortNum]).GPIOAFSEL &= au32_TempValue; /*store pin DIO function value in the proper bit in proper GPIOAFSEL register*/
-        } 
+            (*U32ARR_BaseAddrArr[au8_PortNum]).GPIODEN |= au32_TempValue; /*enable digital pin configuration */
+        }
+        /*check if the pin function is ANALOG*/ 
+        else if (ANALOG_FUNCTION_VALUE == PortDriver_CfgArr[au8_CfgStCounter].PortDriver_Channel_Function)
+        {
+            au32_TempValue = ( 1 << au8_ChannelOffset ); /*calculate pin ANALOG mask*/
+            (*U32ARR_BaseAddrArr[au8_PortNum]).GPIOAMSEL |= au32_TempValue; /*enable analog pin configuration */
+        }
+        /*if the pin function is DIGITAL ALTERNATIVE*/
         else
         {
             /* set proper bit in GPIOAFSEL register to select ALTERNATIVE function*/
             au32_TempValue = ( 1 << au8_ChannelOffset );  /*calculate pin function mask*/
-            (*U32ARR_BaseAddrArr[au8_PortNum]).GPIOAFSEL |= au32_TempValue; /*store pin ALTERNATIVE function value in the proper bit in proper GPIOAFSEL register*/
-            
+            (*U32ARR_BaseAddrArr[au8_PortNum]).GPIOAFSEL |= au32_TempValue; /*store pin ALTERNATIVE function value in the proper bit in proper GPIOAFSEL register*/      
+            (*U32ARR_BaseAddrArr[au8_PortNum]).GPIODEN |= au32_TempValue; /*enable digital pin configuration */
+
             /* store proper value in proper field in GPIOPCTL register to select desired function*/
             au32_TempValue = ( 0xF << au8_ChannelOffset); /*calculate bits mask*/
             au32_TempValue |= (*U32ARR_BaseAddrArr[au8_PortNum]).GPIOPCTL; /*mask proper half-byte(4-bits)*/
@@ -144,17 +173,22 @@ void PortDriver_init (void)
             (*U32ARR_BaseAddrArr[au8_PortNum]).GPIOPCTL = au32_TempValue; /*store function value in proper field in proper GPIOPCTL register*/
         }
         
-        //GPIOADCCTL : ADC   for future implementation
-        //GPIOMACTL : uDMA   for future implementation
         
+
+
+
+
         /*** CONFIGERATE PIN PROPERTIES ***/
         /*
-         *
-         *
-         *
-         *
+         * GPIOR2R reg bits 0:7, each bit represent output pin current (0:N/A,  1:2mA)
+         * GPIOR4R reg bits 0:7, each bit represent output pin current (0:N/A,  1:4mA)
+         * GPIOR8R reg bits 0:7, each bit represent output pin current (0:N/A,  1:8mA)
+         * GPIOODR reg bits 0:7, each bit represent pin attachment (0:N/A, 1:OPENED REAIN)
+         * GPIOPDR reg bits 0:7, each bit represent pin attachment (0:N/A, 1:PULL DOWN RESISTOR)
+         * GPIOPUR reg bits 0:7, each bit represent pin attachment (0:N/A, 1:PULL UP RESISTOR)
+         * GPIOSLR reg bits 0:7, each bit represent pin slew rate configuration (0:disable, 1:enable)
          */
-        /*select drive strength*/
+        /*select output current*/
         au32_TempValue = ( 1 << au8_ChannelOffset );  /*calculate pin mask*/
 
         switch (PortDriver_CfgArr[au8_CfgStCounter].PortDriver_Channel_Current_mA)
@@ -176,30 +210,30 @@ void PortDriver_init (void)
 
         }
         
-        /*selsect pin pad*/
+        /*select pin pad*/
         switch (PortDriver_CfgArr[au8_CfgStCounter].PortDriver_Channel_Attachment)
         {
             case PORTDRIVER_CHANNEL_ATTACHMENT_NOTCONNECTED:
-            (*U32ARR_BaseAddrArr[au8_PortNum]).GPIOODR &= ~(au32_TempValue) ;
-            (*U32ARR_BaseAddrArr[au8_PortNum]).GPIOPDR &= ~(au32_TempValue) ;
-            (*U32ARR_BaseAddrArr[au8_PortNum]).GPIOPUR &= ~(au32_TempValue) ;
+            (*U32ARR_BaseAddrArr[au8_PortNum]).GPIOODR &= ~(au32_TempValue) ; /*disable the pin open drain*/
+            (*U32ARR_BaseAddrArr[au8_PortNum]).GPIOPDR &= ~(au32_TempValue) ; /*disable the pin pull-down resistor*/
+            (*U32ARR_BaseAddrArr[au8_PortNum]).GPIOPUR &= ~(au32_TempValue) ; /*disable the pin pull-up resistor*/
             break;
 
             case PORTDRIVER_CHANNEL_ATTACHMENT_PULLUPRES:
-            (*U32ARR_BaseAddrArr[au8_PortNum]).GPIOPUR |= au32_TempValue ;
+            (*U32ARR_BaseAddrArr[au8_PortNum]).GPIOPUR |= au32_TempValue ; /*enable the pin open drain*/
             break;
             
             case PORTDRIVER_CHANNEL_ATTACHMENT_PULLDOWNRES:
-            (*U32ARR_BaseAddrArr[au8_PortNum]).GPIOPDR |= au32_TempValue ;
+            (*U32ARR_BaseAddrArr[au8_PortNum]).GPIOPDR |= au32_TempValue ; /*enable the pin pull-down resistor*/
             break;
             
             case PORTDRIVER_CHANNEL_ATTACHMENT_OPENDRAIN:
-            (*U32ARR_BaseAddrArr[au8_PortNum]).GPIOODR |= au32_TempValue;
+            (*U32ARR_BaseAddrArr[au8_PortNum]).GPIOODR |= au32_TempValue; /*enable the pin pull-up resistor*/
 
             /*enable/disable slew rate*/
             if (PORTDRIVER_CHANNEL_SLEWRATE_ENABLE == PortDriver_CfgArr[au8_CfgStCounter].PortDriver_Channel_SlewRate)
             {
-                (*U32ARR_BaseAddrArr[au8_PortNum]).GPIOSLR |= au32_TempValue;
+                (*U32ARR_BaseAddrArr[au8_PortNum]).GPIOSLR |= au32_TempValue; /*enable the pin slew rate*/
             }
             break;
             
@@ -208,57 +242,78 @@ void PortDriver_init (void)
         }
 
         
-        /*TODO: SELECT PIN OPERATION MODE*/
-        //MOVE THIS POINT TO PIN FUNCTION
-        //GPIODEN
-        //GPIOAMSEL
         
+
+
+
         /*** CONFIGURE INTERRUPT CONTROL ***/
+        /* GPIOIM reg bits 0:7, each bit represent interrupt configuration (0:disable,  1:enable)
+         * GPIOIS reg bits 0:7, each bit represent interrupt sense (0:edge,  1:level )
+         * GPIOIBE reg bits 0:7, each bit represent interrupt both edge (0:single edge,  1:both edge)
+         * GPIOIEV reg bits 0:7, each bit represent interrupt event (0:falling edge/low level, 1:raising edge/high level)
+         */
         if (PORTDRIVER_CHANNEL_EXTI_DISABLE == PortDriver_CfgArr[au8_CfgStCounter].PortDriver_Channel_Exti)
         {
-            (*U32ARR_BaseAddrArr[au8_PortNum]).GPIOIM &= ~(au32_TempValue) ;
+            (*U32ARR_BaseAddrArr[au8_PortNum]).GPIOIM &= ~(au32_TempValue) ;/*disable pin interrupt*/
         }
         else
         {
-            (*U32ARR_BaseAddrArr[au8_PortNum]).GPIOIM |= au32_TempValue ;
+            (*U32ARR_BaseAddrArr[au8_PortNum]).GPIOIM |= au32_TempValue ; /*enable pin interrupt*/
 
             if (EXT_INTERRUPT_EDGE_DETECT == (PortDriver_CfgArr[au8_CfgStCounter].PortDriver_Channel_Exti / EXT_INTERRUPT_DETECT_FACTOR))
             {
-                (*U32ARR_BaseAddrArr[au8_PortNum]).GPIOIS &= ~(au32_TempValue);
+                (*U32ARR_BaseAddrArr[au8_PortNum]).GPIOIS &= ~(au32_TempValue); /*select interrupt edge trigger detection*/
 
                 if(PORTDRIVER_CHANNEL_EXTI_BOTH_EDGE == PortDriver_CfgArr[au8_CfgStCounter].PortDriver_Channel_Exti)
                 {
-                    (*U32ARR_BaseAddrArr[au8_PortNum]).GPIOIBE |= au32_TempValue;
+                    (*U32ARR_BaseAddrArr[au8_PortNum]).GPIOIBE |= au32_TempValue; /*select both edge detection*/
                 }
 
                 else
                 {
-                    (*U32ARR_BaseAddrArr[au8_PortNum]).GPIOIBE &= ~(au32_TempValue);
+                    (*U32ARR_BaseAddrArr[au8_PortNum]).GPIOIBE &= ~(au32_TempValue); /*select single edge detection*/
 
                     if(PORTDRIVER_CHANNEL_EXTI_RISIN_GEDGE == PortDriver_CfgArr[au8_CfgStCounter].PortDriver_Channel_Exti)
                     {
-                        (*U32ARR_BaseAddrArr[au8_PortNum]).GPIOIEV |= au32_TempValue;
+                        (*U32ARR_BaseAddrArr[au8_PortNum]).GPIOIEV |= au32_TempValue; /*select rising edge detection*/
                     }
 
                     else if (PORTDRIVER_CHANNEL_EXTI_FALLIN_GEDGE == PortDriver_CfgArr[au8_CfgStCounter].PortDriver_Channel_Exti)
                     {
-                        (*U32ARR_BaseAddrArr[au8_PortNum]).GPIOIEV &= ~(au32_TempValue);
+                        (*U32ARR_BaseAddrArr[au8_PortNum]).GPIOIEV &= ~(au32_TempValue); /*select falling edge detection*/
                     }
                 }
 
             } 
             else if (EXT_INTERRUPT_LEVEL_DETECT == (PortDriver_CfgArr[au8_CfgStCounter].PortDriver_Channel_Exti / EXT_INTERRUPT_DETECT_FACTOR))
             {
-                (*U32ARR_BaseAddrArr[au8_PortNum]).GPIOIS |= au32_TempValue;
+                (*U32ARR_BaseAddrArr[au8_PortNum]).GPIOIS |= au32_TempValue;/*select interrupt level detection*/
+                if(PORTDRIVER_CHANNEL_EXTI_HIGH_LEVEL_SENSE == PortDriver_CfgArr[au8_CfgStCounter].PortDriver_Channel_Exti)
+                {
+                    (*U32ARR_BaseAddrArr[au8_PortNum]).GPIOIEV |= au32_TempValue; /*select high level detection*/
+                }
+
+                else if (PORTDRIVER_CHANNEL_EXTI_LOW_LEVEL_SENSE == PortDriver_CfgArr[au8_CfgStCounter].PortDriver_Channel_Exti)
+                {
+                    (*U32ARR_BaseAddrArr[au8_PortNum]).GPIOIEV &= ~(au32_TempValue); /*select low level detection*/
+                }
             }
         }
         
         
-        /*TODO: LOCK GPIO AND UNCOMMITTED*/
-        au32_TempValue = ~( 1 << au8_ChannelOffset );
-        (*U32ARR_BaseAddrArr[au8_PortNum]).GPIOCR |= au32_TempValue;
+
+
+
+
+        /*** LOCK GPIO AND UNCOMMITTED ***/
+        /*
+         * GPIOLOCK reg protect some other gpio register from undesired access so to access this register unlock this register first (0x4C4F434B: UNLOCK, other value: LOCK)
+         * GPIODIR reg bits 0:7, each bit represent pin commitment level  (0:UNCOMMITTED,  1:COMMITTED)
+         */
+        au32_TempValue = ~( 1 << au8_ChannelOffset ); /*calculate non commitment mask*/
+        (*U32ARR_BaseAddrArr[au8_PortNum]).GPIOCR &= ~(au32_TempValue); /*disable commitment level to proper pin*/
         
-        (*U32ARR_BaseAddrArr[au8_PortNum]).GPIOLOCK = GPIO_LOCK_VALUE ;
+        (*U32ARR_BaseAddrArr[au8_PortNum]).GPIOLOCK = GPIO_LOCK_VALUE ; /*lock gpio registers*/
         
         
    
