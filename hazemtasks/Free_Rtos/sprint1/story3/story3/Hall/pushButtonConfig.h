@@ -8,8 +8,6 @@
 #ifndef PUSHBUTTONCONFIG_H_
 #define PUSHBUTTONCONFIG_H_
 
-#include "pushButton.h"
-
 
 #define BTN_MAX_NUM		(2)
 

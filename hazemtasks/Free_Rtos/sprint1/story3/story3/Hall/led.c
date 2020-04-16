@@ -22,9 +22,6 @@
 void Led_Init(En_LedNumber_t en_led_id)
 {
 	DIO_Cfg_s LED_init;
-	
-	
-
 	switch(en_led_id)
 	{
 	case LED_0:

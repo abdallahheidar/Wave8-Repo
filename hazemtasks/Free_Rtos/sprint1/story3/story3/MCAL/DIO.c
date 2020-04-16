@@ -181,43 +181,27 @@ ERROR_STATUS DIO_Write (uint8_t GPIO, uint8_t pins, uint8_t value)
 */
 
 ERROR_STATUS DIO_Read (uint8_t GPIO,uint8_t pins, uint8_t *data)
-{  /*ERROR RET VARIBALE*/
-   ERROR_STATUS ERROR=E_OK;
- /*choose any PORT*/  
-   switch(GPIO)
-   {
-      case GPIOA:
-            if((PORTA_PIN&pins)==pins)
-            *data=HIGH;
-            else
-            *data=LOW;
-            break;
-      case GPIOB:
-            if((PORTB_PIN&pins)==pins)
-            *data=HIGH;
-            else
-            *data=LOW;
-            break;
-      case GPIOC:
-            if((PORTC_PIN&pins)==pins)
-            *data=HIGH;
-            else
-            *data=LOW;
-            break;
-      case GPIOD:
-            if((PORTD_PIN&pins)==pins)
-            *data=HIGH;
-            else
-            *data=LOW;
-            break;
- /*if the channel is wrong */           
-      default:
-            ERROR=E_NOK;
-            break;
-   }
-
-   
-   return ERROR;
+{  
+	ERROR_STATUS aenum_status =   E_OK;
+	
+		switch(GPIO){
+			case GPIOA:
+			*data = PORTA_PIN & pins;
+			break;
+			case GPIOB:
+			*data = PORTB_PIN & pins;
+			break;
+			case GPIOC:
+			*data = PORTC_PIN & pins;
+			break;
+			case GPIOD:
+			*data = PORTD_PIN & pins;
+			break;
+			default:
+			break;
+		}
+	
+	return aenum_status;
 }
 
 

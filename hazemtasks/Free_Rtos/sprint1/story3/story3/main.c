@@ -37,7 +37,7 @@ TaskHandle_t xHandle = NULL;
 
  xTaskCreate(
  Pushbuttomtask,       /* Function that implements the task. */
- "toggelled",          /* Text name for the task. */
+ "togge",          /* Text name for the task. */
  STACK_SIZE,      /* Stack size in words, not bytes. */
  ( void * ) 1,    /* Parameter passed into the task. */
  tskIDLE_PRIORITY,/* Priority at which the task is created. */

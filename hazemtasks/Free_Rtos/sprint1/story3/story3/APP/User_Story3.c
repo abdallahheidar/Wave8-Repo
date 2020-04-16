@@ -24,6 +24,27 @@
 #define led_off_period        100
 #define  led_toggel_period400    200
 
+#define INIT_TASK_PRIORITY				0
+
+#define BUTTON_TASK_PRIORITY			1
+#define BUTTON_TASK_DELAY				1		/*Button Task delay in Milli seconds*/
+#define MINIMUM_BUTTON_PRESS			2000	/*Minimum button press time in Milli Seconds*/
+#define MAXIMUM_BUTTON_PRESS			4000	/*Maximum button press time in Milli Seconds*/
+
+#define	LED_TOG_TASK_PRIORITY			2
+#define LED_TOG_TASK_400ms_DELAY		400		/*Toggling delay in Milli seconds*/
+#define LED_TOG_TASK_100ms_DELAY		100		/*Toggling delay in Milli seconds*/
+#define LED_TOG_TASK_NO_DELAY			1		/*Toggling delay in Milli seconds*/
+
+#define INITIAL_COUNT					-1
+
+/*Global Counter to be shared between the tasks*/
+sint32_t su32_Counter;
+
+/*Global Flag to be shared between the tasks*/
+uint8_t gu8_LedToggleTaskReady;
+
+
 /***************************************************************************/
 
 
@@ -65,126 +86,95 @@ void UserStoryThreeInit(void)
 ************************************************************************************/
 void UserStoryThree(void)
 {
-	TickType_t UserStoryOne_LastWakeTime;
-	 /* to avoid tacking the same input from the user */
-	const TickType_t UserStoryOne_Frequency = ONE_HANDRED_MS;
-
-	static uint8_t u8_entry_counter=0;
-	static uint8_t u8_toggling_counter=0;
-	static uint8_t u8_wait_for_release_flag=FLAG_LOW;
-	static uint8_t u8_toggling_flag=FLAG_LOW;
-	uint8_t au8_button_status;
-
-    /* Initialize the xLastWakeTime variable with the current time */
-	UserStoryOne_LastWakeTime = xTaskGetTickCount();
-	while(TRUE)
+	uint8_t u8_PushButtonStatus = Released;
+	while(1)
 	{
-		au8_button_status = pushButtonGetStatus(BTN_0);
-		if(au8_button_status == 1)
-		{
-			u8_wait_for_release_flag = FLAG_HIGH;
-			u8_entry_counter++;
-		}
-		else
-		{
-			u8_wait_for_release_flag = FLAG_LOW;
-			u8_entry_counter = 0;
-		}
-
-		if(u8_entry_counter>20 && u8_entry_counter<40)
-		{
-			//led toggle 400ms
-			if(u8_toggling_counter == 4)
-			{
-				Led_Toggle(LED_0);
-				u8_toggling_counter=0;
-			}
-		}
-
-		else if(u8_entry_counter>40)
-		{
-			//led toggle 100ms
-			Led_Toggle(LED_0);
-		}
-
-		else if(u8_entry_counter<20)
-		{
-			//led off
-			Led_Off(LED_0);
-		}
-
-		/* Wait for the next cycle */
-		vTaskDelayUntil( &UserStoryOne_LastWakeTime, UserStoryOne_Frequency);
+	pushButtonGetStatus(BTN_0,&u8_PushButtonStatus);
+	if(u8_PushButtonStatus)
+	Led_Off(LED_0);
+	else
+	Led_On(LED_0);
+	
+	vTaskDelay(50);
 	}
 }
 
 
 
 
-Pushbuttomtask(void)
+void Pushbuttomtask(void)
 {
-uint8_t	au8_buttomstate;
-uint8_t flag=0;
-while(1)
-{
-	if(gu8_flagdone=0)
+/*Variable to store the push button status in*/
+	uint8_t u8_PushButtonStatus = Released;
+
+	while(1)
 	{
-			if(flag==0)
-			{
-					au8_buttomstate=pushButtonGetStatus(BTN_0);
-					if(au8_buttomstate==PRESSED)
-					{
-						flag=1;
-					}
-			}
-			else
-			{
-				au8_buttomstate=pushButtonGetStatus(BTN_0);
-				if(au8_buttomstate==RELEASED)
-				{
-					flag=0;
-					gu8_flagdone=1;
-			
-				}
-				else
-				{
-			
-					gu8_counter++;
-			
-				}
-		
-			}
+		/*Get the push button status*/
+		pushButtonGetStatus(BTN_0,&u8_PushButtonStatus);
+
+		/*Check the push button status if it is pressed increment the counter by 1
+		and since this task's periodicity is 1 ms so each counter incrementation represents
+		1 Milli second press on the button*/
+		if (u8_PushButtonStatus == Pressed )
+		{
+			su32_Counter++;
+		}
+
+		/*If the button is pressed again reset the counter to count the pressing time again*/
+		if (u8_PushButtonStatus == Pressed && gu8_LedToggleTaskReady)
+		{
+			su32_Counter = INITIAL_COUNT;
+			gu8_LedToggleTaskReady = FALSE;
+		}
+
+		/*if the button is released after being pressed set the "ready flag" for the led toggle task*/
+		if ((u8_PushButtonStatus) && (su32_Counter > INITIAL_COUNT))
+		{
+			gu8_LedToggleTaskReady = TRUE;
+		}
+
+		/*delay for 1 Milli second*/
+		vTaskDelay(BUTTON_TASK_DELAY);
 	}
-	vTaskDelay(20);
 }	
-}
+
+
 
 
 void ledtask(void)
 {
-	gu8_flagdone=0;
-	uint8_t au8_delay=0;
-	while(1)
+	
+uint16_t u16_LedTaskDelay = LED_TOG_TASK_NO_DELAY;
+while(1)
+{
+	/*check the "ready flag"*/
+	if (gu8_LedToggleTaskReady)
 	{
-		Led_Toggle(LED_0);
-		/*if(gu8_counter<led_off_period)
+		/*if the button is pressed less than 2000 Milli seconds switch the LED off*/
+		if (su32_Counter<=MINIMUM_BUTTON_PRESS)
 		{
 			Led_Off(LED_0);
-			au8_delay=20;
 		}
-		else if((gu8_counter>led_off_period)&&(gu8_counter<led_toggel_period400))
+
+		/*if the button is pressed more than 2000 and less than 4000 Milli seconds toggle the led with 400ms periodicity*/
+		else if (su32_Counter>MINIMUM_BUTTON_PRESS && su32_Counter<=MAXIMUM_BUTTON_PRESS)
 		{
 			Led_Toggle(LED_0);
-			au8_delay=400;
-			
+			u16_LedTaskDelay = LED_TOG_TASK_400ms_DELAY;
 		}
-		else
+
+		/*if the button is pressed more than 4000 Milli seconds toggle the led with 100ms periodicity*/
+		else if (su32_Counter>MAXIMUM_BUTTON_PRESS)
 		{
 			Led_Toggle(LED_0);
-			au8_delay=100;
-		}*/
-		vTaskDelay(100);
+			u16_LedTaskDelay = LED_TOG_TASK_100ms_DELAY;
+		}
+
 	}
+
+	vTaskDelay(u16_LedTaskDelay);
+}
+
 	
 	
 	
