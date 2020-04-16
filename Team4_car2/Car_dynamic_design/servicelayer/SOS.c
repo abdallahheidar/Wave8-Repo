@@ -1,9 +1,9 @@
-/*
+t /*
  * SOS.c
  *
  * Created: 2/24/2020 3:58:24 PM
- *  Author: Hazem 
- */ 
+ *  Author: Hazem
+ */
 
 
 /*- INCLUDES -----------------------------------------------*/
@@ -19,7 +19,7 @@ typedef  struct  Task_BlockType
 	ptrtotask taskfunc;
 	uint16_t delay_milistone;
 	uint8_t  priority;
-	
+
 }Task_BlockType;
 
 /*- GLOBAL STATIC VARIABLES -------------------------------*/
@@ -45,7 +45,7 @@ static void SOS_taskbublesort(Task_BlockType * astr_taskbuffer , uint8_t u8_numb
 	ptrtotask pf_temp;
 	uint8_t au8_tempperiodicity=0;
 	uint16_t au8_tempdelaymilistone=0;
-	
+
 	for(au8_counter1=FIRST_TASK;au8_counter1<u8_numberoftasks;au8_counter1++)
 	{
 		for(au8_counter2=FIRST_TASK;au8_counter2<u8_numberoftasks;au8_counter2++)
@@ -55,40 +55,40 @@ static void SOS_taskbublesort(Task_BlockType * astr_taskbuffer , uint8_t u8_numb
 				au8_temppriority=astr_taskbuffer[au8_counter2].priority;
 				astr_taskbuffer[au8_counter2].priority=astr_taskbuffer[au8_counter2+1].priority;
 				astr_taskbuffer[au8_counter2+1].priority=au8_temppriority;
-				
+
 				au8_tempdelay=astr_taskbuffer[au8_counter2].delay;
 				astr_taskbuffer[au8_counter2].delay=astr_taskbuffer[au8_counter2+1].delay;
 				astr_taskbuffer[au8_counter2+1].delay=au8_tempdelay;
-				
+
 				pf_temp=astr_taskbuffer[au8_counter2].taskfunc;
 				astr_taskbuffer[au8_counter2].taskfunc=astr_taskbuffer[au8_counter2+1].taskfunc;
 				astr_taskbuffer[au8_counter2+1].taskfunc=pf_temp;
-				
+
 				au8_tempperiodicity=astr_taskbuffer[au8_counter2].perodicity;
 				astr_taskbuffer[au8_counter2].perodicity=astr_taskbuffer[au8_counter2+1].perodicity;
 				astr_taskbuffer[au8_counter2+1].perodicity=au8_tempperiodicity;
-				
+
 				au8_tempdelaymilistone=astr_taskbuffer[au8_counter2].delay_milistone;
 				astr_taskbuffer[au8_counter2].delay_milistone=astr_taskbuffer[au8_counter2+1].delay_milistone;
 				astr_taskbuffer[au8_counter2+1].delay_milistone=au8_tempdelaymilistone;
-				
-				
-				
-				
+
+
+
+
 			}
 		}
 	}
-	
-	
+
+
 }
 
 
 
 
-	
+
 /*- APIs IMPLEMENTATION -----------------------------------*/
 
-	
+
 /************************************************************************/
 /* SOS_Init
 EnmSOSError_t SOS_Init (const PtrSOS_Configtype ConfigPtr )
@@ -96,18 +96,18 @@ ConfigPtr Pointer to a selected configuration structure*/
 /************************************************************************/
 
 EnmSOSError_t SOS_Init (const PtrSOS_Configtype ConfigPtr )
-{  
-	 /* error variable for init fun*/	 
+{
+	 /* error variable for init fun*/
 	EnmSOSError_t au8_SOSiniterror =E_OK;
-	  	
+
 	/* check pointer_config is null or not */
 	if(ConfigPtr==NULL)
 	{
 		/*if null return null error from error handling*/
-		au8_SOSiniterror =SOS_INIT_NULL_POINTER; 
+		au8_SOSiniterror =SOS_INIT_NULL_POINTER;
 	}
 	else
-	{  
+	{
 		/*INITIALIZED all global variables*/
 	    gu8_SOSresloution=CLEAR;
 		gu8_SOStasks=CLEAR;
@@ -118,10 +118,10 @@ EnmSOSError_t SOS_Init (const PtrSOS_Configtype ConfigPtr )
 			au8_SOSiniterror=SOS_MULTIPLE_INIT;
 		}
 		else
-		{   
-			/*store Resolution into global static variable*/  
+		{
+			/*store Resolution into global static variable*/
 			gu8_SOSresloution=ConfigPtr->u8_res;
-			/*config timer according to SOS_TIMERID*/  
+			/*config timer according to SOS_TIMERID*/
 			Timer_cfg_s str_SOStimerconfig={CLEAR};
 			switch(ConfigPtr->u8_SOS_timerid)
 			{
@@ -147,10 +147,10 @@ EnmSOSError_t SOS_Init (const PtrSOS_Configtype ConfigPtr )
 				au8_SOSiniterror =E_NOK;
 				break;
 			}
-			/*check timer is init correct or not */  
+			/*check timer is init correct or not */
 			if(Timer_Init(&str_SOStimerconfig)==E_OK)
 			{
-				
+
 			}
 			else
 			{
@@ -158,17 +158,17 @@ EnmSOSError_t SOS_Init (const PtrSOS_Configtype ConfigPtr )
 			}
 		}
 	}
-	/*convert module into INITIALIZED mode*/  
+	/*convert module into INITIALIZED mode*/
 	gu8_SOSinitflag=INITIALIZED;
-	
+
 	return au8_SOSiniterror;
 }
 
 
 /*
 Function Name 	SOS_Start_Timer
-Syntax:     
-Sync/Async:   ASYNC  
+Syntax:
+Sync/Async:   ASYNC
 Parameters (in):
 Parameters (out):
 Parameters (inOut):
@@ -176,16 +176,16 @@ Return:
 */
 
 EnmSOSError_t SOS_Start_Timer(uint16_t u16_time,ptrtotask pf_task,uint8_t u8_periodicORoneshot,uint8_t u8_priority)
-{   
+{
 	/* error variable for sos_start fun initial value no error*/
 	EnmSOSError_t au8_SOSstarterror=E_OK;
-	
+
 	/*check if module is initialized or not*/
 	if(gu8_SOSinitflag==NOTINITIALIZED)
 	{
 		au8_SOSstarterror=SOS_MODULE_NOTINITIALIZED;
 	}
-	
+
 	else
 	{
 		/*check if tasks is less than the maximum number of tasks */
@@ -219,7 +219,7 @@ EnmSOSError_t SOS_Start_Timer(uint16_t u16_time,ptrtotask pf_task,uint8_t u8_per
 						Timer_Setcallback(SOS_schedulertime);
 						if(Timer_Start(SOS_TIMER_ID,TCNT_INITIAL_VALUE)==E_OK)
 						{
-							
+
 						}
 						else
 						{
@@ -246,7 +246,7 @@ EnmSOSError_t SOS_Start_Timer(uint16_t u16_time,ptrtotask pf_task,uint8_t u8_per
 */
 
 EnmSOSError_t SOS_Stop_Timer(ptrtotask ptrtofun)
-{	
+{
 	/* error variable for sos_stop fun initial value no error*/
 	EnmSOSError_t au8_SOSstoperror=E_OK;
 	uint8_t au8_counter;
@@ -265,7 +265,7 @@ EnmSOSError_t SOS_Stop_Timer(ptrtotask ptrtofun)
              /* task wanted to stop founded  */
 			if(gastr_SOSbuffer[au8_counter].taskfunc==ptrtofun)
 			{
-				/* raise flag*/  
+				/* raise flag*/
 			    au8_taskisfound=FOUND;
 			     /* if stooped task equal last task in buffer*/
 				if(au8_counter==LAST_TASK)
@@ -294,12 +294,12 @@ EnmSOSError_t SOS_Stop_Timer(ptrtotask ptrtofun)
 			}
 
 		}
-	    /* if task deleted equal last task stop timer*/	
+	    /* if task deleted equal last task stop timer*/
 		if(gu8_SOStasks==LAST_TASK)
 		{
 			if(Timer_Stop(SOS_TIMER_ID)==E_OK)
 			{
-				
+
 			}
 			else
 			{
@@ -336,13 +336,13 @@ EnmSOSError_t SOS_Dispatch(void)
 	{
 		/* clear system tick */
 		gu32_ostick=CLEAR;
-		
+
        /* readjust timer to make a system_tick after 1ms(system tick) */
 		if(Timer_SetValue(SOS_TIMER_ID,&au8_preloadtimer)==E_OK)
 		{
-			
+
 		}
-		else 
+		else
 		{
 			au8_SOSdiserror=E_NOK;
 		}
@@ -378,7 +378,7 @@ EnmSOSError_t SOS_Dispatch(void)
 					{
 						if(SOS_Stop_Timer(gastr_SOSbuffer[u8_counter].taskfunc)==E_OK)
 						{
-							
+
 						}
 						else
 						{
@@ -429,11 +429,11 @@ EnmSOSError_t SOS_DeInit(void)
 		}
 		if(Timer_Stop(SOS_TIMER_ID)==E_OK)
 		{
-			
+
 		}
 		else
 		   au8_SOSEROR=E_NOK;
-		  
+
 	}
     /*if SOS WAS NOT_INITIALIZED RETURN SOS_MODULE_NOTINITIALIZED*/
 	else
