@@ -47,7 +47,7 @@ uint8_t KeyPad_getPressedKey(void)
 		{
 			if(BIT_IS_CLEAR(KEYPAD_PORT_IN,row)) /* if the switch is press in this row */
 			{
-				while(BIT_IS_CLEAR(KEYPAD_PORT_IN,row));  /* for button debouncing */
+				//while(BIT_IS_CLEAR(KEYPAD_PORT_IN,row));  /* for button debouncing */
 				key = KeyPad_4x3_adjustKeyNumber((row*N_col)+col+ONE);
 
 			}
