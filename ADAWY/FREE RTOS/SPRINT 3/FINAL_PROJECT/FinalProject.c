@@ -10,23 +10,26 @@
 #define DATA_COUNTER_INITIAL_VALUE      0
 #define TRANSMIT_COUNTER_INITIAL_VALUE  0
 
-void UART_RecData (uint8_t Data);
-void ReciveTask (void *pvParameters);
-void TransmitTask (void *pvParameters);
-void SystemInitTask (void *pvParameters);
+static void UART_RecData (uint8_t Data);
+static void ReciveTask (void *pvParameters);
+static void TransmitTask (void *pvParameters);
+static void SystemInitTask (void *pvParameters);
 
 
 
-TaskHandle_t TransmitTaskHAndle;
-TaskHandle_t ReciveTaskHAndle;
-TaskHandle_t SystemInitTaskHAndle;
-
+static TaskHandle_t TransmitTaskHAndle;
+static TaskHandle_t ReciveTaskHAndle;
+static TaskHandle_t SystemInitTaskHAndle;
+static SemaphoreHandle_t ReciveSemaphoreHandle; 
+static uint8_t garru8_ReciveArr[TRANSMIT_MAX_SIZE];
+static uint8_t gu8_ReciveDataSize = 0;
+static uint8_t gu8_ReciveCounter = 0;
 
 void FinalProject (void)
 {
     xTaskCreate (SystemInitTask, "R",100, NULL, 4,&SystemInitTaskHAndle);
 
-    xTaskCreate (TransmitTask, "T", 200, NULL, 2,&TransmitTaskHAndle);
+    xTaskCreate (TransmitTask, "T", 300, NULL, 2,&TransmitTaskHAndle);
 
     xTaskCreate (ReciveTask, "R", 200, NULL, 3,&ReciveTaskHAndle);
     
@@ -82,7 +85,7 @@ void TransmitTask (void *pvParameters)
     
     static SemaphoreHandle_t SendDataSemaphoreHandle; 
     SendDataSemaphoreHandle = xSemaphoreCreateBinary();
-static int i = 0;
+
     while(1)
     {
         // Wait for the next cycle.
@@ -95,17 +98,16 @@ static int i = 0;
             if ( au8_DataCounter < TRANSMIT_MAX_SIZE)
             {
                 arru8_TransmitArr[au8_DataCounter] = au8_KeyPadData; /*store the number in transmit data array*/
+                
+                while(NOT_INITIALIZED == gu8_LCD_DisplayStringRowColumnFlag)
+                {
+                    LCD_DisplayStringRowColumn(&au8_KeyPadData,1,au8_DataCounter);
+                }
+                gu8_LCD_DisplayStringRowColumnFlag = NOT_INITIALIZED;
+                
                 au8_DataCounter++;
                 
-                while (NOT_INITIALIZED == gu8_LCD_DisplayCharFlag)
-                {
-                    LCD_DisplayChar(au8_KeyPadData); /*display the number on LCD*/
-                    
-                }
-                gu8_LCD_DisplayCharFlag = NOT_INITIALIZED;
-                
                 xSemaphoreGive( SendDataSemaphoreHandle );
-                
             }
             
         }
@@ -118,6 +120,8 @@ static int i = 0;
             Led_On(LED_1);
             xLEdLastWakeTime = xTaskGetTickCount();
             
+            UART_TRANSMIT_Char(au8_DataCounter +'0', NULL); /*send data size*/
+            
             while (au8_DataCounter > au8_TransmitCounter)
             {
                 UART_TRANSMIT_Char(arru8_TransmitArr[au8_TransmitCounter], NULL);
@@ -126,7 +130,13 @@ static int i = 0;
             }
             au8_DataCounter = DATA_COUNTER_INITIAL_VALUE;
             au8_TransmitCounter = TRANSMIT_COUNTER_INITIAL_VALUE;
-            LCD_Clear();
+            
+            while(NOT_INITIALIZED == gu8_LCD_DisplayStringRowColumnFlag)
+            {
+                LCD_DisplayStringRowColumn((uint8_t*)"         ",TRANSMIT_MAX_SIZE,0);
+            }
+            
+            gu8_LCD_DisplayStringRowColumnFlag = NOT_INITIALIZED;
             
             // Wait for the next cycle.
             vTaskDelayUntil( &xLEdLastWakeTime, 200 );
@@ -143,22 +153,63 @@ static int i = 0;
 void ReciveTask (void *pvParameters)
 {
     TickType_t xLastWakeTime;
-    const TickType_t xFrequency = 1000;
+    const TickType_t xFrequency = 100;
     
-    // Initialise the xLastWakeTime variable with the current time.
-    xLastWakeTime = xTaskGetTickCount();
+    ReciveSemaphoreHandle = xSemaphoreCreateBinary();
     
     while(1)
     {
-        // Wait for the next cycle.
-        vTaskDelayUntil( &xLastWakeTime, xFrequency );
         
-        
+        if (pdTRUE == xSemaphoreTake( ReciveSemaphoreHandle, ( TickType_t ) 50 ))
+        {
+            // Initialise the xLastWakeTime variable with the current time.
+            xLastWakeTime = xTaskGetTickCount();
+            
+            Led_On(LED_0);
+            
+            while(NOT_INITIALIZED == gu8_LCD_DisplayStringRowColumnFlag)
+            {
+                 LCD_DisplayStringRowColumn(garru8_ReciveArr,gu8_ReciveDataSize,16);
+            }
+            gu8_LCD_DisplayStringRowColumnFlag = NOT_INITIALIZED;
+            
+            gu8_ReciveDataSize = 0;
+            gu8_ReciveCounter = 0;
+            
+            // Wait for the next cycle.
+            vTaskDelayUntil( &xLastWakeTime, 500 );
+            
+            Led_Off(LED_0);
+            
+            // Wait for the next cycle.
+            vTaskDelayUntil( &xLastWakeTime, 2000 );   
+            
+            while(NOT_INITIALIZED == gu8_LCD_DisplayStringRowColumnFlag)
+            {
+                LCD_DisplayStringRowColumn((uint8_t*)"         ",TRANSMIT_MAX_SIZE,16);
+            }
+            gu8_LCD_DisplayStringRowColumnFlag = NOT_INITIALIZED;
+                          
+        }        
     }
 }
 
 
 void UART_RecData (uint8_t Data)
 {
-    ;
+    if (gu8_ReciveDataSize == 0)
+    {
+        gu8_ReciveDataSize = Data - '0';
+    }
+    else if (gu8_ReciveDataSize > gu8_ReciveCounter)
+    {
+        garru8_ReciveArr[gu8_ReciveCounter] = Data;
+        
+        gu8_ReciveCounter++;
+    }
+    
+    if (gu8_ReciveDataSize == gu8_ReciveCounter)
+    {
+        xSemaphoreGive( ReciveSemaphoreHandle );
+    }
 }
