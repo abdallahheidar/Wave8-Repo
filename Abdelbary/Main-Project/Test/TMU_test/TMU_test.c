@@ -4,6 +4,8 @@
  * Created: 2/25/2020 3:23:35 PM
  *  Author: mahmo
  */ 
+#ifdef GCC
+
 #include "TMU_test.h"
 #define ERROR__TIMER_CH					3
 #define TIMER_CHS_TESTS					4
@@ -24,7 +26,7 @@
 					
 #define invald_ID                      200
 volatile uint16_t timer0_MS_flag;
-static uint8_t gu8_testCaseNumber;
+STATIC uint8_t gu8_testCaseNumber;
 
 /*
 static sint16_t sau16_fun_status [FUN_STATUS_COUNT] = {OK,NOK};
@@ -45,7 +47,7 @@ ERROR_STATUS TMU_start_Id_rapper(uint8_t Id)
 
 ERROR_STATUS TMU_start_lapTime_rapper(uint8_t lap_time)
 {
-	static uint8_t Id = ZERO;
+	STATIC uint8_t Id = ZERO;
 	sint16_t s16_fun_status =  TMU_start(Id,TMU_stub_comsumer_fun,lap_time,PERIODIC);
 	Id++;
 	return s16_fun_status;
@@ -53,7 +55,7 @@ ERROR_STATUS TMU_start_lapTime_rapper(uint8_t lap_time)
 
 ERROR_STATUS TMU_start_callBFun_rapper(uint8_t CBF_indx)
 {
-	static uint8_t Id = ZERO;
+	STATIC uint8_t Id = ZERO;
 	void (*fun_pointers_parameter[POINTER_STATE_TESTS])(void)= {TMU_stub_comsumer_fun,NULL};
 	sint16_t s16_fun_status =  TMU_start(Id,fun_pointers_parameter[CBF_indx],ONE,PERIODIC);
 	Id++;
@@ -62,7 +64,7 @@ ERROR_STATUS TMU_start_callBFun_rapper(uint8_t CBF_indx)
 
 ERROR_STATUS TMU_start_types_rapper(uint8_t type)
 {
-	static uint8_t Id = ZERO;
+	STATIC uint8_t Id = ZERO;
 	sint16_t s16_fun_status =  TMU_start(Id,TMU_stub_comsumer_fun,ONE,type);
 	Id++;
 	return s16_fun_status;
@@ -291,3 +293,5 @@ void TMU_Module_run_test(void)
 	printf("\n\n\t=========================ENDED================================\n\n");
 
 }
+
+#endif

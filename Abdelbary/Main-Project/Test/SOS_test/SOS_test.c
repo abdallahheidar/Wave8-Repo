@@ -4,6 +4,8 @@
  * Created: 2/25/2020 3:23:35 PM
  *  Author: mahmo
  */ 
+#ifdef GCC
+
 #include "SOS_test.h"
 #define ERROR__TIMER_CH					3
 #define TIMER_CHS_TESTS					4
@@ -24,7 +26,7 @@
 					
 #define invald_ID                      200
 volatile uint16_t timer0_MS_flag;
-static uint8_t gu8_testCaseNumber;
+STATIC uint8_t gu8_testCaseNumber;
 /*
 static sint16_t sau16_fun_status [FUN_STATUS_COUNT] = {OK,NOK};
 */
@@ -46,7 +48,7 @@ ERROR_STATUS SOS_createTask_Id_rapper(uint8_t Id)
 
 ERROR_STATUS SOS_createTask_lapTime_rapper(uint8_t lap_time)
 {
-	static uint8_t Id = ZERO;
+	STATIC uint8_t Id = ZERO;
 	sint16_t s16_fun_status =  SOS_createTask(Id,sos_stub_comsumer_fun,lap_time,PERIODIC,ONE);
 	Id++;
 	return s16_fun_status;
@@ -54,7 +56,7 @@ ERROR_STATUS SOS_createTask_lapTime_rapper(uint8_t lap_time)
 
 ERROR_STATUS SOS_createTask_callBFun_rapper(uint8_t CBF_indx)
 {
-	static uint8_t Id = ZERO;
+	STATIC uint8_t Id = ZERO;
 	void (*fun_pointers_parameter[POINTER_STATE_TESTS])(void)= {sos_stub_comsumer_fun,NULL};
 	sint16_t s16_fun_status =  SOS_createTask(Id,fun_pointers_parameter[CBF_indx],ONE,PERIODIC,ONE);
 	Id++;
@@ -63,7 +65,7 @@ ERROR_STATUS SOS_createTask_callBFun_rapper(uint8_t CBF_indx)
 
 ERROR_STATUS SOS_createTask_types_rapper(uint8_t type)
 {
-	static uint8_t Id = ZERO;
+	STATIC uint8_t Id = ZERO;
 	sint16_t s16_fun_status =  SOS_createTask(Id,sos_stub_comsumer_fun,ONE,type,ONE);
 	Id++;
 	return s16_fun_status;
@@ -292,3 +294,5 @@ void SOS_Module_run_test(void)
 	printf("\n\n\t=========================ENDED================================\n\n");
 
 }
+
+#endif
