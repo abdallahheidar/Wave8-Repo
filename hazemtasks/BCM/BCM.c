@@ -2,21 +2,22 @@
  * BCM.c
  *
  * Created: 3/3/2020 1:45:32 AM
- *  Author: Ema
+ *  Author: hazem
  */
 /*- INCLUDES ----------------------------------------------*/
 #include "BCM.h"
 /*- LOCAL MACROS ------------------------------------------*/
+#define  EOF_FRAME    13
 
 /*- STATIC FUNCTIONS PROTOTYPES ---------------------------*/
- BCMError_t BCM_SENDDONE(void);
- void BCM_SENDCHECKSUMDONE(void);
+ BCMError_t Bcm_cbkSenddone(void);
+ void Bcm_cbkchecksumdone(void);
  BCMError_t bcm_RX(void);
 
  /*- LOCAL Data types --------------------------------------*/
 
   /*- GLOBAL STATIC VARIABLES -------------------------------*/
-typedef volatile struct ARRAY_CONTROL{
+typedef volatile struct gstr_bcm_control{
    uint8_t bcm_id;
    uint16_t BCM_SIZE;
    uint8_t  BCM_CHECK_SUM;
@@ -29,8 +30,12 @@ typedef volatile struct ARRAY_CONTROL{
    volatile uint8_t buffer_index ;
    }gstr_bcm_control;
 
-   static uint8_t BCM_init_state = NO_INIT;
-
+static uint8_t BCM_init_state = NO_INIT;
+static uint8_t gu8_Tx_state;
+typedef (void)(*pf_bcmsend)(uint8_t );
+typedef (uint8_t)(*pf_bcmrec)(void);
+typedef (void)(*pf)(void);
+typedef (void)(*bcm_setcbk)(pf);
  gstr_bcm_control  gstr_bcm_control_array;
  /*- LOCAL FUNCTIONS IMPLEMENTATION ------------------------*/
 BCMError_t BCM_init(Bcm_Cfg_ST *Bcm_cfg_st)
@@ -53,18 +58,22 @@ BCMError_t BCM_init(Bcm_Cfg_ST *Bcm_cfg_st)
 		{
 			USART_Config ST_Config={USART_BAUDRATE,TX_ENABLE,RX_ENABLE,NO_DOUBLE_SPEED,DATA_SIZE_8,PARITY_DISABLE,STOP_1BIT,ASYNCH};
 			USART_init(&ST_Config);
+			
 		}
         break;
 		case BCM_SPI_MODE:
 		{
+			
 			switch(Bcm_cfg_st->SPI_Mode)
 			{
+				pf_pf_bcm_setcbk=SPI_setCallBack;
                 case BCM_SPI_MASTER:
                 {
                     status.ClockRateSelect=SPI_F_OSC_16;
                     status.MasterSlaveSelect=SPI_MASTER;
                     status.Mode=SPI_INTERRUPT_ENABLED;
                     SPI_init(&status);
+					pf_bcmsend=SPI_sendByte;
                 }
                 break;
 				case BCM_SPI_SLAVE:
@@ -73,6 +82,7 @@ BCMError_t BCM_init(Bcm_Cfg_ST *Bcm_cfg_st)
                     status.MasterSlaveSelect=SPI_SLAVE;
                     status.Mode=SPI_INTERRUPT_ENABLED;
                     SPI_init(&status);
+					pf_bcmrec=pf_bcmrec;
                 }
                 break;
                 default:
@@ -112,7 +122,7 @@ BCMError_t BCM_recieve(uint8_t *Buffer_ptr,BCM_recieve_cbk CBKFUN)
         gstr_bcm_control_array.bcm_state = BCM_RECEIVE;
         gstr_bcm_control_array.bcm_buffer_state = BCM_BUFFER_LOCK;
         gstr_bcm_control_array.gu_buffer_ptr = Buffer_ptr;
-        SPI_setCallBack(bcm_RX);
+        pf_bcm_setcbk(bcm_RX);
     }
 
 	return retVal;
@@ -174,19 +184,19 @@ BCMError_t bcm_RX(void)
 			{
 				case 0:
 				{
-					gstr_bcm_control_array.bcm_id += SPI_receivebyte();
+					gstr_bcm_control_array.bcm_id += pf_bcmrec();
                     gstr_bcm_control_array.buffer_index;
                 }
 				break;
 				case 1:
 				{
-					gstr_bcm_control_array.bcm_buffer_state += ((SPI_receivebyte())-'0');
+					gstr_bcm_control_array.bcm_buffer_state += ((pf_bcmrec())-'0');
                     gstr_bcm_control_array.buffer_index;
 				}
 				break;
 				case 2:
 				{
-					gstr_bcm_control_array.bcm_buffer_state += ((SPI_receivebyte())-'0');
+					gstr_bcm_control_array.bcm_buffer_state += ((pf_bcmrec())-'0');
                     gstr_bcm_control_array.buffer_index;
 				}
 				break;
@@ -201,13 +211,13 @@ BCMError_t bcm_RX(void)
 		{
 			if (gstr_bcm_control_array.buffer_index < (gstr_bcm_control_array.BCM_SIZE-CHECK_SUM_INDEX))
 			{
-				gstr_bcm_control_array.gu_buffer_ptr[gstr_bcm_control_array.buffer_index] = SPI_receivebyte();
+				gstr_bcm_control_array.gu_buffer_ptr[gstr_bcm_control_array.buffer_index] = pf_bcmrec();
 				gstr_bcm_control_array.BCM_CHECK_SUM+= gstr_bcm_control_array.gu_buffer_ptr[gstr_bcm_control_array.buffer_index];
 			}
 
 			if (gstr_bcm_control_array.buffer_index == (gstr_bcm_control_array.BCM_SIZE-1))
 			{
-				gstr_bcm_control_array.gu_buffer_ptr[gstr_bcm_control_array.buffer_index] = SPI_receivebyte();	// receive check sum
+				gstr_bcm_control_array.gu_buffer_ptr[gstr_bcm_control_array.buffer_index] = pf_bcmrec();	// receive check sum
 				gstr_bcm_control_array.bcm_state = BCM_RECIEVE_COMPLETE;
 			}
         }
@@ -250,6 +260,7 @@ BCMError_t BCM_Send(BCM_SEND_CBKFUNCOMP CBKFUN,uint8_t* BUFFER,uint16_t size)
 
 void BCM_TX_dispatcher(void)
 {
+uint8_t au8_datatosend;	
     switch(gstr_bcm_control_array.bcm_state)
     {
        case BCM_IDLE:
@@ -259,40 +270,42 @@ void BCM_TX_dispatcher(void)
 	      break;
        case BCM_TXSEND:
        {
-            SPI_setCallBack(BCM_SENDDONE);
+            pf_bcm_setcbk(Bcm_cbkSenddone);
 
             if(gstr_bcm_control_array.buffer_index==0)
             {
-                SPI_sendByte(gstr_bcm_control_array.bcm_id);
+                au8_datatosend=gstr_bcm_control_array.bcm_id;
             }
             else if(gstr_bcm_control_array.buffer_index==1)
             {
-                SPI_sendByte((uint8_t)gstr_bcm_control_array.BCM_size);
+                au8_datatosend=(uint8_t)gstr_bcm_control_array.BCM_size;
             }
             else if(gstr_bcm_control_array.buffer_index==2)
             {
-                SPI_sendByte((uint8_t)(gstr_bcm_control_array.BCM_size>>8));
+               au8_datatosend=(uint8_t)gstr_bcm_control_array.BCM_size>>8;
             }
             else
             {
-                SPI_sendByte(gstr_bcm_control_array.garray[gstr_bcm_control_array.buffer_index-3]);
+                au8_datatosend=gstr_bcm_control_array.garray[gstr_bcm_control_array.buffer_index-3];
             }
             gstr_bcm_control_array.buffer_index++;
+			pf_bcmsend(au8_datatosend);
             gstr_bcm_control_array.bcm_state=BCM_TXSENDING;
        }
        break;
        case BCM_TXSENDING:
 	   {
-            if(gstr_bcm_control_array.buffer_index==13)
+            if(gstr_bcm_control_array.buffer_index==EOF_FRAME)
             {
-                SPI_sendByte(gstr_bcm_control_array.BCM_CHECK_SUM);
+                pf_bcmsend(gstr_bcm_control_array.BCM_CHECK_SUM);
                 gstr_bcm_control_array.bcm_state=BCM_TXCOMPLETE;
             }
 	   }
        break;
        case BCM_TXCOMPLETE:
        {
-        SPI_setCallBack(BCM_SENDCHECKSUMDONE);
+		  
+        pf_bcm_setcbk(Bcm_cbkchecksumdone);
        }
        break;
        default:
@@ -300,7 +313,7 @@ void BCM_TX_dispatcher(void)
     }
 }
 
-BCMError_t BCM_SENDDONE(void)
+BCMError_t Bcm_cbkSenddone(void)
 {
     BCMError_t  retVal = E_OK;
 
@@ -309,7 +322,7 @@ BCMError_t BCM_SENDDONE(void)
     return retVal;
 }
 
-void BCM_SENDCHECKSUMDONE(void)
+void Bcm_cbkchecksumdone(void)
 {
     gstr_bcm_control_array.bcm_state=BCM_IDLE;
 }
