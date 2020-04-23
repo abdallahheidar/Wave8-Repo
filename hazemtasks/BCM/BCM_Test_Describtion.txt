@@ -9,7 +9,7 @@ TEST CASE PASSED !
 *******************************************_API_NO#_1_VALID_PARAMS**************************************************
 *****************************************TEST_CASE_NO#_1***********************************************
 -FUNCTION NAME: BCM_Init
--INPUT: BCM_MODE:=1---- SPI_MODE=5
+-INPUT: BCM_MODE:---- SPI_MODE=master
 -EXPECTED OUTPUT:OK
 TEST CASE PASSED !
 
@@ -17,7 +17,7 @@ TEST CASE PASSED !
 *******************************************_API_NO#_1_VALID_PARAMS**************************************************
 *****************************************TEST_CASE_NO#_2***********************************************
 -FUNCTION NAME: BCM_Init
--INPUT: BCM_MODE:=2---- SPI_MODE=3
+-INPUT: BCM_MODE:=---- SPI_MODE=slave
 -EXPECTED OUTPUT:OK
 TEST CASE PASSED !
 
@@ -25,7 +25,7 @@ TEST CASE PASSED !
 *******************************************_API_NO#_1_VALID_PARAMS**************************************************
 *****************************************TEST_CASE_NO#_3***********************************************
 -FUNCTION NAME: BCM_Init
--INPUT: BCM_MODE:=2---- SPI_MODE=4
+-INPUT: BCM_MODE:=---- SPI_MODE=master
 -EXPECTED OUTPUT:OK
 TEST CASE PASSED !
 
@@ -41,7 +41,7 @@ TEST CASE PASSED !
 *******************************************_API_NO#_1_INVALID_PARAMS**************************************************
 *****************************************TEST_CASE_NO#_1***********************************************
 -FUNCTION NAME: BCM_Init
--INPUT: BCM_MODE:=3---- SPI_MODE=5
+-INPUT: BCM_MODE:=3---- SPI_MODE=invaildmode
 -EXPECTED OUTPUT:OK
 TEST CASE PASSED !
 
@@ -49,7 +49,7 @@ TEST CASE PASSED !
 *******************************************_API_NO#_1_INVALID_PARAMS**************************************************
 *****************************************TEST_CASE_NO#_2***********************************************
 -FUNCTION NAME: BCM_Init
--INPUT: BCM_MODE:=255---- SPI_MODE=5
+-INPUT: BCM_MODE:=invaildmode---- SPI_MODE=invaildmode
 -EXPECTED OUTPUT:OK
 TEST CASE PASSED !
 
@@ -57,7 +57,7 @@ TEST CASE PASSED !
 *******************************************_API_NO#_1_INVALID_PARAMS**************************************************
 *****************************************TEST_CASE_NO#_3***********************************************
 -FUNCTION NAME: BCM_Init
--INPUT: BCM_MODE:=2---- SPI_MODE=5
+-INPUT: BCM_MODE:=---- SPI_MODE=invaildmode
 -EXPECTED OUTPUT:OK
 TEST CASE PASSED !
 
@@ -65,7 +65,7 @@ TEST CASE PASSED !
 *******************************************_API_NO#_2_VALID_PARAMS**************************************************
 *****************************************TEST_CASE_NO#_1***********************************************
 -FUNCTION NAME: BCM_Receive
--INPUT: Buffer
+-INPUT: data
 -EXPECTED OUTPUT:OK
 TEST CASE PASSED !
 
@@ -81,7 +81,7 @@ TEST CASE PASSED !
 *******************************************_API_NO#_3_VALID_PARAMS**************************************************
 *****************************************TEST_CASE_NO#_4201840***********************************************
 -FUNCTION NAME: BCM_Send
--INPUT: Buffer
+-INPUT: data
 -EXPECTED OUTPUT:OK
 TEST CASE PASSED !
 
