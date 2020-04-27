@@ -7,6 +7,7 @@
 
 #ifndef MCAL_TI_PERIPHERALS_ADC_ADC_REGISTERMAP_H_
 #define MCAL_TI_PERIPHERALS_ADC_ADC_REGISTERMAP_H_
+#include "stdint.h"
 
 typedef struct
 {
@@ -70,11 +71,6 @@ typedef struct
 
 #define ADC0      ((ADC_Register_Type*)0x40038000)
 #define ADC1      ((ADC_Register_Type*)0x40039000)
-
-
-
-
-
 
 
 #endif /* MCAL_TI_PERIPHERALS_ADC_ADC_REGISTERMAP_H_ */

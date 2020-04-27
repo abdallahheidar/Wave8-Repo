@@ -144,15 +144,6 @@ typedef struct
 typedef uint32_t Adc_ValueGroupType;
 
 
-typedef uint8_t Adc_PrescaleType;
-
-
-typedef uint8_t Adc_ConversionTimeType;
-
-
-typedef uint8_t Adc_SamplingTimeType;
-
-
 /*Type of channel resolution in number of bits.*/
 typedef uint8_t Adc_ResolutionType;
 #define ADC_RESOLUTION_12_BIT                    12
@@ -168,12 +159,9 @@ typedef uint8_t Adc_StatusType;
                                                      * So far no result is available.
                                                      */
 
-#define ADC_COMPLETED                             3 /* A conversion round (which is not the final one) of the specified group has been finished.
+#define ADC_COMPLETED                             3 /* A conversion round of the specified group has been finished.
                                                      * A result is available for all channels of the group.
                                                      */
 
-/*#define ADC_STREAM_COMPLETED                      4*/ /* The result buffer is completely filled
-                                                     * For each channel of the selected group the number of samples to be acquired is available
-                                                     */
 
 #endif /* MCAL_TI_PERIPHERALS_ADC_ADC_TYPES_H_ */
