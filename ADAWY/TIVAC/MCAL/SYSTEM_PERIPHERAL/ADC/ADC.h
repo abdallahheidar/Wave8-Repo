@@ -14,7 +14,11 @@
 #include "ADC_Types.h"
 #include "ADC_RegisterMap.h"
 #include "ADC_Lcfg.h"
+#include "ADC_Cfg.h"
 
+#if (TEST_MODE)
+#include <stdio.h>
+#endif
 
 /************************************************************************
  ***************************** GLOBAL MACRO *****************************

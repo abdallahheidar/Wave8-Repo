@@ -43,6 +43,7 @@
 #define TRUE                                  1u
 #define FALSE                                 0u
 
+
 /************************************************************************
  **************************** MACRO FUNCTION ****************************
  ************************************************************************/
@@ -50,9 +51,6 @@
 #define CLEAR_BIT(REG,BIT)      do{(REG) &= ~(BIT);}while(0)
 #define TOGGLE_BIT(REG,BIT)     do{(REG) ^= (BIT);}while(0)
 #define GET_BIT(REG,BIT)        ((REG) & (BIT))
-
-
-
 
 /************************************************************************
  *************************** GLOBAL VARIABLES ***************************
@@ -70,20 +68,9 @@ static uint8_t gu8_GroupConversionRun = GROUP_CONVERSION_RUN_INITIAL_VALUE; /*0:
  *********************** LOCAL FUNCTION PROTOTYPES **********************
  ************************************************************************/
 
-
-
-
-
 /************************************************************************
  ******************** LOCAL FUNCTIONS IMPLEMENTATION ********************
  ************************************************************************/
-
-
-
-
-
-
-
 
 
 /************************************************************************
@@ -97,118 +84,128 @@ void Adc_Init( const Adc_ConfigType* ConfigPtr )
             au8_GroupMask = (ONE_BIT << (au8_SequencerNum)) << (au8_Module * NUM_OF_SEQUENCER);
     uint32_t au32_TempValue = TEMP_VALUE_INITIAL_VALUE;
 
-    /* 1. Ensure that the sample sequencer is disabled by clearing the corresponding ASENn bit in the
-     * ADCACTSS register. Programming of the sample sequencers is allowed without having them
-     * enabled. Disabling the sequencer during programming prevents erroneous execution if a trigger
-     * event were to occur during the configuration process.
-     */
-    au32_TempValue =   ONE_BIT<<au8_SequencerNum; /*ASEN bit mask*/
-    CLEAR_BIT(ADC_MODULE.ADCACTSS, au32_TempValue); /*Disable the sequencer*/
-
-
-    /* 2. Configure the trigger event for the sample sequencer in the ADCEMUX register. */
-    au32_TempValue = (uint32_t)((ConfigPtr->ADC_TriggerSource) << (au8_SequencerNum * TRIGGER_MASK_FACTOR)); /*Trigger event mask*/
-    ADC_MODULE.ADCEMUX |= au32_TempValue; /*Select trigger event*/
-
-    if (ADC_TRIGGER_SOURCE_PPROCESSOR == ConfigPtr->ADC_TriggerSource)
+    if (NULL == ConfigPtr)
     {
-        SET_BIT(gu8_GroupTrigerSource, au8_GroupMask); /*set trigger source flag (S/W)*/
+#if (TEST_MODE)
+        Printf("ADC_E_PARAMATER CONFIGRATION POINTER IS NULL ");
+#endif
     }
+
     else
     {
-        CLEAR_BIT(gu8_GroupTrigerSource, au8_GroupMask); /*clear trigger source flag (H/W)*/
-    }
+        /* 1. Ensure that the sample sequencer is disabled by clearing the corresponding ASENn bit in the
+         * ADCACTSS register. Programming of the sample sequencers is allowed without having them
+         * enabled. Disabling the sequencer during programming prevents erroneous execution if a trigger
+         * event were to occur during the configuration process.
+         */
+        au32_TempValue =   ONE_BIT<<au8_SequencerNum; /*ASEN bit mask*/
+        CLEAR_BIT(ADC_MODULE.ADCACTSS, au32_TempValue); /*Disable the sequencer*/
+
+
+        /* 2. Configure the trigger event for the sample sequencer in the ADCEMUX register. */
+        au32_TempValue = (uint32_t)((ConfigPtr->ADC_TriggerSource) << (au8_SequencerNum * TRIGGER_MASK_FACTOR)); /*Trigger event mask*/
+        ADC_MODULE.ADCEMUX |= au32_TempValue; /*Select trigger event*/
+
+        if (ADC_TRIGGER_SOURCE_PPROCESSOR == ConfigPtr->ADC_TriggerSource)
+        {
+            SET_BIT(gu8_GroupTrigerSource, au8_GroupMask); /*set trigger source flag (S/W)*/
+        }
+        else
+        {
+            CLEAR_BIT(gu8_GroupTrigerSource, au8_GroupMask); /*clear trigger source flag (H/W)*/
+        }
 
 
 
-    /* 3. When using a PWM generator as the trigger source, use the ADC Trigger Source Select
-     * (ADCTSSEL) register to specify in which PWM module the generator is located. The default
-     * register reset selects PWM module 0 for all generators.
-     */
+        /* 3. When using a PWM generator as the trigger source, use the ADC Trigger Source Select
+         * (ADCTSSEL) register to specify in which PWM module the generator is located. The default
+         * register reset selects PWM module 0 for all generators.
+         */
 
 
-    /* 4. For each sample in the sample sequence, configure the corresponding input source in the
-     * ADCSSMUXn register.
-     */
+        /* 4. For each sample in the sample sequence, configure the corresponding input source in the
+         * ADCSSMUXn register.
+         */
 
-    if (ADC_CHANNEL_TEMP_SENSOR != ConfigPtr->ADC_Channel) /*If the siganl source is input channel not on ship Temp. sensor*/
-    {
-        /*number of channel shifted left by number of sample in sequencer*/
-        au32_TempValue = ((ConfigPtr->ADC_Channel) << ((ConfigPtr->ADC_SampleNum) * SAMPLE_NUM_SHIFT_FACTOR));
+        if (ADC_CHANNEL_TEMP_SENSOR != ConfigPtr->ADC_Channel) /*If the siganl source is input channel not on ship Temp. sensor*/
+        {
+            /*number of channel shifted left by number of sample in sequencer*/
+            au32_TempValue = ((ConfigPtr->ADC_Channel) << ((ConfigPtr->ADC_SampleNum) * SAMPLE_NUM_SHIFT_FACTOR));
+            /*Select module number (0,1), then select sequencer number (0,1,2,3), then select the register*/
+            ADC_MODULE.SEQUENCER_ARR[au8_SequencerNum].ADCSSMUX |= au32_TempValue;
+        }
+
+        /* 5. For each sample in the sample sequence, configure the sample control bits in the corresponding
+         * nibble in the ADCSSCTLn register. When programming the last nibble, ensure that the END bit
+         * is set. Failure to set the END bit causes unpredictable behavior.
+         */
+        au32_TempValue = TEMP_VALUE_INITIAL_VALUE; /*Clear Temp value to use it as a mask*/
+
+        /*Select Temperature sensor or channel*/
+        if (ADC_CHANNEL_TEMP_SENSOR == ConfigPtr->ADC_Channel)
+        {
+            SET_BIT(au32_TempValue, TS_BIT); /*Select the conversion from Temperature Sensor*/
+        }
+        else
+        {
+            CLEAR_BIT(au32_TempValue, TS_BIT); /*Select the conversion from I/O channel*/
+        }
+
+        /*Operation mode (polling or interrupt)*/
+        if (ADC_OPERATION_MODE_INTERRUPT == ConfigPtr->ADC_OperationMode)
+        {
+            SET_BIT(au32_TempValue, IE_BIT); /*enable the interrupt*/
+        }
+        else if (ADC_OPERATION_MODE_POLLING == ConfigPtr->ADC_OperationMode)
+        {
+            CLEAR_BIT(au32_TempValue, IE_BIT); /*disable the interrupt*/
+        }
+        else
+        {
+            /*report error*/
+        }
+
+        /*Determine the end of sample*/
+        if (ADC_END_OF_SAMPLE_ACTIVE == ConfigPtr->ADC_EndOfSample)
+        {
+            SET_BIT(au32_TempValue, END_BIT); /*this sample is the last sample of the sequence.*/
+            SET_BIT(gu8_GroupInit, au8_GroupMask); /*set group init flag*/
+        }
+        else if (ADC_END_OF_SAMPLE_DEACTIVATE == ConfigPtr->ADC_EndOfSample)
+        {
+            CLEAR_BIT(au32_TempValue, END_BIT); /*Another sample in the sequence is the final sample.*/
+        }
+        else
+        {
+            /*report error*/
+        }
+
+        /*Determine sample mode (Single end, Differential)*/
+        if (ADC_SAMPLE_MODE_SINGLE_END == ConfigPtr->ADC_SampleMode)
+        {
+            CLEAR_BIT(au32_TempValue, D_BIT); /*Select single end mode*/
+        }
+        else
+        {
+            SET_BIT(au32_TempValue, D_BIT); /*Select differential mode*/
+        }
+
+        /*mask value shifted left by number of sample in sequencer*/
+        au32_TempValue = (uint32_t)(au32_TempValue << (ConfigPtr->ADC_SampleNum * SAMPLE_NUM_SHIFT_FACTOR));
         /*Select module number (0,1), then select sequencer number (0,1,2,3), then select the register*/
-        ADC_MODULE.SEQUENCER_ARR[au8_SequencerNum].ADCSSMUX |= au32_TempValue;     
-    }
-
-    /* 5. For each sample in the sample sequence, configure the sample control bits in the corresponding
-     * nibble in the ADCSSCTLn register. When programming the last nibble, ensure that the END bit
-     * is set. Failure to set the END bit causes unpredictable behavior.
-     */
-    au32_TempValue = TEMP_VALUE_INITIAL_VALUE; /*Clear Temp value to use it as a mask*/
-
-    /*Select Temperature sensor or channel*/
-    if (ADC_CHANNEL_TEMP_SENSOR == ConfigPtr->ADC_Channel)
-    {
-        SET_BIT(au32_TempValue, TS_BIT); /*Select the conversion from Temperature Sensor*/
-    }
-    else
-    {
-        CLEAR_BIT(au32_TempValue, TS_BIT); /*Select the conversion from I/O channel*/
-    }
-
-    /*Operation mode (polling or interrupt)*/
-    if (ADC_OPERATION_MODE_INTERRUPT == ConfigPtr->ADC_OperationMode)
-    {
-        SET_BIT(au32_TempValue, IE_BIT); /*enable the interrupt*/
-    }
-    else if (ADC_OPERATION_MODE_POLLING == ConfigPtr->ADC_OperationMode)
-    {
-        CLEAR_BIT(au32_TempValue, IE_BIT); /*disable the interrupt*/
-    }
-    else
-    {
-        /*report error*/
-    }
-
-    /*Determine the end of sample*/
-    if (ADC_END_OF_SAMPLE_ACTIVE == ConfigPtr->ADC_EndOfSample)
-    {
-        SET_BIT(au32_TempValue, END_BIT); /*this sample is the last sample of the sequence.*/
-        SET_BIT(gu8_GroupInit, au8_GroupMask); /*set group init flag*/
-    }
-    else if (ADC_END_OF_SAMPLE_DEACTIVATE == ConfigPtr->ADC_EndOfSample)
-    {
-        CLEAR_BIT(au32_TempValue, END_BIT); /*Another sample in the sequence is the final sample.*/
-    }
-    else
-    {
-        /*report error*/
-    }
-
-    /*Determine sample mode (Single end, Differential)*/
-    if (ADC_SAMPLE_MODE_SINGLE_END == ConfigPtr->ADC_SampleMode)
-    {
-        CLEAR_BIT(au32_TempValue, D_BIT); /*Select single end mode*/
-    }
-    else
-    {
-        SET_BIT(au32_TempValue, D_BIT); /*Select differential mode*/
-    }
-		
-    /*mask value shifted left by number of sample in sequencer*/
-    au32_TempValue = (uint32_t)(au32_TempValue << (ConfigPtr->ADC_SampleNum * SAMPLE_NUM_SHIFT_FACTOR));
-    /*Select module number (0,1), then select sequencer number (0,1,2,3), then select the register*/
-    ADC_MODULE.SEQUENCER_ARR[au8_SequencerNum].ADCSSCTL |= au32_TempValue;
-            
+        ADC_MODULE.SEQUENCER_ARR[au8_SequencerNum].ADCSSCTL |= au32_TempValue;
 
 
-    /* 6. If interrupts are to be used, set the corresponding MASK bit in the ADCIM register. */
+
+        /* 6. If interrupts are to be used, set the corresponding MASK bit in the ADCIM register. */
 
 
-    /* 7. Enable the sample sequencer logic by setting the corresponding ASENn bit in the ADCACTSS
-     * register.
-     */
-    au32_TempValue =  (uint32_t)(ONE_BIT<<(au8_SequencerNum));
-    SET_BIT((ADC_MODULE.ADCACTSS), au32_TempValue); /*Enable the Sequencer*/	
+        /* 7. Enable the sample sequencer logic by setting the corresponding ASENn bit in the ADCACTSS
+         * register.
+         */
+        au32_TempValue =  (uint32_t)(ONE_BIT<<(au8_SequencerNum));
+        SET_BIT((ADC_MODULE.ADCACTSS), au32_TempValue); /*Enable the Sequencer*/
+    }
 
 }
 
@@ -226,7 +223,9 @@ Std_ReturnType Adc_SetupResultBuffer( Adc_SequencerType Group, Adc_ValueGroupTyp
     if (NULL == DataBufferPtr)
     {
         Error |= TRUE;
-        /*return null pointer error (ADC_E_PARAM_POINTER)*/
+#if (TEST_MODE)
+        Printf("ADC_E_PARAMATER BUFFER POINTER IS NULL ");
+#endif
     }
     else
     {
@@ -238,7 +237,9 @@ Std_ReturnType Adc_SetupResultBuffer( Adc_SequencerType Group, Adc_ValueGroupTyp
             if ( (SEQUENCER_0_MAX_SAMPLE < au8_BufferNumOfElement) || (SEQUENCER_NO_SAMPLE == au8_BufferNumOfElement) )
             {
                 Error |= TRUE;
-                /*report error noncompatible size error*/
+#if (TEST_MODE)
+                Printf("ADC_E NON COMPATIBLE SIZE ERROR");
+#endif
             }
             else
             {
@@ -250,7 +251,9 @@ Std_ReturnType Adc_SetupResultBuffer( Adc_SequencerType Group, Adc_ValueGroupTyp
             if ( (SEQUENCER_1_2_MAX_SAMPLE < au8_BufferNumOfElement) || (SEQUENCER_NO_SAMPLE == au8_BufferNumOfElement) )
             {
                 Error |= TRUE;
-                /*report error noncompatible size error*/
+#if (TEST_MODE)
+                Printf("ADC_E NON COMPATIBLE SIZE ERROR");
+#endif
             }
             else
             {
@@ -262,7 +265,9 @@ Std_ReturnType Adc_SetupResultBuffer( Adc_SequencerType Group, Adc_ValueGroupTyp
             if (SEQUENCER_3_MAX_SAMPLE != au8_BufferNumOfElement)
             {
                 Error |= TRUE;
-                /*report error noncompatible size error*/
+#if (TEST_MODE)
+                Printf("ADC_E NON COMPATIBLE SIZE ERROR");
+#endif
             }
             else
             {
@@ -272,7 +277,9 @@ Std_ReturnType Adc_SetupResultBuffer( Adc_SequencerType Group, Adc_ValueGroupTyp
         else
         {
             Error |= TRUE;
-            /*report error Group ID non-existing error (ADC_E_PARAM_GROUP)*/
+#if (TEST_MODE)
+                Printf("ADC_E PARAMTER GROUP ID NON-EXISTING ERROR");
+#endif
         }
 
 
@@ -295,6 +302,7 @@ Std_ReturnType Adc_SetupResultBuffer( Adc_SequencerType Group, Adc_ValueGroupTyp
 
 
 
+#if(START_GROUP_CONVERSIO)
 void Adc_StartGroupConversion( Adc_SequencerType Group )
 {
     uint8_t au8_Temp = TEMP_VALUE_INITIAL_VALUE,
@@ -307,6 +315,9 @@ void Adc_StartGroupConversion( Adc_SequencerType Group )
     if ( (NUM_OF_SEQUENCER <= au8_Sequencer) || (NUM_OF_MODULES <= au8_Module) )
     {
         au8_Error |= TRUE;
+#if (TEST_MODE)
+        Printf("ADC_E_PARAMTER GROUP ID NON-EXISTING ERROR");
+#endif
     }
 
     /*** CHECK THE GROUP INITIALIZED ***/
@@ -314,6 +325,9 @@ void Adc_StartGroupConversion( Adc_SequencerType Group )
     if( FALSE == au8_Temp)
     {
         au8_Error |= TRUE;
+#if (TEST_MODE)
+        Printf("ADC_E GROUP ISN'T INITIALIZED ");
+#endif
     }
 
     /*** CHECK THE RESULT BUFFER SETUP ***/
@@ -321,6 +335,9 @@ void Adc_StartGroupConversion( Adc_SequencerType Group )
     if( FALSE == au8_Temp)
     {
         au8_Error |= TRUE;
+#if (TEST_MODE)
+        Printf("ADC_E GROUP BUFFER IS NOT INITIALIZED ");
+#endif
     }
 
     /*** CHECK THE EVENT TRIGGER SOURCE ***/
@@ -328,6 +345,9 @@ void Adc_StartGroupConversion( Adc_SequencerType Group )
     if( FALSE == au8_Temp)/* if the source is H/W */
     {
         au8_Error |= TRUE;
+#if (TEST_MODE)
+        Printf("ADC_E GROUP ISN'T SOFTWARE TRIGGER ");
+#endif
     }
 
     /*** CHECK PRE START ***/
@@ -335,6 +355,9 @@ void Adc_StartGroupConversion( Adc_SequencerType Group )
     if( FALSE != au8_Temp)/* if the group already start */
     {
         au8_Error |= TRUE;
+#if (TEST_MODE)
+        Printf("ADC_E GROUP IS ALREADY STARTED CONVERSION ");
+#endif
     }
 
     if (FALSE == au8_Error)
@@ -344,9 +367,11 @@ void Adc_StartGroupConversion( Adc_SequencerType Group )
         SET_BIT(gu8_GroupConversionRun, au8_GroupMask); /*set group run conversion flag*/
     }
 }
+#endif
 
 
 
+#if(STOP_GROUP_CONVERSIO)
 void Adc_StopGroupConversion( Adc_SequencerType Group )
 {
     uint8_t au8_Temp = TEMP_VALUE_INITIAL_VALUE,
@@ -359,6 +384,9 @@ void Adc_StopGroupConversion( Adc_SequencerType Group )
     if ( (NUM_OF_SEQUENCER <= au8_Sequencer) || (NUM_OF_MODULES <= au8_Module) )
     {
         au8_Error |= TRUE;
+#if (TEST_MODE)
+        Printf("ADC_E_PARAMTER GROUP ID NON-EXISTING ERROR");
+#endif
     }
 
     /*** CHECK THE GROUP INITIALIZED ***/
@@ -366,6 +394,9 @@ void Adc_StopGroupConversion( Adc_SequencerType Group )
     if( FALSE == au8_Temp)
     {
         au8_Error |= TRUE;
+#if (TEST_MODE)
+        Printf("ADC_E GROUP ISN'T INITIALIZED ");
+#endif
     }
 
     /*** CHECK THE EVENT TRIGGER SOURCE ***/
@@ -373,6 +404,9 @@ void Adc_StopGroupConversion( Adc_SequencerType Group )
     if( FALSE == au8_Temp)/* if the source is H/W */
     {
         au8_Error |= TRUE;
+#if (TEST_MODE)
+        Printf("ADC_E GROUP ISN'T SOFTWARE TRIGGER ");
+#endif
     }
 
     /*** CHECK PRE STOP ***/
@@ -380,6 +414,9 @@ void Adc_StopGroupConversion( Adc_SequencerType Group )
     if( FALSE == au8_Temp)/* if the group already stop */
     {
         au8_Error |= TRUE;
+#if (TEST_MODE)
+        Printf("ADC_E GROUP ISN'T STARTED CONVERSION ");
+#endif
     }
 
     if (FALSE == au8_Error)
@@ -389,6 +426,7 @@ void Adc_StopGroupConversion( Adc_SequencerType Group )
         CLEAR_BIT(gu8_GroupConversionRun, au8_GroupMask); /*set group start conversion flag*/
     }
 }
+#endif
 
 
 
@@ -405,6 +443,9 @@ Std_ReturnType Adc_ReadGroup( Adc_SequencerType Group, Adc_ValueGroupType* DataB
     if ( (NUM_OF_SEQUENCER <= au8_Sequencer) || (NUM_OF_MODULES <= au8_Module) )
     {
         au8_Error |= TRUE;
+#if (TEST_MODE)
+        Printf("ADC_E_PARAMTER GROUP ID NON-EXISTING ERROR");
+#endif
     }
 
     /*** CHECK THE GROUP INITIALIZED ***/
@@ -412,6 +453,9 @@ Std_ReturnType Adc_ReadGroup( Adc_SequencerType Group, Adc_ValueGroupType* DataB
     if( FALSE == au8_Temp)
     {
         au8_Error |= TRUE;
+#if (TEST_MODE)
+        Printf("ADC_E GROUP ISN'T INITIALIZED ");
+#endif
     }
 
     /*** CHECK THE RESULT BUFFER SETUP ***/
@@ -419,6 +463,9 @@ Std_ReturnType Adc_ReadGroup( Adc_SequencerType Group, Adc_ValueGroupType* DataB
     if( FALSE == au8_Temp)
     {
         au8_Error |= TRUE;
+#if (TEST_MODE)
+        Printf("ADC_E GROUP BUFFER IS NOT INITIALIZED ");
+#endif
     }
 
     /*** CHECK PRE START ***/
@@ -426,12 +473,18 @@ Std_ReturnType Adc_ReadGroup( Adc_SequencerType Group, Adc_ValueGroupType* DataB
     if( FALSE == au8_Temp)/* if the group stop conversion */
     {
         au8_Error |= TRUE;
+#if (TEST_MODE)
+        Printf("ADC_E GROUP IS ALREADY STARTED CONVERSION ");
+#endif
     }
 
     /*** CHECK DATA BUFFER POINTER ***/
     if (NULL == DataBufferPtr)
     {
         au8_Error |= TRUE;
+#if (TEST_MODE)
+        Printf("ADC_E_PARAMATER BUFFER POINTER IS NULL ");
+#endif
     }
 
     /*** CHECK IF THE CONVERSION COMPLETE ***/
@@ -439,12 +492,15 @@ Std_ReturnType Adc_ReadGroup( Adc_SequencerType Group, Adc_ValueGroupType* DataB
     if(FALSE == au32_CompleteConvesionBit)
     {
         au8_Error |= TRUE;
+#if (TEST_MODE)
+        Printf("ADC_E CONVERSION ISN'T COMPLETE YET");
+#endif
     }
 
 
     if (FALSE == au8_Error)
     {     
-			  *DataBufferPtr = ADC_MODULE.SEQUENCER_ARR[au8_Sequencer].ADCSSFIFO; /*read conversion result*/
+	    *DataBufferPtr = ADC_MODULE.SEQUENCER_ARR[au8_Sequencer].ADCSSFIFO; /*read conversion result*/
         CLEAR_BIT(ADC_MODULE.ADCISC, (ONE_BIT << (au8_Sequencer))); /*clear conversion complete flag*/
     }
 
@@ -467,7 +523,9 @@ Adc_StatusType Adc_GetGroupStatus( Adc_SequencerType Group )
     if ( (NUM_OF_SEQUENCER <= au8_Sequencer) || (NUM_OF_MODULES <= au8_Module) )
     {
         au8_Error |= TRUE;
-        /*report error*/
+#if (TEST_MODE)
+        Printf("ADC_E_PARAMTER GROUP ID NON-EXISTING ERROR");
+#endif
     }
 
     /*** CHECK THE GROUP INITIALIZED ***/
@@ -475,7 +533,9 @@ Adc_StatusType Adc_GetGroupStatus( Adc_SequencerType Group )
     if( FALSE == au8_Temp)
     {
         au8_Error |= TRUE;
-        /*report error*/
+#if (TEST_MODE)
+        Printf("ADC_E GROUP ISN'T INITIALIZED ");
+#endif
     }
 
     if (FALSE == au8_Error)
