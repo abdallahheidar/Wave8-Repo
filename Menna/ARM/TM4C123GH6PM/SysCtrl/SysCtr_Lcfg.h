@@ -6,7 +6,7 @@
 
 #define SysCtr_Clock_Hz						40000000
 
-#define NUM_OF_PRIPHERALS 15
+#define NUM_OF_PRIPHERALS 40
 #define ENABLE 1 
 #define DISABLE 0
 
