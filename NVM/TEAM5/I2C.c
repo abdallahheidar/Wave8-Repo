@@ -10,6 +10,7 @@
 /*********************************includes**********************************/
 #include "I2C.h"
 #include "I2C_Cfg.h"
+//#include "../Common/softwareDelay.h"
 /***************************************************************************/
 
 
@@ -147,8 +148,12 @@ I2C_CheckType I2C_ReqWrite(unsigned char SlaveAddress, const unsigned char* Data
 
 		else
 		{
+			//softwareDelayUS(10);
 			/* Put data On TWI data Register */
 			TWDR = *DataPtr;
+
+			DataLen--;
+			DataPtr++;
 		}
 
 		/*
@@ -161,8 +166,6 @@ I2C_CheckType I2C_ReqWrite(unsigned char SlaveAddress, const unsigned char* Data
 		while(BIT_IS_CLEAR(TWCR,TWINT));
 
 		au8_counter++;
-		DataLen--;
-		DataPtr++;
 	}
 
 	if(Clb_Ptr != NULL)
@@ -205,6 +208,7 @@ I2C_CheckType I2C_ReqRead(unsigned char SlaveAddress, unsigned char* DataPtr, un
 
 		else
 		{
+			//softwareDelayUS(10);
 			/*
 			 * Clear the TWINT flag before reading the data TWINT=1
 			 * Enable sending ACK after reading or receiving data TWEA=1
@@ -215,10 +219,11 @@ I2C_CheckType I2C_ReqRead(unsigned char SlaveAddress, unsigned char* DataPtr, un
 			while(BIT_IS_CLEAR(TWCR,TWINT));
 			/* Read Data */
 			*DataPtr = TWDR;
+
+			DataLen--;
+			DataPtr++;
 		}
 		au8_counter++;
-		DataLen--;
-		DataPtr++;
 	}
 
 	if(Clb_Ptr != NULL)
