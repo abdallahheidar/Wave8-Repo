@@ -27,7 +27,7 @@ typedef struct
 	MEMIF_CbkType BlockReadDoneNotif;
 }MEMIF_ConfigType;
 void MEMIF_Init(void);
-MEMIF_CheckType MEMIF_ReqWriteBlock(unsigned char BlockId,const unsigned char* DataPtr);
+MEMIF_CheckType MEMIF_ReqWriteBlock(unsigned char BlockId, unsigned char* DataPtr);
 MEMIF_CheckType MEMIF_ReqReadBlock(unsigned char BlockId, unsigned char* DataPtr);
 void MEMIF_Main(void);
 void MEMIF_IntEepromWriteCbk(void);

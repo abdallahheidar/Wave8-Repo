@@ -10,12 +10,14 @@
 /*******************************************************************
  *--------------------------- INCLUDES ----------------------------*
  *******************************************************************/
-
+#include "avr/io.h"
 #include "MEM_IF.h"
 #include "MEM_IF_Cfg.h"
 #include "std_types.h"
 #include "EEPROM_EXT.h"
 #include "EEPROM_INT.h"
+#define UDR                  *((reg_type8_t)(0X2C))
+
 #if (TEST == ENABLE)
 #include <stdio.h>
 #endif
@@ -38,7 +40,7 @@
 static uint8_t gu8_WriteBlockFlag;
 static uint8_t gu8_READ_BLOCK_FLAG;
 
-static const uint8_t* gu8_DataPtr;
+static  uint8_t* gu8_DataPtr;
 static uint8_t gu8_BlockNum;
 
 static uint8_t gu8_MainFuncStatus;
@@ -62,7 +64,7 @@ void MEMIF_Init(void)
 }
 
 
-MEMIF_CheckType MEMIF_ReqWriteBlock(unsigned char BlockId,const unsigned char* DataPtr)
+MEMIF_CheckType MEMIF_ReqWriteBlock(unsigned char BlockId, unsigned char* DataPtr)
 {
     MEMIF_CheckType au8_Return = MEMIF_OK; /*consider the return ok as initial value*/
     uint8_t au8_Counter = COUNTER_INITIAL_VALUE;
@@ -262,7 +264,7 @@ void MEMIF_Main(void)
                 printf("Function: MEMIF_Main writing in internal EEPROM ... \n");
                 #endif
                 /*write the desired data on internal EEPROM*/
-                au8_FuncReturn = EEINT_ReqWrite(au8_StartAddress, gu8_DataPtr, au8_Length);
+                au8_FuncReturn = EEINT_ReqWrite(au8_StartAddress,gu8_DataPtr, au8_Length);
             } 
             
             else if (EXTERNAL_MEM == au8_StorageType)
@@ -295,6 +297,7 @@ void MEMIF_Main(void)
                 #endif
                 /*read the desired data from internal EEPROM*/
                 au8_FuncReturn = EEINT_ReqRead(au8_StartAddress, gu8_DataPtr, au8_Length);
+				
             }
             else if (EXTERNAL_MEM == au8_StorageType)
             {
@@ -306,7 +309,7 @@ void MEMIF_Main(void)
             }
             else
             {
-                ;
+                
                 #if (ENABLE == TEST)
                 printf("Function: MEMIF_Main Error in storage type !!! \n");
                 #endif
@@ -314,7 +317,7 @@ void MEMIF_Main(void)
         }
         else
         {
-            ;
+           
             #if (ENABLE == TEST)
             printf("Function: MEMIF_Main Error in R/W operation mode !!! \n");
             #endif
@@ -390,6 +393,7 @@ void MEMIF_IntEepromReadCbk(void)
     #if (ENABLE == TEST)
     printf("Function: MEMIF_IntEepromReadCbk finished \n");
     #endif
+	
 }
 
 void MEMIF_ExtEepromWriteCbk(void)

@@ -9,7 +9,7 @@
 #ifndef MEM_IF_CFG_H_
 #define MEM_IF_CFG_H_
 #include "MEM_IF.h"
-#define MEMIF_NUM_OF_BLOCKS 2u
+#define MEMIF_NUM_OF_BLOCKS 1u
 extern const MEMIF_ConfigType MEMIF_ConfigParam;
 
 
