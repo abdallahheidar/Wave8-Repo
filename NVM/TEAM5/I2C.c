@@ -140,7 +140,7 @@ void I2C_Stop(void)
 I2C_CheckType I2C_ReqWrite(unsigned char SlaveAddress, const unsigned char* DataPtr, unsigned char DataLen)
 {
 	uint8_t au8_stats = I2C_OK;
-	uint8_t au8_counter = CLEAR;
+	static uint8_t au8_counter = CLEAR;
 	/* errors checking */
 	if(SlaveAddress > MEM_RANGE || DataPtr == NULL || DataLen > MEM_RANGE)
 	{
@@ -286,5 +286,8 @@ I2C_CheckType I2C_ReqRead(unsigned char SlaveAddress, unsigned char* DataPtr, un
 ISR(TWI_vect)
 {
 	I2C_FLAG = FLAG_LOW;
-	Operation_Clb_Ptr();    /* call the function to complete the operation */
+	if(Operation_Clb_Ptr != NULL)
+	{
+		Operation_Clb_Ptr();    /* call the function to complete the operation */
+	}
 }
