@@ -8,9 +8,10 @@
 
 
 /*********************************includes**********************************/
-#include "I2C.h"
+#include "i2c.h"
 #include "I2C_Cfg.h"
-//#include "../Common/softwareDelay.h"
+#include "../MCAL/registers.h"
+#include "../MCAL/interrupt.h"
 /***************************************************************************/
 
 
@@ -31,11 +32,24 @@
 #define CLEAR                       0
 #define END                         0
 #define NULL	                    ((void *)0)
+#define FLAG_HIGH                   1
+#define FLAG_LOW                    0
+#define MEM_RANGE                   1024
+#define WRITE_OPERATION             0
+#define READ_OPERATION              1
 /***************************************************************************/
 
 
 /******************************global variables*****************************/
-I2C_CbkPftype Clb_Ptr = NULL;
+void (*Consumer_Clb_Ptr)(void) = NULL;
+uint8_t I2C_FLAG;
+uint8_t *write_data_ptr = NULL;
+uint8_t write_data_length = CLEAR;
+uint8_t write_data_address = CLEAR;
+uint8_t I2C_Operation = WRITE_OPERATION;
+uint8_t *read_data_ptr = NULL;
+uint8_t read_data_length = CLEAR;
+uint8_t read_data_address = CLEAR;
 /***************************************************************************/
 
 
@@ -77,9 +91,11 @@ void I2C_Init(void)
        General Call Recognition: Off */
     TWAR = DEVICE_ID; /* set the device address */
 
-    TWCR = (1<<TWEN); /* enable TWI */
+    TWCR = (1<<TWEN) | (1<<TWIE); /* enable TWI and TWI interrupt*/
 
-    Clb_Ptr = I2C_ConfigParam.ActionDoneCbkPtr;  /* set the call back function */
+    Consumer_Clb_Ptr = I2C_ConfigParam.ActionDoneCbkPtr;  /* set the call back function */
+
+    I2C_FLAG = FLAG_LOW;           /* reset the flag */
 }
 
 
@@ -98,10 +114,7 @@ static void I2C_start(void)
 	 * send the start bit by TWSTA=1
 	 * Enable TWI Module TWEN=1 
 	 */
-    TWCR = (1 << TWINT) | (1 << TWSTA) | (1 << TWEN);
-    
-    /* Wait for TWINT flag set in TWCR Register (start bit is send successfully) */
-    while(BIT_IS_CLEAR(TWCR,TWINT));
+    TWCR = (1 << TWINT) | (1 << TWSTA) | (1 << TWEN) | (1<<TWIE);
 }
 
 
@@ -120,7 +133,7 @@ void I2C_Stop(void)
 	 * send the stop bit by TWSTO=1
 	 * Enable TWI Module TWEN=1 
 	 */
-    TWCR = (1 << TWINT) | (1 << TWSTO) | (1 << TWEN);
+    TWCR = (1 << TWINT) | (1 << TWSTO) | (1 << TWEN) | (1<<TWIE);
 }
 
 
@@ -137,41 +150,65 @@ void I2C_Stop(void)
 I2C_CheckType I2C_ReqWrite(unsigned char SlaveAddress, const unsigned char* DataPtr, unsigned char DataLen)
 {
 	uint8_t au8_stats = I2C_OK;
-	uint8_t au8_counter = CLEAR;
-	while(DataLen != END)
+	static uint8_t au8_entry_counter;
+
+	I2C_Operation = WRITE_OPERATION;       /* set the I2C operation to be write */
+	/* errors checking */
+	if(SlaveAddress > MEM_RANGE || DataPtr == NULL || DataLen > MEM_RANGE)
 	{
-		if(au8_counter == FIRST_ENTRY)
-		{
-			I2C_start();
-			TWDR = SlaveAddress & WRITE_MASK;   /* slave address and write operation */
-		}
-
-		else
-		{
-			//softwareDelayUS(10);
-			/* Put data On TWI data Register */
-			TWDR = *DataPtr;
-
-			DataLen--;
-			DataPtr++;
-		}
-
-		/*
-		 * Clear the TWINT flag before sending the data TWINT=1
-		 * Enable TWI Module TWEN=1
-		 */
-		TWCR = (1 << TWINT) | (1 << TWEN);
-
-		/* Wait for TWINT flag set in TWCR Register(data is send successfully) */
-		while(BIT_IS_CLEAR(TWCR,TWINT));
-
-		au8_counter++;
+		au8_stats = I2C_NOK;
 	}
 
-	if(Clb_Ptr != NULL)
+	else
 	{
-		Clb_Ptr();  /* notify the consumer */
+		write_data_length = DataLen;
+		if(I2C_FLAG == FLAG_LOW)
+		{
+			I2C_FLAG = FLAG_HIGH;       /*  raise the flag */
+			if(write_data_length > END)
+			{
+				if(au8_entry_counter == FIRST_ENTRY)
+				{
+					write_data_ptr = DataPtr;             /* save the data pointer */
+					write_data_address = SlaveAddress;   /* save the address */
+					I2C_start();                        /* send the start bit */
+				}
+
+				else if(au8_entry_counter == SECOND_ENTRY)
+				{
+					TWDR = SlaveAddress & WRITE_MASK;   /* slave address and write operation */
+				}
+
+				else
+				{
+					/* Put data On TWI data Register */
+					TWDR = *write_data_ptr;
+					write_data_length--;    /* increment the length */
+					write_data_ptr++;      /* increment the pointer */
+				}
+
+				/*
+				 * Clear the TWINT flag before sending the data TWINT=1
+				 * Enable TWI Module TWEN=1
+				 */
+				TWCR = (1 << TWINT) | (1 << TWEN) | (1<<TWIE);
+
+				au8_entry_counter++;
+			}
+		}
 	}
+
+	if(DataLen == END)
+	{
+		au8_entry_counter = CLEAR;  /* reset the counter */
+		I2C_FLAG = FLAG_LOW;  /* reset the flag */
+
+		if(Consumer_Clb_Ptr != NULL)
+		{
+			Consumer_Clb_Ptr();    /* notify the consumer */
+		}
+	}
+
 	return au8_stats;
 }
 
@@ -188,47 +225,89 @@ I2C_CheckType I2C_ReqWrite(unsigned char SlaveAddress, const unsigned char* Data
 I2C_CheckType I2C_ReqRead(unsigned char SlaveAddress, unsigned char* DataPtr, unsigned char DataLen)
 {
 	uint8_t au8_stats = I2C_OK;
-	uint8_t au8_counter = CLEAR;
-	while(DataLen != END)
+	static uint8_t au8_entry_counter = CLEAR;
+
+	I2C_Operation = READ_OPERATION;          /* set the I2C operation to be write */
+	/* errors checking */
+	if(SlaveAddress > MEM_RANGE || DataPtr == NULL || DataLen > MEM_RANGE)
 	{
-		if(au8_counter == FIRST_ENTRY)
-		{
-			I2C_start();
-			TWDR = SlaveAddress | READ_MASK;   /* slave address and read operation */
-
-			/*
-			 * Clear the TWINT flag before sending the data TWINT=1
-			 * Enable TWI Module TWEN=1
-			 */
-			TWCR = (1 << TWINT) | (1 << TWEN);
-
-			/* Wait for TWINT flag set in TWCR Register(data is send successfully) */
-			while(BIT_IS_CLEAR(TWCR,TWINT));
-		}
-
-		else
-		{
-			//softwareDelayUS(10);
-			/*
-			 * Clear the TWINT flag before reading the data TWINT=1
-			 * Enable sending ACK after reading or receiving data TWEA=1
-			 * Enable TWI Module TWEN=1
-			 */
-			TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWEA);
-			/* Wait for TWINT flag set in TWCR Register (data received successfully) */
-			while(BIT_IS_CLEAR(TWCR,TWINT));
-			/* Read Data */
-			*DataPtr = TWDR;
-
-			DataLen--;
-			DataPtr++;
-		}
-		au8_counter++;
+		au8_stats = I2C_NOK;
 	}
 
-	if(Clb_Ptr != NULL)
+	else
 	{
-		Clb_Ptr();    /* notify the consumer */
+		read_data_length = DataLen;
+		if(I2C_FLAG == FLAG_LOW)
+		{
+			I2C_FLAG = FLAG_HIGH;       /*  raise the flag */
+
+			if(read_data_length > END)
+			{
+				if(au8_entry_counter == FIRST_ENTRY)
+				{
+					read_data_ptr = DataPtr;             /* save the data pointer */
+					read_data_address = SlaveAddress;   /* save the address */
+					I2C_start();                       /* send the start bit */
+				}
+
+				else if(au8_entry_counter == SECOND_ENTRY)
+				{
+					TWDR = SlaveAddress | READ_MASK;   /* slave address and read operation */
+
+					/*
+					 * Clear the TWINT flag before sending the data TWINT=1
+					 * Enable TWI Module TWEN=1
+					 */
+					TWCR = (1 << TWINT) | (1 << TWEN) | (1<<TWIE);
+
+				}
+
+				else
+				{
+					/*
+					 * Clear the TWINT flag before reading the data TWINT=1
+					 * Enable sending ACK after reading or receiving data TWEA=1
+					 * Enable TWI Module TWEN=1
+					 */
+					TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWEA) | (1<<TWIE);
+
+					/* Read Data */
+					*read_data_ptr = TWDR;
+					read_data_length--;    /* increment the length */
+					read_data_ptr++;      /* increment the pointer */
+				}
+				au8_entry_counter++;
+			}
+		}
 	}
+
+	if(DataLen == END)
+	{
+		au8_entry_counter = CLEAR;  /* reset the counter */
+		I2C_FLAG = FLAG_LOW;  /* reset the flag */
+
+		if(Consumer_Clb_Ptr != NULL)
+		{
+			Consumer_Clb_Ptr();    /* notify the consumer */
+		}
+	}
+
 	return au8_stats;
+}
+
+
+/************************************************************************************
+					     				ISR
+************************************************************************************/
+ISR(TWI_vect)
+{
+	I2C_FLAG = FLAG_LOW;
+	if(I2C_Operation == WRITE_OPERATION)
+	{
+		I2C_ReqWrite(write_data_address,write_data_ptr,write_data_length);    /* call the function to complete the operation */
+	}
+	else if(I2C_Operation == READ_OPERATION)
+	{
+		I2C_ReqRead(read_data_address,read_data_ptr,read_data_length);    /* call the function to complete the operation */
+	}
 }
