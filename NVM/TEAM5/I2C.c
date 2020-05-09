@@ -41,15 +41,15 @@
 
 
 /******************************global variables*****************************/
-void (*Consumer_Clb_Ptr)(void) = NULL;
-uint8_t I2C_FLAG;
-uint8_t *write_data_ptr = NULL;
-uint8_t write_data_length = CLEAR;
-uint8_t write_data_address = CLEAR;
-uint8_t I2C_Operation = WRITE_OPERATION;
-uint8_t *read_data_ptr = NULL;
-uint8_t read_data_length = CLEAR;
-uint8_t read_data_address = CLEAR;
+static void (*Consumer_Clb_Ptr)(void) = NULL;
+static uint8_t I2C_FLAG;
+static uint8_t *write_data_ptr = NULL;
+static uint8_t write_data_length ;
+static uint8_t write_data_address;
+static uint8_t I2C_Operation;
+static uint8_t *read_data_ptr = NULL;
+static uint8_t read_data_length;
+static uint8_t read_data_address;
 /***************************************************************************/
 
 
@@ -95,7 +95,13 @@ void I2C_Init(void)
 
     Consumer_Clb_Ptr = I2C_ConfigParam.ActionDoneCbkPtr;  /* set the call back function */
 
-    I2C_FLAG = FLAG_LOW;           /* reset the flag */
+    /* initialize all global variables */
+    I2C_FLAG = FLAG_LOW;
+    write_data_length = CLEAR;
+    write_data_address = CLEAR;
+    I2C_Operation = WRITE_OPERATION;
+    read_data_length = CLEAR;
+    read_data_address = CLEAR;
 }
 
 
