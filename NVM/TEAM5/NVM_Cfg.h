@@ -9,7 +9,7 @@
 #ifndef NVM_CFG_H_
 #define NVM_CFG_H_
 #include "NVM.h"
-#define NVM_NUM_OF_BLOCKS 1u
+#define NVM_NUM_OF_BLOCKS 2u
 extern  NVM_ConfigType NVM_BlocConfig[NVM_NUM_OF_BLOCKS];
 extern  NVM_GlobalCallbacksType NVM_GlobalCallbacks;
 

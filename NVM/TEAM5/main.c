@@ -104,7 +104,11 @@ void Main_Main(void)
 				
 				ReadAllDone = 0;
 				lcd_clrScreen();
-				lcd_dispString("Waiting for the first Press");
+				lcd_gotoxy(0,0);
+				lcd_dispString("Waiting for");
+				lcd_gotoxy(0,1);
+				lcd_dispString("first press");
+				lcd_gotoxy(0,0);
 				SystemState = STATE_RUNNING;
 			}
 		}

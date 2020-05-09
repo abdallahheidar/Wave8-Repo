@@ -7,10 +7,11 @@
 #include "Btn.h"
 #include "NVM.h"
 #include "lcd_4bit.h"
+#include "avr/io.h"
 #include <stdlib.h>
 
 #define BTN2_ID 1
-#define COUNTER1_BLOCK_ID 0x01
+#define COUNTER1_BLOCK_ID 1
 #define DISPLAY_RAW 0x01
 
 #define STATE_IDLE         0x00
@@ -34,7 +35,8 @@ void App2_WriteCbk(void)
 }
 void App2_ReadCbk(void)
 {
-	DataReadFlag = (unsigned char)1;
+	DataReadFlag = 1;
+
 }
 void App2_main(void)
 {
@@ -48,8 +50,9 @@ void App2_main(void)
 			if(BtnState == PRESSED)
 			{
 				
-				NVM_ReadBlock(COUNTER1_BLOCK_ID,&CounterData);
+				TCNT2=NVM_ReadBlock(COUNTER1_BLOCK_ID,&CounterData);
 				State = STATE_READING;
+				
 			}
 			else
 			{
@@ -61,12 +64,13 @@ void App2_main(void)
 		{
 			if(DataReadFlag == 1)
 			{
+				TCNT2=0x10;
 				char str[4];
 				DataReadFlag = 0;
 				CounterData ++;
-				lcd_gotoxy(DISPLAY_RAW,1);
-				lcd_dispString("    ");
-				lcd_gotoxy(DISPLAY_RAW,1);
+				lcd_gotoxy(0,1);
+				lcd_clrScreen();
+				lcd_gotoxy(0,1);
 				itoa(CounterData,str,10);
 				lcd_dispString(str);	
 				NVM_WriteBlock(COUNTER1_BLOCK_ID,&CounterData);

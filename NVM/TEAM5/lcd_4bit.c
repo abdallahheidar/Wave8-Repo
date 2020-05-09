@@ -41,9 +41,6 @@ void lcd_init(void)
 	lcd_sendCommand(0x33); // 4-bit mode
 	lcd_sendCommand (0x32);
 	lcd_sendCommand (0x28);
-
-
-
 	lcd_sendCommand(0x0c); // turn on lcd
 
 	
@@ -63,6 +60,7 @@ void lcd_sendCommand(unsigned char cmd)
 
 	WriteNipple(high_nibble);
 	enableTrigger(); // triggre lcd enable
+	_delay_us(10);
 	WriteNipple(low_nibble);
 	enableTrigger();
 	_delay_us(100);
@@ -93,39 +91,23 @@ void lcd_displayChar (unsigned char data)
 }
 
 
-void lcd_gotoxy(unsigned char y , unsigned char x )
+void lcd_gotoxy(unsigned char u8_posx , unsigned char u8_posy )
 {
-	unsigned char position = 0x80;
-	
-	switch(y)
+	unsigned char DDRAMA=0;
+	// remap lines into proper order
+	switch(u8_posy)
 	{
 		case 0:
-
-		position=position+x;
-		
+		DDRAMA = LCD_LINE0+u8_posx;
 		break;
-
 		case 1:
-
-		position=0xc0;
-		position=position+x;
-
+		DDRAMA = LCD_LINE1+u8_posx;
 		break;
-
-		case 2:
-
-		position=position+x;
-
+		default:
 		break;
-
-		case 3:
-		position=position+x;
-		break;
-		
-		
 	}
-	
-	lcd_sendCommand(position);
+	// set data address
+	lcd_sendCommand(1<<LCD_DDRAM | DDRAMA);
 
 
 }

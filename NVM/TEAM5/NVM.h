@@ -9,7 +9,7 @@
 #ifndef NVM_H_
 #define NVM_H_
 #include "std_types.h"
-#define UDR                  *((reg_type8_t)(0X2C))
+#include "MEM_IF.h"
 typedef enum {NVM_OK, NVM_NOK, NVM_BUSY}NVM_CheckType;
 typedef void (*NvmActionDoneCbkPtrType)(void);
 typedef struct

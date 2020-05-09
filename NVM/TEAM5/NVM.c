@@ -8,6 +8,7 @@
 #include "NVM_Cfg.h"
 #include "std_types.h"
 #include "avr/io.h"
+
 #define IDLE_STATE                  0
 #define READ_ALL_STATE          	1
 #define WRITE_ALL_STATE         	2
@@ -25,226 +26,237 @@
 #define FREE                        0
 #define DONE                        1
 #define NOT_YET                     0
-static uint8_t gu8_SMstate;
-static uint8_t gu8_initflag;
-static uint8_t gu8_allbusy;
-static uint8_t gu8_blockbusy;
-static uint8_t gu8_ReadBlock_id;
-static uint8_t* gu8_Read_data_ptr;
-static uint8_t gu8_WriteBlock_id;
-static uint8_t* gu8_Write_data_ptr;
-static volatile uint8_t gu8_Writecbknotify;
-static  volatile uint8_t gu8_Readcbknotify;
+static uint8_t gu8_NVM_SM;
+static uint8_t gu8_NVM_INIT_Flag;
+static uint8_t gu8_NVMbusy_flag;
+static uint8_t gu8_Read_ID;
+static uint8_t* gu8ptr_ReadData;
+static uint8_t gu8_Write_ID;
+static uint8_t* gu8ptr_WriteData;
+static volatile uint8_t gu8_WriteDone;
+static  volatile uint8_t gu8_ReadDone;
+
+
 void NVM_Init(void)
 {
-	if(gu8_initflag==INITIALIZED)
+	if(gu8_NVM_INIT_Flag==INITIALIZED)
 	{
 
 	}
 	else
 	{
-		NVM_BlocConfig[0].BlockRamAddress[0]=0x02;
-		gu8_initflag=INITIALIZED;
-		gu8_SMstate=IDLE_STATE;
-		gu8_allbusy=FREE;
-		gu8_blockbusy=FREE;
+		gu8_NVM_INIT_Flag=INITIALIZED;
+		gu8_NVM_SM=IDLE_STATE;
+		gu8_NVMbusy_flag=FREE;
 	}
 }
 
 
 NVM_CheckType NVM_ReadAll(void)
 {
-	NVM_CheckType au8_ret_error=NVM_OK;
-	if(gu8_initflag==UN_INITIALIZED)
+	NVM_CheckType Error=NVM_OK;
+	if(gu8_NVM_INIT_Flag==UN_INITIALIZED)
 	{
-		au8_ret_error=NVM_NOK;
+		Error=NVM_NOK;
 	}
 	else
 	{
+		if(gu8_NVMbusy_flag==BUSY)
+		{
+			Error=NVM_BUSY;
+		}
+		else
+		{
 		
-			gu8_SMstate=READ_ALL_STATE;
-			gu8_allbusy=BUSY;
-		
+			gu8_NVM_SM=READ_ALL_STATE;
+			gu8_NVMbusy_flag=BUSY;
+		}
 
 	}
 
-	return au8_ret_error;
+	return Error;
 }
 
 
 NVM_CheckType NVM_WriteAll(void)
 {
-	NVM_CheckType au8_ret_error=NVM_OK;
-	if(gu8_initflag==UN_INITIALIZED)
+	NVM_CheckType Error=NVM_OK;
+	if(gu8_NVM_INIT_Flag==UN_INITIALIZED)
 	{
-		au8_ret_error=NVM_NOK;
+		Error=NVM_NOK;
 	}
 	else
 	{
-		if(gu8_allbusy==BUSY)
+		if(gu8_NVMbusy_flag==BUSY)
 		{
-			au8_ret_error=NVM_BUSY;
+			Error=NVM_BUSY;
 		}
 		else
 		{
-			gu8_SMstate=WRITE_ALL_STATE;
-			gu8_allbusy=BUSY;
+			gu8_NVM_SM=WRITE_ALL_STATE;
+			gu8_NVMbusy_flag=BUSY;
 		}
 
 	}
 
-	return au8_ret_error;
+	return Error;
 }
 
 
 NVM_CheckType NVM_ReadBlock(unsigned char BlockId, unsigned char* DataPtr)
 {
-	NVM_CheckType au8_ret_error=NVM_OK;
+	NVM_CheckType Error=NVM_OK;
 	if(NULL==DataPtr)
 	{
-		au8_ret_error=NVM_NOK;
+		Error=NVM_NOK;
 	}
 	else
 	{
-		if(gu8_blockbusy==BUSY)
+		if(gu8_NVMbusy_flag==BUSY)
 		{
-			au8_ret_error=NVM_BUSY;
+			Error=NVM_BUSY;
 		}
 		else
 		{
-			gu8_ReadBlock_id=BlockId;
-			gu8_Read_data_ptr=DataPtr;
-			gu8_blockbusy=BUSY;
-			gu8_SMstate=READ_BLOCK_STATE;
+			gu8_Read_ID=BlockId;
+			gu8ptr_ReadData=DataPtr;
+			gu8_NVMbusy_flag=BUSY;
+			gu8_NVM_SM=READ_BLOCK_STATE;
 
 		}
 
 	}
 
-	return au8_ret_error;
+	return Error;
 }
 NVM_CheckType NVM_WriteBlock(uint8_t BlockId, uint8_t* DataPtr)
 {
-	NVM_CheckType au8_ret_error=NVM_OK;
+	NVM_CheckType Error=NVM_OK;
 	if(NULL==DataPtr)
 	{
-		au8_ret_error=NVM_NOK;
+		Error=NVM_NOK;
 	}
 	else
 	{
-		if(gu8_blockbusy==BUSY)
+		if(gu8_NVMbusy_flag==BUSY)
 		{
-			au8_ret_error=NVM_BUSY;
+			Error=NVM_BUSY;
 		}
 		else
 		{
-			gu8_WriteBlock_id=BlockId;
-			gu8_Write_data_ptr=DataPtr;
-			gu8_blockbusy=BUSY;
-			gu8_SMstate=WRITE_BLOCK_STATE;
+			gu8_Write_ID=BlockId;
+			gu8ptr_WriteData=DataPtr;
+			gu8_NVMbusy_flag=BUSY;
+			gu8_NVM_SM=WRITE_BLOCK_STATE;
 		}
 
 	}
-	return au8_ret_error;
+	return Error;
 }
 
 
 void NVM_Main(void)
 {
-	static uint8_t au8_counter=0;
-	static uint8_t au8_counter2=0;
-	static uint8_t AU8_READALL=0;
-	switch(gu8_SMstate)
+	static uint8_t au8_ID_count=0;
+	static uint8_t au8_LEN_Count=0;
+	switch(gu8_NVM_SM)
 	{
 		case IDLE_STATE:
-		gu8_allbusy=FREE;
-		gu8_blockbusy=FREE;
-		au8_counter2=0;
-		au8_counter=0;
+		gu8_NVMbusy_flag=FREE;
+		au8_LEN_Count=0;
+		au8_ID_count=0;
 		break;
 		case WRITE_ALL_STATE:
-		if(au8_counter==NVM_NUM_OF_BLOCKS)
+		if(au8_ID_count==NVM_NUM_OF_BLOCKS)
 		{
-			gu8_SMstate=WRITE_ALL_DONE_STATE;
+			gu8_NVM_SM=WRITE_ALL_DONE_STATE;
 		}
 		else
 		{
-			MEMIF_ReqWriteBlock(NVM_BlocConfig[au8_counter].BlockId,NVM_BlocConfig[au8_counter].BlockRamAddress);
-			au8_counter++;
-			gu8_SMstate=WRITING_ALL_STATE;
+			MEMIF_ReqWriteBlock(NVM_BlocConfig[au8_ID_count].BlockId,NVM_BlocConfig[au8_ID_count].BlockRamAddress);
+			au8_ID_count++;
+			gu8_NVM_SM=WRITING_ALL_STATE;
 		}
 		break;
 		case  WRITING_ALL_STATE:
-		if(gu8_Writecbknotify==DONE)
+		if(gu8_WriteDone==DONE)
 		{
-			gu8_Writecbknotify=NOT_YET;
-			gu8_SMstate=WRITE_ALL_STATE;
+			gu8_WriteDone=NOT_YET;
+			gu8_NVM_SM=WRITE_ALL_STATE;
 		}
 		break;
 		case READ_ALL_STATE:   
-			if(AU8_READALL==NVM_NUM_OF_BLOCKS)
+			if(au8_ID_count==NVM_NUM_OF_BLOCKS)
 			{
-				gu8_SMstate=READ_ALL_DONE_STATE;
+				gu8_NVM_SM=READ_ALL_DONE_STATE;
 				
 			}
 			else
 			{
 
-				MEMIF_ReqReadBlock(NVM_BlocConfig[0].BlockId,NVM_BlocConfig[0].BlockRamAddress);
-				AU8_READALL++;
-				gu8_SMstate=READING_ALL_STATE;
+				MEMIF_ReqReadBlock(NVM_BlocConfig[au8_ID_count].BlockId,NVM_BlocConfig[au8_ID_count].BlockRamAddress);
+				au8_ID_count++;
+				gu8_NVM_SM=READING_ALL_STATE;
 			}
 			break;
 		case  WRITE_BLOCK_STATE:
-				for(au8_counter=0;au8_counter<NVM_NUM_OF_BLOCKS;au8_counter++)
+				for(au8_ID_count=0;au8_ID_count<NVM_NUM_OF_BLOCKS;au8_ID_count++)
 				{
-					if(NVM_BlocConfig[au8_counter].BlockId==gu8_WriteBlock_id)
+					if(NVM_BlocConfig[au8_ID_count].BlockId==gu8_Write_ID)
 					{
-						for(au8_counter2=0;au8_counter2<NVM_BlocConfig[au8_counter].BlockLength;au8_counter2++)
-						NVM_BlocConfig[au8_counter].BlockRamAddress[au8_counter2]=gu8_Write_data_ptr[au8_counter2];
+						for(au8_LEN_Count=0;au8_LEN_Count<NVM_BlocConfig[au8_ID_count].BlockLength;au8_LEN_Count++)
+						NVM_BlocConfig[au8_ID_count].BlockRamAddress[au8_LEN_Count]=gu8ptr_WriteData[au8_LEN_Count];
 						break;
 					}
 				}
-				gu8_SMstate=WRITE_BLOCK_DONE_STATE;
+				gu8_NVM_SM=WRITE_BLOCK_DONE_STATE;
 				break;
 		case  WRITE_BLOCK_DONE_STATE:
-				gu8_blockbusy=FREE;
-				NVM_BlocConfig[au8_counter].BlockWriteNotifPtr();
-				au8_counter=0;
-				au8_counter2=0;
-				gu8_SMstate=IDLE_STATE;
+				gu8_NVMbusy_flag=FREE;
+				NVM_BlocConfig[au8_ID_count].BlockWriteNotifPtr();
+				au8_ID_count=0;
+				au8_LEN_Count=0;
+				gu8_NVM_SM=IDLE_STATE;
 				break;
 		case  READ_BLOCK_STATE:
-		*gu8_Read_data_ptr=NVM_BlocConfig[0].BlockRamAddress[0];
-		gu8_SMstate=READ_BLOCK_DONE_STATE;
+		for(au8_ID_count=0;au8_ID_count<NVM_NUM_OF_BLOCKS;au8_ID_count++)
+		{
+			if(NVM_BlocConfig[au8_ID_count].BlockId==gu8_Read_ID)
+			{
+				for(au8_LEN_Count=0;au8_LEN_Count<NVM_BlocConfig[au8_ID_count].BlockLength;au8_LEN_Count++)
+				gu8ptr_ReadData[au8_LEN_Count]=NVM_BlocConfig[au8_ID_count].BlockRamAddress[au8_LEN_Count];
+				break;
+			}
+		}
+		gu8_NVM_SM=READ_BLOCK_DONE_STATE;
 		break;
 		case  READ_BLOCK_DONE_STATE:
-		gu8_blockbusy=FREE;
-		NVM_BlocConfig[au8_counter].BlockReadNotifPtr();
-		au8_counter=0;
-		au8_counter2=0;
-		gu8_SMstate=IDLE_STATE;
+		gu8_NVMbusy_flag=FREE;
+		NVM_BlocConfig[au8_ID_count].BlockReadNotifPtr();
+		au8_ID_count=0;
+		au8_LEN_Count=0;
+		gu8_NVM_SM=IDLE_STATE;
 		break;
 		case  READING_ALL_STATE:
-		if(gu8_Readcbknotify==DONE)
+		if(gu8_ReadDone==DONE)
 		{
 
-			gu8_Readcbknotify=NOT_YET;
-			gu8_SMstate=READ_ALL_STATE;
+			gu8_ReadDone=NOT_YET;
+			gu8_NVM_SM=READ_ALL_STATE;
 			
 		}
 		break;
 		case  READ_ALL_DONE_STATE:
-				gu8_allbusy=FREE;
-				AU8_READALL=0;
+				gu8_NVMbusy_flag=FREE;
+				au8_ID_count=0;
 				NVM_GlobalCallbacks.ReadAllCallback();
-				gu8_SMstate=IDLE_STATE;
+				gu8_NVM_SM=IDLE_STATE;
 		break;
 		case  WRITE_ALL_DONE_STATE:
-				gu8_allbusy=FREE;
-				au8_counter=0;
+				gu8_NVMbusy_flag=FREE;
+				au8_ID_count=0;
 				NVM_GlobalCallbacks.WriteAllCallBack();
-				gu8_SMstate=IDLE_STATE;
+				gu8_NVM_SM=IDLE_STATE;
 				break;
 		default:
 			  break;
@@ -257,10 +269,10 @@ void NVM_Main(void)
 
 void NVM_WriteBlockDoneNotif(void)
 {
-	gu8_Writecbknotify=DONE;
+	gu8_WriteDone=DONE;
 }
 
 void NVM_ReadBlockDoneNotif(void)
 {
-	gu8_Readcbknotify=DONE;
+	gu8_ReadDone=DONE;
 }

@@ -63,9 +63,9 @@ void App1_main(void)
 				char str[4];
 				DataReadFlag = 0;
 				CounterData ++;
-				lcd_gotoxy(DISPLAY_RAW,0);
-				lcd_dispString("    ");
-				lcd_gotoxy(DISPLAY_RAW,0);
+				lcd_clrScreen();
+				lcd_gotoxy(0,0);
+				lcd_gotoxy(0,0);
 				itoa(CounterData,str,10);
 				lcd_dispString(str);	
 				NVM_WriteBlock(COUNTER1_BLOCK_ID,&CounterData);

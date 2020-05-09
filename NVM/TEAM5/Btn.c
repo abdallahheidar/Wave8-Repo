@@ -21,10 +21,7 @@ void BTN_GetState(BtnStateType *BtnStatePtr, unsigned char BtnId)
 }
 void BTN_Manager(void)
 {
-	unsigned char i=0;
-	BtnStateType state;
-	unsigned char Data;
-	static uint8_t *au8_btncounter;
+
 	static uint8_t au8_btn1state=0;
 	static uint8_t au8_btn2state=0;
 	static uint8_t au8_btn3state=0;

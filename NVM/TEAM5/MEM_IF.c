@@ -16,7 +16,6 @@
 #include "std_types.h"
 #include "EEPROM_EXT.h"
 #include "EEPROM_INT.h"
-#define UDR                  *((reg_type8_t)(0X2C))
 
 #if (TEST == ENABLE)
 #include <stdio.h>
