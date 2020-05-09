@@ -16,27 +16,27 @@
 
 
 /*********************************definitions*******************************/
-#define TWI_NO_PRESCALLER           0
-#define TWI_PRESCALLER_4            1
-#define TWI_PRESCALLER_16           2
-#define TWI_PRESCALLER_64           3
-#define DEVICE_ID                   0x10
-#define TWO                         2
-#define FOUR                        4
-#define SIXTEEN                     16
-#define CLEAR                       0
-#define FIRST_ENTRY                 0
-#define SECOND_ENTRY                1
-#define READ_MASK                   0x01
-#define WRITE_MASK                  0xFE
-#define CLEAR                       0
-#define END                         0
+#define TWI_NO_PRESCALLER           0u
+#define TWI_PRESCALLER_4            1u
+#define TWI_PRESCALLER_16           2u
+#define TWI_PRESCALLER_64           3u
+#define DEVICE_ID                   0x10u
+#define TWO                         2u
+#define FOUR                        4u
+#define SIXTEEN                     16u
+#define CLEAR                       0u
+#define FIRST_ENTRY                 0u
+#define SECOND_ENTRY                1u
+#define READ_MASK                   0x01u
+#define WRITE_MASK                  0xFEu
+#define CLEAR                       0u
+#define END                         0u
 #define NULL	                    ((void *)0)
-#define FLAG_HIGH                   1
-#define FLAG_LOW                    0
-#define MEM_RANGE                   1024
-#define WRITE_OPERATION             0
-#define READ_OPERATION              1
+#define FLAG_HIGH                   1u
+#define FLAG_LOW                    0u
+#define MEM_RANGE                   1024u
+#define WRITE_OPERATION             0u
+#define READ_OPERATION              1u
 /***************************************************************************/
 
 
