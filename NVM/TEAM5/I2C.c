@@ -42,14 +42,14 @@
 
 /******************************global variables*****************************/
 void (*Consumer_Clb_Ptr)(void) = NULL;
-uint8_t I2C_FLAG;
-uint8_t *write_data_ptr = NULL;
-uint8_t write_data_length = CLEAR;
-uint8_t write_data_address = CLEAR;
-uint8_t I2C_Operation = WRITE_OPERATION;
-uint8_t *read_data_ptr = NULL;
-uint8_t read_data_length = CLEAR;
-uint8_t read_data_address = CLEAR;
+static uint8_t I2C_FLAG;
+static uint8_t *write_data_ptr = NULL;
+static uint8_t write_data_length = CLEAR;
+static uint8_t write_data_address = CLEAR;
+static uint8_t I2C_Operation = WRITE_OPERATION;
+static uint8_t *read_data_ptr = NULL;
+static uint8_t read_data_length = CLEAR;
+static uint8_t read_data_address = CLEAR;
 /***************************************************************************/
 
 
@@ -147,7 +147,7 @@ void I2C_Stop(void)
 * Return value: I2C_CheckType
 * Description: this function writes data on I2C bus
 ************************************************************************************/
-I2C_CheckType I2C_ReqWrite(unsigned char SlaveAddress, const unsigned char* DataPtr, unsigned char DataLen)
+I2C_CheckType I2C_ReqWrite(uint8_t SlaveAddress, const uint8_t * DataPtr, uint8_t DataLen)
 {
 	uint8_t au8_stats = I2C_OK;
 	static uint8_t au8_entry_counter;
@@ -222,7 +222,7 @@ I2C_CheckType I2C_ReqWrite(unsigned char SlaveAddress, const unsigned char* Data
 * Return value: I2C_CheckType
 * Description: this function writes data on I2C bus
 ************************************************************************************/
-I2C_CheckType I2C_ReqRead(unsigned char SlaveAddress, unsigned char* DataPtr, unsigned char DataLen)
+I2C_CheckType I2C_ReqRead(uint8_t SlaveAddress, uint8_t * DataPtr, uint8_t DataLen)
 {
 	uint8_t au8_stats = I2C_OK;
 	static uint8_t au8_entry_counter = CLEAR;

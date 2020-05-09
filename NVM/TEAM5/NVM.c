@@ -26,6 +26,7 @@
 #define FREE                        0
 #define DONE                        1
 #define NOT_YET                     0
+
 static uint8_t gu8_NVM_SM;
 static uint8_t gu8_NVM_INIT_Flag;
 static uint8_t gu8_NVMbusy_flag;
